@@ -1,160 +1,147 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 24/09/2026.
+Data do último registro: 24/09/2026.  
+**Branch de trabalho atual:** `pausa-s1-6`
 
 ---
 
 ## 1. Status Geral do Projeto
 - **Fase atual:** Sprint 1 — Fundação, arquitetura e PWA.
-- **Progresso:** Tarefas S0.2, S1.1, S1.2, S1.3, S1.4 e **S1.5 concluídas com sucesso**. Repositório conectado e publicação no GitHub Pages ativa.
+- **Tarefas concluídas e homologadas:**
+  - `S0.2`: Diagnóstico e verificação de ambiente (Node, npm, Python, Git).
+  - `S1.1`: Fundação e arquitetura inicial (Vite, TypeScript, CSS puro, `.gitignore`).
+  - `S1.2`: Modelagem dos dados em `src/domain/tipos.ts` (entidades, 4 conclusões, validação humana, campos opcionais).
+  - `S1.3`: Navegação client-side por hash, 6 etapas, stepper, acessibilidade, aviso de dados fictícios e 4 elementos essenciais na Identificação.
+  - `S1.4`: Geração de 5 cenários fictícios determinísticos em `public/data/` e suíte de testes com 12 testes no `pytest` (`scripts/test_gerar_dados.py`).
+  - `S1.5`: Configuração de base (`/conforma-gsasp/`), documentação (`README.md`), automação CI/CD (`.github/workflows/deploy.yml`) e publicação no GitHub Pages (`https://cleytondias84.github.io/conforma-gsasp/`).
+- **Tarefa iniciada na S1.6 e status atual (NÃO CONCLUÍDA):**
+  - **O que foi implementado tecnicamente:**
+    - Plugin `vite-plugin-pwa` configurado em `vite.config.ts` com Workbox e geração automática de Service Worker (`sw.js`).
+    - Manifesto Web (`manifest.webmanifest`) com tema `#0f172a`, idioma `pt-BR`, escopo `/conforma-gsasp/`, `start_url: '/conforma-gsasp/#/'` e modo `standalone`.
+    - Script determinístico `scripts/gerar_icones.py` e geração de todos os ícones em `public/`: `favicon.svg`, `pwa-192x192.png`, `pwa-512x512.png`, maskables e `apple-touch-icon.png`.
+    - Precache configurado para 31 ativos essenciais (HTML, CSS, JS, ícones e todos os arquivos JSON de dados sintéticos em `/data/*.json`).
+    - Metatags de PWA integradas em `index.html`.
+    - Step de geração de ícones adicionado em `.github/workflows/deploy.yml`.
+    - Compilação (`npm run build`) e testes unitários (`pytest`) testados com 100% de sucesso localmente.
+  - **O que ainda está pendente na S1.6:**
+    - Teste manual de instalação do PWA em navegador compatível (Chrome/Edge/dispositivo móvel).
+    - Teste manual de funcionamento offline (simulação de corte de rede via DevTools ou desconexão física, recarregamento com `F5` e navegação pelas 6 rotas por hash).
+    - **A tarefa S1.6 NÃO está concluída** e não deve ser dada como pronta sem a validação humana desses dois testes.
 - **Repositório oficial:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
-- **Site publicado:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
-- **Status de verificação:** Abertura do site publicado no navegador confirmada pelo usuário; a navegação completa de ponta a ponta na versão publicada permanece a ser realizada.
-- **Próxima tarefa:** **S1.6** (Instalação e cache inicial; configuração PWA e ícones em public) — mantida pendente conforme o `sprint.md`, sem inicialização.
+- **Branch do ponto de parada:** `pausa-s1-6` (as alterações da S1.6 estão isoladas nesta branch para não publicar código pendente na `main`).
+- **Site publicado atualmente (baseado na main):** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Sprint 2:** Mantida pendente, sem inicialização.
 
 ---
 
-## 2. Histórico de Entregas (Resultados Comprovados)
+## 2. Próximo Passo Exato ao Retomar
 
-### Preparação e Sprint 0
-- **Ajuste de documentação:** Nomes dos arquivos padronizados para `docs/contexto.md` e `docs/sprint.md` (removida duplicidade `.md.md`). Conteúdo 100% preservado.
-- **Tarefa S0.2 (Ambiente):** Verificação de ferramentas concluída.
-  - Node.js: `v22.11.0`
-  - npm: `10.9.0` (executável via `npm.cmd` no PowerShell)
-  - Python: `3.13.0` (64-bit estável em `C:\Program Files\Python313\python.exe`)
-  - Git: `git version 2.51.0.windows.1`
+Ao abrir o projeto no novo computador:
 
-### S1.1 — Fundação e Arquitetura Inicial
-- Estrutura base criada com **Vite + TypeScript + CSS puro** (sem framework adicional pesado).
-- Arquivos criados e configurados:
-  - `.gitignore` (proteção de `node_modules`, `dist`, `.venv`, `.env` e segredos).
-  - `package.json` (dependências: `typescript ^5.7.3`, `vite ^6.2.0`).
-  - `tsconfig.json` (configuração estrita do compilador TypeScript).
-  - `index.html` (ponto de entrada HTML).
-  - `src/style.css` e `src/main.ts`.
-- Compilação testada com sucesso via `npm run build` (código de saída 0).
-
-### S1.2 — Modelagem dos Dados
-- Arquivo criado: [`src/domain/tipos.ts`](../src/domain/tipos.ts).
-- Modelagem completa das entidades:
-  - `Processo`, `Analise`, `Pertinencia`, `ItemConformidade`, `Condicionante`, `Achado`, `Risco`, `Resultado`, `EventoLocal`.
-- Requisitos funcionais cumpridos:
-  - Andamento da edição (`estadoEdicao`: `rascunho`, `em_analise`, `concluida`) separado da conclusão técnica.
-  - Quatro conclusões previstas pela RN08 modeladas: `APTO_PARA_ASSINATURA`, `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`, `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`, `NAO_RECOMENDAVEL_PARA_ASSINATURA`.
-  - Validação humana de achados explicitada: `SUGESTAO_SISTEMA`, `VALIDADO`, `REJEITADO`.
-  - Campos não avaliados ou opcionais explicitados (aceitando `null` ou flags de não aplicabilidade).
-- Compilação validada com sucesso via `npm run build`.
-
-### S1.3 — Navegação e Estrutura Visual
-- Arquivos criados/atualizados: [`src/router.ts`](../src/router.ts), [`src/style.css`](../src/style.css), [`src/main.ts`](../src/main.ts).
-- Roteamento client-side por hash implementado:
-  - Início: `#/`
-  - 1. Identificação: `#/identificacao`
-  - 2. Pertinência: `#/pertinencia`
-  - 3. Conformidade: `#/conformidade`
-  - 4. Achados: `#/achados`
-  - 5. Riscos: `#/riscos`
-  - 6. Resultado: `#/resultado`
-- Recursos de usabilidade e acessibilidade:
-  - Stepper no topo com indicador da etapa atual (`aria-current="step"`).
-  - Botões "← Anterior" e "Próximo →" respeitando limites (retorno ao início na etapa 1 e conclusão da demonstração na etapa 6).
-  - Na tela de Identificação, destaque visual dos **4 elementos essenciais**: Objeto, Tipo/Origem, Valor e Vigência.
-  - Suporte a foco visível por teclado (`:focus-visible`) e layout responsivo.
-  - Selo visível em todas as telas: *"Protótipo didático — somente dados fictícios"*.
-- **Testes manuais realizados e confirmados pelo usuário:**
-  1. Fluxo sequencial de avançar e recuar entre todas as etapas.
-  2. Visualização dos 4 destaques na Identificação.
-  3. Recarregamento de página com `F5` mantendo a rota da hash sem quebrar.
-  4. Navegação acessível via teclado usando a tecla `Tab`.
-- Compilação validada com sucesso via `npm run build`.
-
-### S1.4 — Geração de Dados Sintéticos e Testes
-- **Ambiente virtual local:** Configurado `.venv` local com Python 3.13.0 estável.
-- **Dependências de teste:** `pytest==9.1.1` instalado isoladamente e registrado em [`requirements.txt`](../requirements.txt).
-- **Scripts desenvolvidos:**
-  - [`scripts/gerar_dados.py`](../scripts/gerar_dados.py): Gerador 100% determinístico com 5 cenários fictícios estruturados estritamente conforme [`src/domain/tipos.ts`](../src/domain/tipos.ts).
-  - [`scripts/test_gerar_dados.py`](../scripts/test_gerar_dados.py): Suíte de testes unitários com 12 testes no `pytest`.
-- **Arquivos gerados em `public/data/` (7 arquivos JSON):**
-  - `cenarios.json` (consolidação com metadados e entidades).
-  - `processos.json` (índice leve dos processos para listagem).
-  - `cenario_01_regular_aquisicao.json` (Regular 1).
-  - `cenario_02_regular_aditivo.json` (Regular 2).
-  - `cenario_03_pendencia_condicionante.json` (Pendência 1).
-  - `cenario_04_pendencia_pertinencia.json` (Pendência 2).
-  - `cenario_05_grave_vigencia_invalida.json` (Inconsistência Grave).
-- **Garantias funcionais e de integridade comprovadas:**
-  - 2 regulares, 2 com pendências, 1 com inconsistência grave.
-  - Dados estritamente determinísticos e repetíveis.
-  - Identificadores únicos para processos, análises, checklist, condicionantes e achados.
-  - Referências cruzadas válidas (`processoId` e `achadosRelacionados`).
-  - Sem dados pessoais reais (zero CPFs, nomes explicitamente marcados como fictícios).
-  - Sem falsa validação humana: `conclusaoValidada=null`, `validacaoHumana=null`, achados em `SUGESTAO_SISTEMA`.
-  - Inconsistências intencionais documentadas e validadas por asserções específicas.
-- **Validação de testes:** 12 testes no `pytest` executados com 100% de aprovação.
-- Compilação da aplicação frontend mantida intacta (`npm run build` com saída 0).
-
-### S1.5 — Configuração de Base, Documentação e Publicação (Concluída)
-- **Base configurada:** [`vite.config.ts`](../vite.config.ts) criado com `base: '/conforma-gsasp/'`.
-- **Endereço local:** Servidor local responde sob o prefixo `http://localhost:5173/conforma-gsasp/`.
-- **Repositório remoto conectado:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp) (branch `main`).
-- **Site publicado no GitHub Pages:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
-- **Status de homologação da publicação:** Abertura do site no navegador confirmada com sucesso pelo usuário. A validação da navegação completa de ponta a ponta na versão publicada permanece a ser realizada.
-- **Compatibilidade de caminhos e rotas por hash:**
-  - As rotas por hash (`#/identificacao`, `#/pertinencia`, etc.) permanecem totalmente compatíveis e operacionais.
-  - No build de produção (`dist/index.html`), os links dos módulos e folhas de estilo receberam automaticamente o prefixo `/conforma-gsasp/assets/`.
-- **Documentação do projeto:** [`README.md`](../README.md) criado na raiz com finalidade institucional, links diretos do site e repositório, ferramentas, instruções de execução, catálogo dos 5 cenários e limitações claras da Sprint 1.
-- **Workflow de automação:** [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) ativo no GitHub Actions (Python 3.13, testes pytest, build Vite e deploy Pages).
-- **Git configurado:** Autor configurado localmente (`Cleyton Dias <cleyton.dias.adv@gmail.com>`), primeiro commit realizado e branch `main` sincronizada com o GitHub.
+1. **Garantir que está na branch `pausa-s1-6`:**
+   ```powershell
+   git checkout pausa-s1-6
+   ```
+2. **Executar o build e o servidor de pré-visualização de produção:**
+   ```powershell
+   npm.cmd run build
+   npm.cmd run preview
+   ```
+   *(O Service Worker só é ativado no build de produção servido via HTTP/HTTPS, por isso deve ser usado `preview` e não apenas `dev`).*
+3. **Executar os dois testes manuais da S1.6:**
+   - **Teste 1 (Instalação):** Abrir o endereço `http://localhost:4173/conforma-gsasp/` no Google Chrome ou Edge. Verificar se o ícone de instalação aparece na barra de endereços (ou no menu do navegador) e clicar em "Instalar CONFORMA". Verificar se abre em janela de aplicativo standalone.
+   - **Teste 2 (Modo Offline):** Abrir as Ferramentas do Desenvolvedor (`F12`), ir na aba **Rede** (Network), mudar a velocidade para **Offline**. Pressionar `F5` e verificar se a página recarrega normalmente sem erro de falta de internet. Clicar em "Começar Demonstração" e navegar pelas seis etapas (`#/identificacao`, `#/pertinencia`, `#/conformidade`, `#/achados`, `#/riscos`, `#/resultado`).
+4. **Após validação do usuário:**
+   - Registrar no `docs/sprint.md` e `docs/RETOMADA.md` a aprovação manual dos testes da S1.6.
+   - Mesclar a branch `pausa-s1-6` na `main` e enviar para o GitHub (`git checkout main`, `git merge pausa-s1-6`, `git push origin main`).
+   - Somente após esses passos, iniciar a **Sprint 2**.
 
 ---
 
-## 3. Diagnóstico e Configuração do Ambiente Atual
-- **Python:** `Python 3.13.0` (64-bit estável em `C:\Program Files\Python313\python.exe`).
-- **Ambiente Virtual:** `.venv` criado localmente na raiz do projeto.
-- **Testes Python:** `pytest 9.1.1` disponível via `.\.venv\Scripts\pytest.exe`.
-- **Node.js e npm:** `v22.11.0` e `10.9.0` (via `npm.cmd` no PowerShell).
-- **Git:** `git version 2.51.0.windows.1` (repositório local inicializado, branch `main`, conectado ao GitHub).
+## 3. Comandos para Preparar e Executar em Outro Computador
 
----
+### Passo a passo no novo computador:
 
-## 4. Próximos Passos ao Retomar
+#### 1. Clonar o repositório e acessar a branch da pausa
+```powershell
+git clone https://github.com/cleytondias84/conforma-gsasp.git
+cd conforma-gsasp
+git checkout pausa-s1-6
+```
 
-### A) Passo Imediato: S1.6 — Configuração PWA (Instalação e Cache Offline)
-- Configurar `vite-plugin-pwa`, manifest e cache para navegação offline após o primeiro carregamento.
-- Testar a instalação e suporte offline em navegador compatível.
-
-### B) Homologação da Navegação Publicada
-- Executar teste navegacional completo pelas 6 etapas diretamente na URL do GitHub Pages (`https://cleytondias84.github.io/conforma-gsasp/`).
-
----
-
-## 5. Comandos do Projeto
-
-```bash
-# 1. Frontend: Instalar dependências e rodar localmente
+#### 2. Preparar o ambiente Node.js / Frontend
+```powershell
+# Instala as dependências (Vite, TypeScript, vite-plugin-pwa)
 npm.cmd install
-npm.cmd run dev
-# Endereço: http://localhost:5173/conforma-gsasp/
+```
 
-# 2. Frontend: Compilação de produção e checagem de tipos
+#### 3. Preparar o ambiente Python local (.venv)
+```powershell
+# Criar o ambiente virtual isolado
+python -m venv .venv
+
+# Ativar o ambiente virtual (Windows PowerShell)
+.\.venv\Scripts\Activate.ps1
+# (ou no CMD: .\.venv\Scripts\activate.bat | ou Linux/macOS: source .venv/bin/activate)
+
+# Instalar dependências registradas (pytest)
+pip install -r requirements.txt
+```
+
+#### 4. Gerar dados sintéticos e ícones
+```powershell
+# Gera os 7 arquivos de cenários fictícios em public/data/
+python scripts/gerar_dados.py
+
+# Gera os ícones do PWA e favicon em public/
+python scripts/gerar_icones.py
+```
+
+#### 5. Executar os testes automatizados
+```powershell
+# Executa a suíte de testes unitários dos dados sintéticos (12 testes)
+pytest -v scripts/test_gerar_dados.py
+```
+
+#### 6. Compilar e executar a aplicação
+```powershell
+# Compilação de produção e checagem estrita de tipos
 npm.cmd run build
 
-# 3. Python: Gerar os dados sintéticos em public/data
-.\.venv\Scripts\python.exe scripts/gerar_dados.py
+# Executa o servidor de pré-visualização (recomendado para testar o PWA e Service Worker)
+npm.cmd run preview
+# Endereço: http://localhost:4173/conforma-gsasp/
 
-# 4. Python: Executar a suíte de testes unitários
-.\.venv\Scripts\pytest.exe -v scripts/test_gerar_dados.py
+# Ou para desenvolvimento contínuo:
+npm.cmd run dev
+# Endereço: http://localhost:5173/conforma-gsasp/
 ```
 
 ---
 
-## 6. Pendências e Decisões Mapeadas
+## 4. Histórico de Entregas Anteriores (S0.2 a S1.5)
 
-1. **Nome do repositório no GitHub:** Confirmado como `conforma-gsasp` e configurado no `vite.config.ts`.
-2. **Decisões funcionais para as próximas Sprints (já catalogadas em `docs/contexto.md`):**
-   - Matriz definitiva de papéis de usuários (Sprint 2).
-   - Regras de obrigatoriedade e não aplicabilidade de campos contratuais (Sprint 2).
-   - Metodologia de cálculo de riscos e tabela de decisão para sugestões de conclusão (Sprints 3 e 4).
+Para consulta de detalhes de decisões e implementações das tarefas já homologadas:
+- **S0.2:** Diagnóstico de ambiente e ferramentas mínimas.
+- **S1.1:** Setup inicial com Vite + TypeScript + CSS puro, `.gitignore` seguro.
+- **S1.2:** Modelagem em `src/domain/tipos.ts` (4 conclusões da RN08, validação humana, campos opcionais).
+- **S1.3:** Roteador hash com 6 etapas, stepper acessível, foco por teclado e destaque dos 4 elementos essenciais na Identificação.
+- **S1.4:** Gerador `scripts/gerar_dados.py` gerando 2 casos regulares, 2 com pendências e 1 grave com inconsistências propositais, testado via `scripts/test_gerar_dados.py`.
+- **S1.5:** Configuração de `base: '/conforma-gsasp/'`, deploy automatizado no GitHub Actions e publicação ativa no GitHub Pages.
+
+---
+
+## 5. Pendências e Decisões Mapeadas para as Próximas Sprints
+
+1. **Homologação manual da S1.6:** Instalação e teste offline.
+2. **Sprint 2 (Formulário e Persistência Local):**
+   - Matriz de papéis de usuários (Administrador, Analista, Revisor, Autoridade, Leitor).
+   - Validações de obrigatoriedade e não aplicabilidade de campos contratuais.
+   - Armazenamento local no navegador com IndexedDB e retomada offline.
+3. **Sprints 3 e 4 (Motor de Regras, Riscos e Documento Final):**
+   - Metodologia de cálculo de riscos e tabela de decisão para sugestões de conclusão.
+   - Geração de documento de conformidade para impressão/PDF.
+
 
 

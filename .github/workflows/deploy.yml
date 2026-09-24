@@ -39,6 +39,10 @@ jobs:
         run: |
           python scripts/gerar_dados.py
 
+      - name: Gerar ícones PWA
+        run: |
+          python scripts/gerar_icones.py
+
       - name: Executar testes unitários dos dados (pytest)
         run: |
           pytest -v
