@@ -2,6 +2,9 @@
 
 > **Aviso Importante:** Este software é um **protótipo didático** em fase de desenvolvimento para demonstração de conceitos de conformidade documental e apoio à decisão na Secretaria Adjunta de Segurança Pública (GSASP/SESP-MT). Todos os dados, processos, números, nomes de empresas e valores contidos neste repositório são **100% fictícios**. Não há utilização de dados pessoais reais, documentos sigilosos ou pareceres institucionais reais.
 
+- **Demonstração Online (GitHub Pages):** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Repositório do Código:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
+
 ---
 
 ## 1. Finalidade do Projeto

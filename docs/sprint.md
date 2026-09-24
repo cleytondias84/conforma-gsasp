@@ -44,6 +44,13 @@ Objetivo: primeira aplicação navegável, instalável em navegador compatível 
 Testes: schema/consistência da massa e navegação básica; verificação de build, endereço publicado e cache inicial. Não confundir conclusão de S1 com MVP funcional completo.
 Commit por tarefa, exemplo: chore: inicia estrutura do CONFORMA GSASP (S1.1).
 
+### Registro de Execução da Sprint 1
+- **Tarefas concluídas:** S1.1, S1.2, S1.3, S1.4 e **S1.5**.
+- **Repositório:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
+- **Site publicado (GitHub Pages):** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Status de verificação da S1.5:** Abertura do site publicado no navegador confirmada com sucesso pelo usuário. A validação do fluxo de navegação completa de ponta a ponta na versão publicada ainda não foi confirmada.
+- **Próxima tarefa pendente:** **S1.6** (Instalação e cache inicial; configuração PWA e ícones em public) — mantida pendente, sem inicialização nesta etapa.
+
 ## Sprint 2 — Formulário de conformidade e persistência local
 
 Objetivo: criar/editar processo fictício e percorrer Identificação → Pertinência → Conformidade.

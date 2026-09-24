@@ -7,8 +7,11 @@ Data do último registro: 24/09/2026.
 
 ## 1. Status Geral do Projeto
 - **Fase atual:** Sprint 1 — Fundação, arquitetura e PWA.
-- **Progresso:** Tarefas S0.2, S1.1, S1.2, S1.3 e S1.4 concluídas. Tarefa **S1.5 parcialmente concluída** (preparação local concluída com sucesso: `vite.config.ts`, `README.md`, workflow de CI/CD e Git local; publicação remota no GitHub Pages pendente).
-- **Próxima tarefa:** Finalização da publicação remota da **S1.5** (quando autorizado repositório no GitHub) ou avanço para a **S1.6** (Configuração PWA: instalação, manifest e cache offline).
+- **Progresso:** Tarefas S0.2, S1.1, S1.2, S1.3, S1.4 e **S1.5 concluídas com sucesso**. Repositório conectado e publicação no GitHub Pages ativa.
+- **Repositório oficial:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
+- **Site publicado:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Status de verificação:** Abertura do site publicado no navegador confirmada pelo usuário; a navegação completa de ponta a ponta na versão publicada permanece a ser realizada.
+- **Próxima tarefa:** **S1.6** (Instalação e cache inicial; configuração PWA e ícones em public) — mantida pendente conforme o `sprint.md`, sem inicialização.
 
 ---
 
@@ -91,24 +94,18 @@ Data do último registro: 24/09/2026.
 - **Validação de testes:** 12 testes no `pytest` executados com 100% de aprovação.
 - Compilação da aplicação frontend mantida intacta (`npm run build` com saída 0).
 
-### S1.5 — Configuração de Base, Documentação e Publicação Local (Parcial)
+### S1.5 — Configuração de Base, Documentação e Publicação (Concluída)
 - **Base configurada:** [`vite.config.ts`](../vite.config.ts) criado com `base: '/conforma-gsasp/'`.
-- **Endereço local:** Servidor local passa a responder sob o prefixo `http://localhost:5173/conforma-gsasp/`.
+- **Endereço local:** Servidor local responde sob o prefixo `http://localhost:5173/conforma-gsasp/`.
+- **Repositório remoto conectado:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp) (branch `main`).
+- **Site publicado no GitHub Pages:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Status de homologação da publicação:** Abertura do site no navegador confirmada com sucesso pelo usuário. A validação da navegação completa de ponta a ponta na versão publicada permanece a ser realizada.
 - **Compatibilidade de caminhos e rotas por hash:**
   - As rotas por hash (`#/identificacao`, `#/pertinencia`, etc.) permanecem totalmente compatíveis e operacionais.
   - No build de produção (`dist/index.html`), os links dos módulos e folhas de estilo receberam automaticamente o prefixo `/conforma-gsasp/assets/`.
-- **Documentação do projeto:** [`README.md`](../README.md) criado na raiz com finalidade institucional, ferramentas, instruções de execução, catálogo dos 5 cenários e limitações claras da Sprint 1.
-- **Workflow de automação:** [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) criado para automação no GitHub Actions com:
-  1. Instalação do Python 3.13 e requirements;
-  2. Geração determinística dos dados sintéticos (`gerar_dados.py`);
-  3. Execução dos testes unitários com `pytest` (comportamento bloqueante se falhar);
-  4. Setup do Node.js 22 e `npm ci`;
-  5. Compilação de produção (`npm run build`);
-  6. Deploy no GitHub Pages via actions oficiais (`upload-pages-artifact@v3` e `deploy-pages@v4`).
-- **Git local inicializado:**
-  - Repositório Git inicializado na raiz do projeto com branch padrão `main`.
-  - Efetividade do [`.gitignore`](../.gitignore) comprovada: `node_modules/`, `dist/`, `.venv/`, `.pytest_cache/` e caches do Python devidamente ignorados.
-- **Situação da publicação:** Publicação remota e criação do remote pendentes para momento oportuno.
+- **Documentação do projeto:** [`README.md`](../README.md) criado na raiz com finalidade institucional, links diretos do site e repositório, ferramentas, instruções de execução, catálogo dos 5 cenários e limitações claras da Sprint 1.
+- **Workflow de automação:** [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) ativo no GitHub Actions (Python 3.13, testes pytest, build Vite e deploy Pages).
+- **Git configurado:** Autor configurado localmente (`Cleyton Dias <cleyton.dias.adv@gmail.com>`), primeiro commit realizado e branch `main` sincronizada com o GitHub.
 
 ---
 
@@ -117,17 +114,18 @@ Data do último registro: 24/09/2026.
 - **Ambiente Virtual:** `.venv` criado localmente na raiz do projeto.
 - **Testes Python:** `pytest 9.1.1` disponível via `.\.venv\Scripts\pytest.exe`.
 - **Node.js e npm:** `v22.11.0` e `10.9.0` (via `npm.cmd` no PowerShell).
-- **Git:** `git version 2.51.0.windows.1` (repositório local inicializado, branch `main`).
+- **Git:** `git version 2.51.0.windows.1` (repositório local inicializado, branch `main`, conectado ao GitHub).
 
 ---
 
 ## 4. Próximos Passos ao Retomar
 
-### A) Conclusão da Publicação Remota (S1.5)
-- Quando autorizado pelo usuário, vincular o repositório remoto no GitHub (`git remote add origin ...`), realizar o primeiro commit e push na branch `main` para acionar a publicação no GitHub Pages.
-
-### B) S1.6 — Configuração PWA
+### A) Passo Imediato: S1.6 — Configuração PWA (Instalação e Cache Offline)
 - Configurar `vite-plugin-pwa`, manifest e cache para navegação offline após o primeiro carregamento.
+- Testar a instalação e suporte offline em navegador compatível.
+
+### B) Homologação da Navegação Publicada
+- Executar teste navegacional completo pelas 6 etapas diretamente na URL do GitHub Pages (`https://cleytondias84.github.io/conforma-gsasp/`).
 
 ---
 
