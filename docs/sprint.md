@@ -45,12 +45,15 @@ Testes: schema/consistência da massa e navegação básica; verificação de bu
 Commit por tarefa, exemplo: chore: inicia estrutura do CONFORMA GSASP (S1.1).
 
 ### Registro de Execução da Sprint 1
-- **Tarefas concluídas e homologadas:** S1.1, S1.2, S1.3, S1.4 e **S1.5** (site publicado em [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/) e repositório em [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)).
-- **Tarefa S1.6 (PWA) — Iniciada / Ponto de Parada na branch `pausa-s1-6` (NÃO CONCLUÍDA):**
-  - *Implementado tecnicamente:* Manifesto web (`manifest.webmanifest`), ícones institucionais (`favicon.svg`, `pwa-192x192.png`, `pwa-512x512.png`, maskables e `apple-touch-icon.png`), plugin `vite-plugin-pwa` integrado ao Vite com service worker automático (`sw.js`) e precache de 31 ativos essenciais (HTML, CSS, JS, ícones e dados JSON sintéticos em `/data/`). Compatível com a base `/conforma-gsasp/` e rotas por hash. Compilação e testes automatizados 100% aprovados.
-  - *Pendente (não homologado):* A instalação do PWA em navegador compatível e o funcionamento offline após desconexão da internet dependem de testes manuais pelo usuário e **NÃO foram marcados como aprovados**. A tarefa S1.6 permanece em aberto.
-  - *Próximo passo exato:* No novo computador, acessar a branch `pausa-s1-6`, rodar `npm.cmd run preview` e realizar a verificação manual de instalação e modo offline via DevTools. Havendo confirmação, aprovar a S1.6 e mesclar na `main`.
-  - *Comandos para outro computador:* Instruções completas registradas em [`docs/RETOMADA.md`](RETOMADA.md) (`git clone`, `git checkout pausa-s1-6`, `npm install`, setup `.venv` Python com `pip install -r requirements.txt`, `python scripts/gerar_dados.py`, `python scripts/gerar_icones.py`, `npm run build` e `npm run preview`).
+- **Tarefas concluídas e homologadas:** S1.1, S1.2, S1.3, S1.4, S1.5 e **S1.6** (Sprint 1 100% concluída e homologada).
+  - Repositório: [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
+  - Site publicado: [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+- **Tarefa S1.6 (PWA) — Detalhes da Conclusão e Homologação:**
+  - *Implementação técnica:* Manifesto web (`manifest.webmanifest`), ícones institucionais (`favicon.svg`, `pwa-192x192.png`, `pwa-512x512.png`, maskables e `apple-touch-icon.png`), plugin `vite-plugin-pwa` integrado ao Vite com service worker automático (`sw.js`) e precache de 31 ativos essenciais (HTML, CSS, JS, ícones e dados JSON sintéticos em `/data/`). Compatível com a base `/conforma-gsasp/` e rotas por hash.
+  - *Testes realizados e homologados:*
+    - **Instalação PWA:** Homologada manualmente pelo usuário em navegador compatível (modo standalone).
+    - **Navegação Offline:** Homologada manualmente pelo usuário; navegação completa pelas 6 etapas após corte de rede com recarregamento bem-sucedido via cache do Service Worker.
+    - **Verificação de Console:** Confirmado console limpo durante o teste em janela anônima. Os erros anteriormente observados no console (`Uncaught (in promise) {}` e `Language detection is not supported for this page`) não foram reproduzidos no teste sem extensões (tanto via automação em perfil temporário limpo quanto em janela anônima pelo usuário). Registra-se que os erros anteriores não foram reproduzidos no teste sem extensões, sem afirmar que toda a aplicação está livre de erros e sem atribuir conclusivamente as duas mensagens à extensão externa.
 - **Sprint 2:** Mantida pendente, sem inicialização.
 
 ## Sprint 2 — Formulário de conformidade e persistência local
