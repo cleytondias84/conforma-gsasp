@@ -1,0 +1,136 @@
+{
+  "id": "cenario_04_pendencia_pertinencia",
+  "nome": "Cenário 4 — Adesão a Ata com Pertinência Não Demonstrada",
+  "categoria": "pendencia",
+  "descricao": "Processo de adesão a ata de registro de preços com pertinência institucional 'NAO_DEMONSTRADA' e carência de reserva orçamentária atestada.",
+  "inconsistenciasIntencionais": [
+    "Pertinência com conclusao 'NAO_DEMONSTRADA'",
+    "Respostas de pertinência com respostas falsas e nulas",
+    "Checklist de dotação orçamentária chk-04-02 está com status 'pendente'",
+    "Dois achados 'RELEVANTE' apontando falta de motivação e carência orçamentária"
+  ],
+  "conclusaoEsperada": "RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA",
+  "processo": {
+    "id": "proc-ficticio-04",
+    "numero": "SESP-PRO-2026/00004",
+    "instrumento": "Termo de Adesão à Ata de Registro de Preços nº 08/2026",
+    "contratado": "Delta Softwares e Soluções Fictícias S/A",
+    "cnpj": "44.444.444/0001-44",
+    "objeto": "Adesão fictícia à ata de registro de preços para fornecimento de licenças de software de análise forense.",
+    "tipoOrigem": "Adesão a Ata (Carona)",
+    "valor": 890000.0,
+    "valorNaoAplicavel": false,
+    "vigenciaInicio": "2026-06-01",
+    "vigenciaFim": "2027-06-01",
+    "vigenciaNaoAplicavel": false,
+    "regimeJuridico": "Lei nº 14.133/2021"
+  },
+  "analise": {
+    "id": "anl-ficticia-04",
+    "processoId": "proc-ficticio-04",
+    "estadoEdicao": "em_analise",
+    "pertinencia": {
+      "respostas": {
+        "competenciaNecessidade": true,
+        "vinculoPlanejamento": false,
+        "beneficioInteressePublico": null,
+        "custoProporcionalidade": false,
+        "economicidade": null
+      },
+      "evidencias": "Documentação enviada pela unidade demandante não correlaciona a quantidade solicitada às metas do plano anual.",
+      "justificativa": "Não consta dos autos a demonstração de benefício institucional e compatibilidade de custos para a quantidade pleiteada.",
+      "conclusao": "NAO_DEMONSTRADA",
+      "providencia": "Requerer estudo de viabilidade e alinhamento com as metas operacionais da perícia técnica."
+    },
+    "checklist": [
+      {
+        "id": "chk-04-01",
+        "descricao": "Estudo Técnico Preliminar e Demonstração da Vantajosidade da Adesão",
+        "status": "pendente",
+        "observacao": "Falta justificativa da vantagem econômica da adesão frente à contratação própria.",
+        "referenciaFonte": "Peça 10 (Ausente)"
+      },
+      {
+        "id": "chk-04-02",
+        "descricao": "Declaração de Dotação e Adequação Orçamentária",
+        "status": "pendente",
+        "observacao": "Certidão orçamentária ainda não ratificada pela área de planejamento e orçamento.",
+        "referenciaFonte": "Peça 15"
+      },
+      {
+        "id": "chk-04-03",
+        "descricao": "Autorização do Órgão Gerenciador da Ata",
+        "status": "ok",
+        "observacao": "Ofício de anuência do órgão gerenciador juntado.",
+        "referenciaFonte": "Peça 18"
+      }
+    ],
+    "condicionantes": [],
+    "achados": [
+      {
+        "id": "ach-04-01",
+        "titulo": "Pertinência institucional não demonstrada nos autos",
+        "evidencia": "Unidade solicitante não fundamentou a correlação entre as 50 licenças pedidas e o número de peritos ativos.",
+        "regraOuMotivo": "RN02 (Conformidade GSASP) e princípios da economicidade e motivação dos atos administrativos.",
+        "impacto": "Risco de aquisição ociosa ou sobredimensionada sem aproveitamento institucional correspondente.",
+        "providencia": "Devolver à unidade técnica para dimensionar a real demanda e comprovar pertinência.",
+        "responsavel": "Unidade Técnica Demandante",
+        "classificacao": "RELEVANTE",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      },
+      {
+        "id": "ach-04-02",
+        "titulo": "Ausência de ateste de dotação orçamentária suficiente para o exercício",
+        "evidencia": "Certidão da Secretaria de Fazenda/Orçamento com campo de saldo em aberto.",
+        "regraOuMotivo": "Art. 16 da Lei Complementar nº 101/2000 (LRF).",
+        "impacto": "Geração de obrigação financeira sem disponibilidade de crédito orçamentário.",
+        "providencia": "Obter manifestação expressa da Unidade Setorial de Orçamento.",
+        "responsavel": "Setor Orçamentário",
+        "classificacao": "RELEVANTE",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      }
+    ],
+    "riscos": [
+      {
+        "dimensao": "juridica",
+        "nivel": "moderado",
+        "justificativa": "Falta de motivação suficiente do ato administrativo de adesão.",
+        "achadosRelacionados": [
+          "ach-04-01"
+        ]
+      },
+      {
+        "dimensao": "financeira",
+        "nivel": "alto",
+        "justificativa": "Ausência de confirmação de dotação orçamentária regular e risco de comprometimento fiscal.",
+        "achadosRelacionados": [
+          "ach-04-02"
+        ]
+      },
+      {
+        "dimensao": "operacional",
+        "nivel": "alto",
+        "justificativa": "Incerteza sobre a aplicabilidade prática das licenças adquiridas.",
+        "achadosRelacionados": [
+          "ach-04-01"
+        ]
+      },
+      {
+        "dimensao": "controle",
+        "nivel": "alto",
+        "justificativa": "Adesões sem planejamento fundamentado configuram vulnerabilidade em auditorias.",
+        "achadosRelacionados": [
+          "ach-04-01",
+          "ach-04-02"
+        ]
+      }
+    ],
+    "conclusaoIndicativa": "RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA",
+    "conclusaoValidada": null,
+    "validacaoHumana": null,
+    "datas": {
+      "criacao": "2026-09-24T13:00:00Z",
+      "atualizacao": "2026-09-24T13:30:00Z"
+    }
+  }
+}

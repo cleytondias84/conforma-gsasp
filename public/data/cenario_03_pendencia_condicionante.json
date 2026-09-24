@@ -1,0 +1,160 @@
+{
+  "id": "cenario_03_pendencia_condicionante",
+  "nome": "Cenário 3 — Pendência de Condicionante e Garantia Contratual",
+  "categoria": "pendencia",
+  "descricao": "Processo de serviços continuados com condicionante jurídica pendente (garantia ausente) e certidão vencida, inviabilizando assinatura antes de saneamento.",
+  "inconsistenciasIntencionais": [
+    "Condicionante cond-03-01 está com situação 'pendente'",
+    "Item de checklist chk-03-02 (garantia) está com status 'pendente'",
+    "Item de checklist chk-03-03 (CNDT) está com status 'confirmar'",
+    "Dois achados classificados como 'RELEVANTE' pendentes de validação"
+  ],
+  "conclusaoEsperada": "RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA",
+  "processo": {
+    "id": "proc-ficticio-03",
+    "numero": "SESP-PRO-2026/00003",
+    "instrumento": "Contrato Administrativo nº 03/2026",
+    "contratado": "Gama Conservação e Limpeza Fictícia EIRELI",
+    "cnpj": "33.333.333/0001-33",
+    "objeto": "Prestação fictícia de serviços contínuos de limpeza, asseio e conservação predial nas dependências da SESP.",
+    "tipoOrigem": "Pregão Eletrônico nº 05/2026",
+    "valor": 520000.0,
+    "valorNaoAplicavel": false,
+    "vigenciaInicio": "2026-05-01",
+    "vigenciaFim": "2027-05-01",
+    "vigenciaNaoAplicavel": false,
+    "regimeJuridico": "Lei nº 14.133/2021"
+  },
+  "analise": {
+    "id": "anl-ficticia-03",
+    "processoId": "proc-ficticio-03",
+    "estadoEdicao": "em_analise",
+    "pertinencia": {
+      "respostas": {
+        "competenciaNecessidade": true,
+        "vinculoPlanejamento": true,
+        "beneficioInteressePublico": true,
+        "custoProporcionalidade": true,
+        "economicidade": true
+      },
+      "evidencias": "Estudo Técnico Preliminar e mapa comparativo de preços anexados aos autos.",
+      "justificativa": "Serviço de limpeza é indispensável à salubridade dos prédios administrativos e operacionais.",
+      "conclusao": "PERTINENTE",
+      "providencia": "Sanear pendências documentais antes de submeter ao Gabinete."
+    },
+    "checklist": [
+      {
+        "id": "chk-03-01",
+        "descricao": "Parecer Jurídico Referencial",
+        "status": "ok",
+        "observacao": "Parecer PGE Fictício nº 103/2026 com 2 condicionantes expressas.",
+        "referenciaFonte": "Peça 34"
+      },
+      {
+        "id": "chk-03-02",
+        "descricao": "Comprovante de Prestação de Garantia Contratual Prévia",
+        "status": "pendente",
+        "observacao": "Comprovante de caução ou apólice de seguro não localizado no dossiê de contratação.",
+        "referenciaFonte": "Peça 40 (Ausente)"
+      },
+      {
+        "id": "chk-03-03",
+        "descricao": "Certidão Negativa de Débitos Trabalhistas (CNDT)",
+        "status": "confirmar",
+        "observacao": "Certidão juntada venceu há 2 dias da data da montagem do processo.",
+        "referenciaFonte": "Peça 29"
+      },
+      {
+        "id": "chk-03-04",
+        "descricao": "Designação de Fiscal e Gestor",
+        "status": "ok",
+        "observacao": "Designação indicada no corpo da minuta contratual.",
+        "referenciaFonte": "Cláusula 15ª"
+      }
+    ],
+    "condicionantes": [
+      {
+        "id": "cond-03-01",
+        "descricao": "Apresentação da garantia da execução contratual no percentual de 5% antes da formalização da assinatura.",
+        "referenciaParecer": "Parecer PGE nº 103/2026, item 21",
+        "situacao": "pendente",
+        "evidenciaAtendimento": "Empresa ainda não protocolou o instrumento de garantia.",
+        "providencia": "Intimar o fornecedor para apresentar o comprovante de garantia em até 3 dias úteis.",
+        "responsavel": "Setor de Contratos"
+      },
+      {
+        "id": "cond-03-02",
+        "descricao": "Atualização das certidões de regularidade com validade expirada.",
+        "referenciaParecer": "Parecer PGE nº 103/2026, item 23",
+        "situacao": "pendente",
+        "evidenciaAtendimento": "CNDT vencida no processo virtual.",
+        "providencia": "Emitir CNDT atualizada via sítio do TST e anexar aos autos.",
+        "responsavel": "Setor de Licitações"
+      }
+    ],
+    "achados": [
+      {
+        "id": "ach-03-01",
+        "titulo": "Garantia contratual indispensável ausente dos autos",
+        "evidencia": "Parecer PGE nº 103/2026 fixou a prestação de garantia como condicionante prévia à assinatura; autos sem comprovante.",
+        "regraOuMotivo": "Art. 96 da Lei nº 14.133/2021 e Parecer Jurídico PGE nº 103/2026.",
+        "impacto": "Risco de desproteção do erário em caso de inadimplemento dos encargos contratuais e trabalhistas.",
+        "providencia": "Retornar os autos ao Setor de Contratos para exigir e juntar o comprovante de garantia.",
+        "responsavel": "Setor de Contratos",
+        "classificacao": "RELEVANTE",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      },
+      {
+        "id": "ach-03-02",
+        "titulo": "Certidão de débitos trabalhistas com prazo de validade expirado",
+        "evidencia": "CNDT anexada à Peça 29 expirou antes da fase de homologação final.",
+        "regraOuMotivo": "Art. 68 da Lei nº 14.133/2021 (habilitação trabalhista obrigatória).",
+        "impacto": "Impossibilidade de celebração de contrato com pessoa jurídica em débito trabalhista.",
+        "providencia": "Extrair certidão atualizada e certificar nos autos.",
+        "responsavel": "Setor de Licitações",
+        "classificacao": "RELEVANTE",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      }
+    ],
+    "riscos": [
+      {
+        "dimensao": "juridica",
+        "nivel": "alto",
+        "justificativa": "Descumprimento de condicionantes expressas formuladas pelo órgão de assessoramento jurídico.",
+        "achadosRelacionados": [
+          "ach-03-01",
+          "ach-03-02"
+        ]
+      },
+      {
+        "dimensao": "financeira",
+        "nivel": "moderado",
+        "justificativa": "Risco financeiro mitigável após o aporte efetivo da caução contratual.",
+        "achadosRelacionados": [
+          "ach-03-01"
+        ]
+      },
+      {
+        "dimensao": "operacional",
+        "nivel": "baixo",
+        "justificativa": "Objeto padronizado de rotina administrativa.",
+        "achadosRelacionados": []
+      },
+      {
+        "dimensao": "controle",
+        "nivel": "moderado",
+        "justificativa": "Pendência de conformidade documental sujeita a apontamento pelos órgãos de controle.",
+        "achadosRelacionados": [
+          "ach-03-02"
+        ]
+      }
+    ],
+    "conclusaoIndicativa": "RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA",
+    "conclusaoValidada": null,
+    "validacaoHumana": null,
+    "datas": {
+      "criacao": "2026-09-24T12:00:00Z",
+      "atualizacao": "2026-09-24T12:45:00Z"
+    }
+  }
+}

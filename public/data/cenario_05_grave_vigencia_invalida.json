@@ -1,0 +1,148 @@
+{
+  "id": "cenario_05_grave_vigencia_invalida",
+  "nome": "Cenário 5 — Inconsistência Grave (Vigência Invertida e Parecer Contrário)",
+  "categoria": "grave",
+  "descricao": "Processo com inconsistência cronológica grave na vigência (término anterior ao início), dispensa emergencial sem respaldo, pertinência 'NAO_PERTINENTE' e dois achados 'IMPEDITIVO'.",
+  "inconsistenciasIntencionais": [
+    "Vigência invertida: vigenciaFim ('2026-02-01') é anterior a vigenciaInicio ('2026-08-01')",
+    "Pertinência com conclusao 'NAO_PERTINENTE' e todas respostas falsas",
+    "Dois achados com classificacao 'IMPEDITIVO' (ach-05-01 e ach-05-02)",
+    "Riscos jurídico, financeiro e de controle em nível 'critico'",
+    "Conclusão indicativa 'NAO_RECOMENDAVEL_PARA_ASSINATURA'"
+  ],
+  "conclusaoEsperada": "NAO_RECOMENDAVEL_PARA_ASSINATURA",
+  "processo": {
+    "id": "proc-ficticio-05",
+    "numero": "SESP-PRO-2026/00005",
+    "instrumento": "Contrato Administrativo nº 99/2026",
+    "contratado": "Omega Equipamentos e Sistemas Fictícios ME",
+    "cnpj": "55.555.555/0001-55",
+    "objeto": "Locação fictícia emergencial de sistemas de monitoramento eletrônico.",
+    "tipoOrigem": "Dispensa de Licitação Emergencial nº 02/2026",
+    "valor": 1250000.0,
+    "valorNaoAplicavel": false,
+    "vigenciaInicio": "2026-08-01",
+    "vigenciaFim": "2026-02-01",
+    "vigenciaNaoAplicavel": false,
+    "regimeJuridico": "Lei nº 14.133/2021"
+  },
+  "analise": {
+    "id": "anl-ficticia-05",
+    "processoId": "proc-ficticio-05",
+    "estadoEdicao": "em_analise",
+    "pertinencia": {
+      "respostas": {
+        "competenciaNecessidade": false,
+        "vinculoPlanejamento": false,
+        "beneficioInteressePublico": false,
+        "custoProporcionalidade": false,
+        "economicidade": false
+      },
+      "evidencias": "Contratação emergencial solicitada sem comprovação de situação de calamidade pública ou emergência concreta no momento da instrução.",
+      "justificativa": "Ausência manifesta dos pressupostos fáticos e jurídicos para contratação direta por dispensa emergencial.",
+      "conclusao": "NAO_PERTINENTE",
+      "providencia": "Recomendar à autoridade o não acolhimento da minuta de contrato."
+    },
+    "checklist": [
+      {
+        "id": "chk-05-01",
+        "descricao": "Cronologia e Consistência da Vigência Contratual",
+        "status": "pendente",
+        "observacao": "Erro material grosseiro: término contratual fixado para 01/02/2026, anterior ao início previsto para 01/08/2026.",
+        "referenciaFonte": "Cláusula 5ª da Minuta Contratual"
+      },
+      {
+        "id": "chk-05-02",
+        "descricao": "Parecer Jurídico Conclusivo",
+        "status": "confirmar",
+        "observacao": "Parecer PGE Fictício nº 999/2026 opinou contrariamente à celebração nos termos apresentados.",
+        "referenciaFonte": "Peça 60"
+      },
+      {
+        "id": "chk-05-03",
+        "descricao": "Justificativa da Situação Emergencial",
+        "status": "pendente",
+        "observacao": "Não caracterizada a urgência que não decorra de desídia da unidade administrativa demandante.",
+        "referenciaFonte": "Peça 15"
+      }
+    ],
+    "condicionantes": [
+      {
+        "id": "cond-05-01",
+        "descricao": "Reformulação integral da minuta corrigindo datas e comprovando emergência sob pena de nulidade.",
+        "referenciaParecer": "Parecer PGE nº 999/2026, item 35",
+        "situacao": "pendente",
+        "evidenciaAtendimento": "Minuta submetida com os mesmos vícios apontados.",
+        "providencia": "Rejeitar a assinatura.",
+        "responsavel": "Gabinete do Secretário"
+      }
+    ],
+    "achados": [
+      {
+        "id": "ach-05-01",
+        "titulo": "Vigência cronologicamente invertida e ineficácia jurídica do instrumento",
+        "evidencia": "Minuta contratual estipula vigênciaInicio em 01/08/2026 e vigenciaFim em 01/02/2026, sendo o término anterior ao início.",
+        "regraOuMotivo": "Princípio da lógica temporal e eficácia dos negócios jurídicos (Código Civil e Lei nº 14.133/2021).",
+        "impacto": "Nulidade do termo contratual por inviabilidade material de execução e retroatividade indevida.",
+        "providencia": "Impedir a assinatura do instrumento na forma atual.",
+        "responsavel": "Gabinete / Assessoria",
+        "classificacao": "IMPEDITIVO",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      },
+      {
+        "id": "ach-05-02",
+        "titulo": "Parecer jurídico contrário à contratação emergencial",
+        "evidencia": "Manifestação jurídica conclusiva pela não caracterização dos requisitos do art. 75, VIII, da Lei 14.133/2021.",
+        "regraOuMotivo": "Art. 75, VIII, da Lei nº 14.133/2021 e Parecer PGE nº 999/2026.",
+        "impacto": "Responsabilização pessoal da autoridade signatária perante o Tribunal de Contas por contratação direta indevida.",
+        "providencia": "Encaminhar à autoridade recomendando expressamente a não assinatura.",
+        "responsavel": "Secretário Adjunto",
+        "classificacao": "IMPEDITIVO",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      }
+    ],
+    "riscos": [
+      {
+        "dimensao": "juridica",
+        "nivel": "critico",
+        "justificativa": "Vício insanável de temporariedade cumulado com parecer jurídico estritamente desfavorável.",
+        "achadosRelacionados": [
+          "ach-05-01",
+          "ach-05-02"
+        ]
+      },
+      {
+        "dimensao": "financeira",
+        "nivel": "critico",
+        "justificativa": "Comprometimento de R$ 1.250.000,00 sem respaldo da emergência alegada.",
+        "achadosRelacionados": [
+          "ach-05-02"
+        ]
+      },
+      {
+        "dimensao": "operacional",
+        "nivel": "alto",
+        "justificativa": "Risco de paralisação e anulação do procedimento.",
+        "achadosRelacionados": [
+          "ach-05-01"
+        ]
+      },
+      {
+        "dimensao": "controle",
+        "nivel": "critico",
+        "justificativa": "Apontamento sumário de irregularidade grave com potencial determinação de ressarcimento.",
+        "achadosRelacionados": [
+          "ach-05-01",
+          "ach-05-02"
+        ]
+      }
+    ],
+    "conclusaoIndicativa": "NAO_RECOMENDAVEL_PARA_ASSINATURA",
+    "conclusaoValidada": null,
+    "validacaoHumana": null,
+    "datas": {
+      "criacao": "2026-09-24T14:00:00Z",
+      "atualizacao": "2026-09-24T14:40:00Z"
+    }
+  }
+}

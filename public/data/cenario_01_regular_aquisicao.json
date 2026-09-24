@@ -1,0 +1,137 @@
+{
+  "id": "cenario_01_regular_aquisicao",
+  "nome": "Cenário 1 — Aquisição Regular de TI (Pregão)",
+  "categoria": "regular",
+  "descricao": "Processo de aquisição de equipamentos de TI com checklist integralmente conferido, pertinência confirmada e condicionantes do parecer jurídico atendidas.",
+  "inconsistenciasIntencionais": [],
+  "conclusaoEsperada": "APTO_PARA_ASSINATURA",
+  "processo": {
+    "id": "proc-ficticio-01",
+    "numero": "SESP-PRO-2026/00001",
+    "instrumento": "Contrato Administrativo nº 01/2026",
+    "contratado": "Alpha Tecnologia e Infraestrutura Fictícia Ltda.",
+    "cnpj": "11.111.111/0001-11",
+    "objeto": "Aquisição fictícia de estações de trabalho e equipamentos de rede para unidades de segurança pública.",
+    "tipoOrigem": "Pregão Eletrônico nº 10/2026",
+    "valor": 350000.0,
+    "valorNaoAplicavel": false,
+    "vigenciaInicio": "2026-03-01",
+    "vigenciaFim": "2027-03-01",
+    "vigenciaNaoAplicavel": false,
+    "regimeJuridico": "Lei nº 14.133/2021"
+  },
+  "analise": {
+    "id": "anl-ficticia-01",
+    "processoId": "proc-ficticio-01",
+    "estadoEdicao": "em_analise",
+    "pertinencia": {
+      "respostas": {
+        "competenciaNecessidade": true,
+        "vinculoPlanejamento": true,
+        "beneficioInteressePublico": true,
+        "custoProporcionalidade": true,
+        "economicidade": true
+      },
+      "evidencias": "Documento Demonstrativo nº 01/2026: renovação do parque tecnológico das unidades operacionais prevista no plano de modernização setorial.",
+      "justificativa": "Necessidade plenamente aderente aos objetivos estratégicos de modernização e aparelhamento institucional.",
+      "conclusao": "PERTINENTE",
+      "providencia": "Prosseguir com o trâmite regular para assinatura após conferência final."
+    },
+    "checklist": [
+      {
+        "id": "chk-01-01",
+        "descricao": "Parecer Jurídico Conclusivo",
+        "status": "ok",
+        "observacao": "Parecer PGE Fictício nº 101/2026 favorável com recomendações formais.",
+        "referenciaFonte": "Processo virtual - Peça 45"
+      },
+      {
+        "id": "chk-01-02",
+        "descricao": "Declaração de Dotação e Adequação Orçamentária",
+        "status": "ok",
+        "observacao": "Nota de Reserva Orçamentária nº 2026/001 anexada e atestada.",
+        "referenciaFonte": "Peça 12"
+      },
+      {
+        "id": "chk-01-03",
+        "descricao": "Garantia Contratual",
+        "status": "ok",
+        "observacao": "Apólice de seguro-garantia devidamente apresentada e conferida.",
+        "referenciaFonte": "Peça 50"
+      },
+      {
+        "id": "chk-01-04",
+        "descricao": "Designação de Gestor e Fiscal de Contrato",
+        "status": "ok",
+        "observacao": "Portaria Fictícia SESP nº 05/2026 publicada.",
+        "referenciaFonte": "Peça 52"
+      },
+      {
+        "id": "chk-01-05",
+        "descricao": "Regularidade Fiscal, Trabalhista e Cadastral",
+        "status": "ok",
+        "observacao": "Certidões negativas válidas anexadas.",
+        "referenciaFonte": "Peça 54"
+      }
+    ],
+    "condicionantes": [
+      {
+        "id": "cond-01-01",
+        "descricao": "Juntada do comprovante de publicação do extrato editalício no Diário Oficial e portal de compras.",
+        "referenciaParecer": "Parecer PGE nº 101/2026, item 14",
+        "situacao": "atendida",
+        "evidenciaAtendimento": "Comprovante de publicação anexado na folha 88.",
+        "providencia": "Registrado nos autos.",
+        "responsavel": "Comissão de Contratação"
+      }
+    ],
+    "achados": [
+      {
+        "id": "ach-01-01",
+        "titulo": "Oportunidade de melhoria no fluxo de comunicação com o fornecedor",
+        "evidencia": "Canal formal de comunicação não especificado de forma explícita na cláusula de notificações da minuta.",
+        "regraOuMotivo": "Boas práticas de gestão e governança contratual.",
+        "impacto": "Eventual atraso em intimações operacionais ou notificações rotineiras.",
+        "providencia": "Recomendar inclusão de endereço eletrônico oficial da contratada no termo de ciência do fiscal.",
+        "responsavel": "Fiscal do Contrato",
+        "classificacao": "MELHORIA",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      }
+    ],
+    "riscos": [
+      {
+        "dimensao": "juridica",
+        "nivel": "baixo",
+        "justificativa": "Procedimento licitatório regular com respaldo integral do parecer jurídico.",
+        "achadosRelacionados": []
+      },
+      {
+        "dimensao": "financeira",
+        "nivel": "baixo",
+        "justificativa": "Disponibilidade orçamentária atestada e garantia idônea aportada.",
+        "achadosRelacionados": []
+      },
+      {
+        "dimensao": "operacional",
+        "nivel": "baixo",
+        "justificativa": "Fiscal e gestor designados com experiência prévia na fiscalização.",
+        "achadosRelacionados": [
+          "ach-01-01"
+        ]
+      },
+      {
+        "dimensao": "controle",
+        "nivel": "baixo",
+        "justificativa": "Documentação completa e checklist 100% conferido.",
+        "achadosRelacionados": []
+      }
+    ],
+    "conclusaoIndicativa": "APTO_PARA_ASSINATURA",
+    "conclusaoValidada": null,
+    "validacaoHumana": null,
+    "datas": {
+      "criacao": "2026-09-24T10:00:00Z",
+      "atualizacao": "2026-09-24T10:30:00Z"
+    }
+  }
+}

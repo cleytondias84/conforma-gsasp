@@ -1,0 +1,130 @@
+{
+  "id": "cenario_02_regular_aditivo",
+  "nome": "Cenário 2 — Termo Aditivo de Prorrogação (Regular com Ressalva)",
+  "categoria": "regular",
+  "descricao": "Termo aditivo de dilatação de prazo contratual continuado sem acréscimo de valor, com valorNaoAplicavel=True e apontamento formal de endosso da garantia.",
+  "inconsistenciasIntencionais": [],
+  "conclusaoEsperada": "APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA",
+  "processo": {
+    "id": "proc-ficticio-02",
+    "numero": "SESP-PRO-2026/00002",
+    "instrumento": "1º Termo Aditivo ao Contrato nº 12/2025",
+    "contratado": "Beta Serviços e Manutenção Predial Fictícia Ltda.",
+    "cnpj": "22.222.222/0001-22",
+    "objeto": "Prorrogação da vigência por 12 meses do contrato de manutenção preventiva e corretiva predial continuada.",
+    "tipoOrigem": "Termo Aditivo / Prorrogação de Serviço Contínuo",
+    "valor": null,
+    "valorNaoAplicavel": true,
+    "vigenciaInicio": "2026-04-01",
+    "vigenciaFim": "2027-04-01",
+    "vigenciaNaoAplicavel": false,
+    "regimeJuridico": "Lei nº 14.133/2021"
+  },
+  "analise": {
+    "id": "anl-ficticia-02",
+    "processoId": "proc-ficticio-02",
+    "estadoEdicao": "em_analise",
+    "pertinencia": {
+      "respostas": {
+        "competenciaNecessidade": true,
+        "vinculoPlanejamento": true,
+        "beneficioInteressePublico": true,
+        "custoProporcionalidade": true,
+        "economicidade": true
+      },
+      "evidencias": "Relatório de Fiscalização nº 08/2026 atestando vantajusidade da prorrogação e manutenção das condições contratuais favoráveis.",
+      "justificativa": "Serviço essencial continuado com vantajosidade comprovada para a administração pública.",
+      "conclusao": "PERTINENTE_COM_JUSTIFICATIVA",
+      "providencia": "Submeter à assinatura com registro de ressalva quanto à revalidação de certidão anexa."
+    },
+    "checklist": [
+      {
+        "id": "chk-02-01",
+        "descricao": "Parecer Jurídico Prévio da Prorrogação",
+        "status": "ok",
+        "observacao": "Parecer PGE Fictício nº 102/2026 aprovando a minuta do aditivo de prazo.",
+        "referenciaFonte": "Peça 22"
+      },
+      {
+        "id": "chk-02-02",
+        "descricao": "Comprovação de Vantajosidade Econômica da Prorrogação",
+        "status": "ok",
+        "observacao": "Pesquisa de mercado demonstrando manutenção de preços vantajosos.",
+        "referenciaFonte": "Peça 18"
+      },
+      {
+        "id": "chk-02-03",
+        "descricao": "Adequação Orçamentária Imediata",
+        "status": "nao_aplicavel",
+        "justificativaNaoAplicavel": "Termo aditivo restrito à dilatação temporal; dotação específica referente ao exercício já empenhada.",
+        "referenciaFonte": "Despacho Financeiro Peça 20"
+      },
+      {
+        "id": "chk-02-04",
+        "descricao": "Regularidade Fiscal da Contratada",
+        "status": "ok",
+        "observacao": "Certidões vigentes na data da instrução.",
+        "referenciaFonte": "Peça 25"
+      }
+    ],
+    "condicionantes": [
+      {
+        "id": "cond-02-01",
+        "descricao": "Verificação de manutenção da regularidade fiscal e trabalhista na data exata da assinatura.",
+        "referenciaParecer": "Parecer PGE nº 102/2026, item 9",
+        "situacao": "em_cumprimento",
+        "evidenciaAtendimento": "Certidões consultadas na emissão da minuta; nova extração programada para o ato de subscrição.",
+        "providencia": "Fiscal deve juntar certidões atualizadas até 24h antes da assinatura.",
+        "responsavel": "Gestor do Contrato"
+      }
+    ],
+    "achados": [
+      {
+        "id": "ach-02-01",
+        "titulo": "Necessidade de atualização da apólice de seguro-garantia prorrogando o prazo de cobertura",
+        "evidencia": "Endosso da garantia referente ao período estendido ainda não anexado (prazo de entrega previsto para até 10 dias após assinatura).",
+        "regraOuMotivo": "Cláusula 12ª do Contrato Original nº 12/2025.",
+        "impacto": "Garantia atual cobre até o término do período anterior; necessária juntada do endosso.",
+        "providencia": "Condicionar o início da nova vigência à entrega do endosso da garantia pelo contratado.",
+        "responsavel": "Fiscal de Contrato",
+        "classificacao": "FORMAL",
+        "estadoValidacao": "SUGESTAO_SISTEMA"
+      }
+    ],
+    "riscos": [
+      {
+        "dimensao": "juridica",
+        "nivel": "baixo",
+        "justificativa": "Prorrogação tempestiva dentro do prazo legal de vigência do contrato original.",
+        "achadosRelacionados": []
+      },
+      {
+        "dimensao": "financeira",
+        "nivel": "baixo",
+        "justificativa": "Sem impacto de acréscimo orçamentário nesta prorrogação temporal.",
+        "achadosRelacionados": []
+      },
+      {
+        "dimensao": "operacional",
+        "nivel": "moderado",
+        "justificativa": "Acompanhamento do endosso da apólice de garantia a ser juntado após a formalização.",
+        "achadosRelacionados": [
+          "ach-02-01"
+        ]
+      },
+      {
+        "dimensao": "controle",
+        "nivel": "baixo",
+        "justificativa": "Processo instruído com antecedência de 60 dias ao vencimento original.",
+        "achadosRelacionados": []
+      }
+    ],
+    "conclusaoIndicativa": "APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA",
+    "conclusaoValidada": null,
+    "validacaoHumana": null,
+    "datas": {
+      "criacao": "2026-09-24T11:00:00Z",
+      "atualizacao": "2026-09-24T11:20:00Z"
+    }
+  }
+}
