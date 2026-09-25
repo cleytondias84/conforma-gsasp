@@ -121,6 +121,138 @@ button:focus-visible {
   letter-spacing: 0.02em;
 }
 
+/* ==========================================================================
+   Controles de Papéis de Usuário (Simulação Didática - S2.5)
+   ========================================================================== */
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.role-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.role-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.role-select {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.role-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.role-banner {
+  background-color: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.5rem;
+  margin: 0.75rem -1.5rem -1.25rem -1.5rem;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.role-banner-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.role-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  color: #ffffff;
+}
+
+.role-pill-assessor {
+  background-color: #2563eb;
+}
+
+.role-pill-administrador {
+  background-color: #7c3aed;
+}
+
+.role-pill-aprovador {
+  background-color: #059669;
+}
+
+.role-pill-leitor {
+  background-color: #475569;
+}
+
+.role-desc {
+  color: #f1f5f9;
+}
+
+.role-limite {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.readonly-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #64748b;
+  padding: 0.85rem 1.25rem;
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.readonly-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed !important;
+  pointer-events: auto;
+}
+
 .footer {
   text-align: center;
   padding: 1.25rem 1.5rem;
@@ -1321,11 +1453,63 @@ button:focus-visible {
   line-height: 1;
 }
 
+.storage-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
 .storage-title {
-  display: block;
+  display: inline-block;
   font-size: 0.9rem;
   color: var(--text-main);
   font-weight: 700;
+}
+
+.connection-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  line-height: 1.2;
+}
+
+.connection-online {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.connection-offline {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  animation: pulseOffline 2s infinite ease-in-out;
+}
+
+@keyframes pulseOffline {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+.storage-bar-warning {
+  border-left-color: #dc2626 !important;
+  background-color: #fff5f5 !important;
+}
+
+.storage-memory-alert {
+  margin: 0.75rem 0 0.5rem 0;
+  padding: 0.65rem 0.85rem;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #9f1239;
+  line-height: 1.45;
 }
 
 .storage-time {

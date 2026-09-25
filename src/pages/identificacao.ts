@@ -12,6 +12,7 @@ import {
   calcularDuracaoVigencia,
   type ResultadoValidacaoProcesso
 } from '../domain/validacao';
+import { podeEditar, podeCarregarCenarios } from '../auth/papeis';
 
 // Cenários didáticos determinísticos com dados estritamente fictícios
 export const CENARIOS_DEMO: Record<string, Processo> = {
@@ -177,6 +178,8 @@ export function renderQuatroElementosEssenciais(processo: Processo): string {
 export function renderIdentificacaoScreen(): string {
   const p = processoAtivo;
   const res = ultimoResultadoValidacao || validarProcesso(p);
+  const editable = podeEditar();
+  const canLoadScenarios = podeCarregarCenarios();
 
   return `
     <div class="stage-header">
@@ -186,6 +189,16 @@ export function renderIdentificacaoScreen(): string {
         <strong>quatro elementos essenciais</strong> mantêm destaque visual permanente e em tempo real para orientar a análise.
       </p>
     </div>
+
+    ${!editable ? `
+    <div class="readonly-banner" role="status" aria-label="Aviso de modo somente leitura">
+      <span class="readonly-icon">🔒</span>
+      <div>
+        <strong>Modo de Consulta (Somente Leitura):</strong>
+        <span>Os campos e opções desta etapa estão desabilitados para o perfil ativo. Alterne para o perfil Editor/Assessor ou Administrador para preencher ou modificar dados.</span>
+      </div>
+    </div>
+    ` : ''}
 
     <!-- Seção de Destaque dos 4 Elementos Essenciais (RN01) -->
     ${renderQuatroElementosEssenciais(p)}
@@ -199,7 +212,7 @@ export function renderIdentificacaoScreen(): string {
         </div>
       </div>
       <div class="scenario-selector-controls">
-        <select id="select-cenario-ficticio" class="form-select" aria-label="Selecione um cenário didático">
+        <select id="select-cenario-ficticio" class="form-select" aria-label="Selecione um cenário didático" ${!canLoadScenarios ? 'disabled' : ''}>
           <option value="cenario-01" ${cenarioSelecionadoId === 'cenario-01' ? 'selected' : ''}>Cenário 1 — Aquisição Regular (Pregão Eletrônico • R$ 350.000,00)</option>
           <option value="cenario-02" ${cenarioSelecionadoId === 'cenario-02' ? 'selected' : ''}>Cenário 2 — Aditivo de Prorrogação (Valor Não Aplicável • 12 meses)</option>
           <option value="cenario-03" ${cenarioSelecionadoId === 'cenario-03' ? 'selected' : ''}>Cenário 3 — Prestação de Serviços Contínuos (Limpeza • R$ 520.000,00)</option>
@@ -207,7 +220,7 @@ export function renderIdentificacaoScreen(): string {
           <option value="cenario-05" ${cenarioSelecionadoId === 'cenario-05' ? 'selected' : ''}>Cenário 5 — Inconsistência Grave (Vigência Invertida para teste da RN13)</option>
           <option value="personalizado" ${cenarioSelecionadoId === 'personalizado' ? 'selected' : ''}>[Personalizado] Limpar campos para preenchimento manual</option>
         </select>
-        <button type="button" id="btn-carregar-cenario" class="btn btn-secondary">Carregar Cenário</button>
+        <button type="button" id="btn-carregar-cenario" class="btn btn-secondary" ${!canLoadScenarios ? 'disabled' : ''}>Carregar Cenário</button>
       </div>
     </div>
 
@@ -242,6 +255,7 @@ export function renderIdentificacaoScreen(): string {
               value="${p.numero || ''}" 
               placeholder="Ex: SESP-PRO-2026/00001"
               required 
+              ${!editable ? 'disabled' : ''}
               aria-describedby="err-numero"
             />
             <span id="err-numero" class="field-error-text">${res.erros.numero || ''}</span>
@@ -259,6 +273,7 @@ export function renderIdentificacaoScreen(): string {
               value="${p.instrumento || ''}" 
               placeholder="Ex: Contrato Administrativo nº 01/2026"
               required 
+              ${!editable ? 'disabled' : ''}
               aria-describedby="err-instrumento"
             />
             <span id="err-instrumento" class="field-error-text">${res.erros.instrumento || ''}</span>
@@ -268,7 +283,7 @@ export function renderIdentificacaoScreen(): string {
             <label for="campo-regimeJuridico" class="form-label">
               Regime Jurídico Aplicável <span class="required-indicator">*</span>
             </label>
-            <select id="campo-regimeJuridico" name="regimeJuridico" class="form-select" required aria-describedby="err-regime">
+            <select id="campo-regimeJuridico" name="regimeJuridico" class="form-select" required ${!editable ? 'disabled' : ''} aria-describedby="err-regime">
               <option value="Lei nº 14.133/2021" ${p.regimeJuridico === 'Lei nº 14.133/2021' ? 'selected' : ''}>Lei nº 14.133/2021 (Nova Lei de Licitações)</option>
               <option value="Lei nº 8.666/1993" ${p.regimeJuridico === 'Lei nº 8.666/1993' ? 'selected' : ''}>Lei nº 8.666/1993 (Regime Anterior)</option>
               <option value="Lei nº 13.019/2014" ${p.regimeJuridico === 'Lei nº 13.019/2014' ? 'selected' : ''}>Lei nº 13.019/2014 (MROSC / Parcerias)</option>
@@ -295,6 +310,7 @@ export function renderIdentificacaoScreen(): string {
             rows="3" 
             placeholder="Descreva claramente o objeto da contratação ou pactuação..."
             required
+            ${!editable ? 'disabled' : ''}
             aria-describedby="err-objeto desc-objeto"
           >${p.objeto || ''}</textarea>
           <div class="form-hint" id="desc-objeto">Conforme RN01, o objeto deve ser claro e específico, evidenciando a necessidade pública atendida.</div>
@@ -313,6 +329,7 @@ export function renderIdentificacaoScreen(): string {
             value="${p.tipoOrigem || ''}" 
             placeholder="Ex: Pregão Eletrônico nº 10/2026, Dispensa de Licitação, Termo Aditivo, etc."
             required 
+            ${!editable ? 'disabled' : ''}
             aria-describedby="err-tipoOrigem"
           />
           <span id="err-tipoOrigem" class="field-error-text">${res.erros.tipoOrigem || ''}</span>
@@ -330,6 +347,7 @@ export function renderIdentificacaoScreen(): string {
               id="chk-contratadoNaoAplicavel" 
               name="contratadoNaoAplicavel" 
               ${p.contratadoNaoAplicavel ? 'checked' : ''}
+              ${!editable ? 'disabled' : ''}
             />
             <span>Não aplicável a este instrumento (ex.: ato unilateral, portaria interna ou instrumento sem contratado formal)</span>
           </label>
@@ -347,7 +365,7 @@ export function renderIdentificacaoScreen(): string {
               class="form-input" 
               value="${p.contratado || ''}" 
               placeholder="Ex: Alpha Tecnologia Fictícia Ltda."
-              ${p.contratadoNaoAplicavel ? 'disabled' : ''}
+              ${!editable || p.contratadoNaoAplicavel ? 'disabled' : ''}
               aria-describedby="err-contratado"
             />
             <span id="err-contratado" class="field-error-text">${res.erros.contratado || ''}</span>
@@ -365,7 +383,7 @@ export function renderIdentificacaoScreen(): string {
               value="${p.cnpj || ''}" 
               placeholder="00.000.000/0001-00"
               maxlength="18"
-              ${p.contratadoNaoAplicavel ? 'disabled' : ''}
+              ${!editable || p.contratadoNaoAplicavel ? 'disabled' : ''}
               aria-describedby="err-cnpj"
             />
             <span id="err-cnpj" class="field-error-text">${res.erros.cnpj || ''}</span>
@@ -384,6 +402,7 @@ export function renderIdentificacaoScreen(): string {
               id="chk-valorNaoAplicavel" 
               name="valorNaoAplicavel" 
               ${p.valorNaoAplicavel ? 'checked' : ''}
+              ${!editable ? 'disabled' : ''}
             />
             <span><strong>Não se aplica a este instrumento</strong> (sem repasse financeiro, cooperação mútua ou aditivo de mera prorrogação)</span>
           </label>
@@ -403,7 +422,7 @@ export function renderIdentificacaoScreen(): string {
               min="0"
               value="${p.valor !== null && p.valor !== undefined ? p.valor : ''}" 
               placeholder="0,00"
-              ${p.valorNaoAplicavel ? 'disabled' : ''}
+              ${!editable || p.valorNaoAplicavel ? 'disabled' : ''}
               aria-describedby="err-valor hint-valor"
             />
             <div id="hint-valor" class="form-hint">
@@ -426,6 +445,7 @@ export function renderIdentificacaoScreen(): string {
               id="chk-vigenciaNaoAplicavel" 
               name="vigenciaNaoAplicavel" 
               ${p.vigenciaNaoAplicavel ? 'checked' : ''}
+              ${!editable ? 'disabled' : ''}
             />
             <span><strong>Não se aplica data término</strong> (vigência por prazo indeterminado quando admitida ou não aplicável)</span>
           </label>
@@ -442,7 +462,7 @@ export function renderIdentificacaoScreen(): string {
               name="vigenciaInicio" 
               class="form-input" 
               value="${p.vigenciaInicio || ''}" 
-              ${p.vigenciaNaoAplicavel ? 'disabled' : ''}
+              ${!editable || p.vigenciaNaoAplicavel ? 'disabled' : ''}
               aria-describedby="err-vigenciaInicio"
             />
             <span id="err-vigenciaInicio" class="field-error-text">${res.erros.vigenciaInicio || ''}</span>
@@ -458,7 +478,7 @@ export function renderIdentificacaoScreen(): string {
               name="vigenciaFim" 
               class="form-input" 
               value="${p.vigenciaFim || ''}" 
-              ${p.vigenciaNaoAplicavel ? 'disabled' : ''}
+              ${!editable || p.vigenciaNaoAplicavel ? 'disabled' : ''}
               aria-describedby="err-vigenciaFim hint-vigencia"
             />
             <div id="hint-vigencia" class="form-hint">
@@ -475,7 +495,7 @@ export function renderIdentificacaoScreen(): string {
           🔍 Validar Campos
         </button>
         <button type="submit" id="btn-salvar-avancar" class="btn btn-primary btn-large">
-          Salvar e Avançar para Pertinência →
+          ${editable ? 'Salvar e Avançar para Pertinência →' : 'Avançar para Pertinência →'}
         </button>
       </div>
 
@@ -527,6 +547,10 @@ function atualizarQuatroElementosAoVivo(p: Processo): void {
  * Lê os dados atuais do formulário do DOM e monta o objeto Processo.
  */
 export function extrairDadosDoFormulario(): Processo {
+  if (!podeEditar()) {
+    return processoAtivo;
+  }
+
   const f = document.getElementById('form-identificacao') as HTMLFormElement | null;
   if (!f) return processoAtivo;
 
@@ -693,6 +717,11 @@ export function initIdentificacaoEvents(onNavegarPertinencia: () => void): void 
   const btnCarregar = document.getElementById('btn-carregar-cenario');
 
   const aplicarCenario = () => {
+    if (!podeCarregarCenarios()) {
+      alert('ℹ️ O carregamento de cenários didáticos está desabilitado para o perfil ativo (somente consulta).');
+      return;
+    }
+
     const cenarioKey = selectCenario?.value || 'cenario-01';
     cenarioSelecionadoId = cenarioKey;
 
@@ -775,6 +804,13 @@ export function initIdentificacaoEvents(onNavegarPertinencia: () => void): void 
   // Submissão do Formulário e Avanço para a Etapa 2 (Pertinência)
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    if (!podeEditar()) {
+      // Perfil somente leitura: permite navegar diretamente sem validação de bloqueio
+      onNavegarPertinencia();
+      return;
+    }
+
     const dados = extrairDadosDoFormulario();
     processoAtivo = dados;
     const res = validarProcesso(dados);

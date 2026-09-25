@@ -15,6 +15,7 @@ import {
   type ResultadoValidacaoPertinencia
 } from '../domain/validacao';
 import { getProcessoAtivo } from './identificacao';
+import { podeEditar, podeCarregarCenarios } from '../auth/papeis';
 
 // Cenários didáticos determinísticos de Pertinência Institucional com dados estritamente fictícios
 export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
@@ -166,6 +167,7 @@ function renderItemCriterio(
   pergunta: string,
   valorAtual: boolean | null
 ): string {
+  const editable = podeEditar();
   const name = `criterio-${id}`;
   const strValor = valorAtual === true ? 'sim' : valorAtual === false ? 'nao' : 'a_avaliar';
 
@@ -186,6 +188,7 @@ function renderItemCriterio(
             name="${name}" 
             value="sim" 
             ${strValor === 'sim' ? 'checked' : ''} 
+            ${!editable ? 'disabled' : ''}
             class="criterio-radio"
           />
           <span class="option-icon">✓</span>
@@ -198,6 +201,7 @@ function renderItemCriterio(
             name="${name}" 
             value="nao" 
             ${strValor === 'nao' ? 'checked' : ''} 
+            ${!editable ? 'disabled' : ''}
             class="criterio-radio"
           />
           <span class="option-icon">✕</span>
@@ -210,6 +214,7 @@ function renderItemCriterio(
             name="${name}" 
             value="a_avaliar" 
             ${strValor === 'a_avaliar' ? 'checked' : ''} 
+            ${!editable ? 'disabled' : ''}
             class="criterio-radio"
           />
           <span class="option-icon">?</span>
@@ -224,6 +229,7 @@ function renderItemCriterio(
  * Renderiza o painel de sugestão do sistema e validação humana (RN02).
  */
 function renderPainelConclusao(pert: Pertinencia): string {
+  const editable = podeEditar();
   const sugestao = sugerirConclusaoPertinencia(pert.respostas);
   const conclusaoValidada = pert.conclusao;
   const haDivergencia = Boolean(conclusaoValidada && conclusaoValidada !== sugestao);
@@ -250,7 +256,7 @@ function renderPainelConclusao(pert: Pertinencia): string {
         <label for="campo-conclusao-pertinencia" class="form-label">
           <strong>Conclusão Técnica do Assessor (Validação Humana Obrigatória • RN02) <span class="required-indicator">*</span></strong>
         </label>
-        <select id="campo-conclusao-pertinencia" name="conclusao" class="form-select" required aria-describedby="divergencia-alerta">
+        <select id="campo-conclusao-pertinencia" name="conclusao" class="form-select" required ${!editable ? 'disabled' : ''} aria-describedby="divergencia-alerta">
           <option value="" ${!conclusaoValidada ? 'selected' : ''}>-- Selecione a Conclusão Técnica Homologada --</option>
           <option value="PERTINENTE" ${conclusaoValidada === 'PERTINENTE' ? 'selected' : ''}>
             PERTINENTE — Interesse público, competência e necessidade demonstrados
@@ -294,6 +300,8 @@ function renderPainelConclusao(pert: Pertinencia): string {
 export function renderPertinenciaScreen(): string {
   const pert = pertinenciaAtiva;
   const res = ultimoResultadoValidacaoPertinencia || validarPertinencia(pert);
+  const editable = podeEditar();
+  const canLoadScenarios = podeCarregarCenarios();
 
   return `
     <div class="stage-header">
@@ -302,6 +310,16 @@ export function renderPertinenciaScreen(): string {
         Filtro prévio obrigatório (<strong>RN02</strong>). A simples legalidade procedimental ou existência de saldo orçamentário não comprovam, isoladamente, a pertinência do gasto público. A avaliação deve ser fundamentada e validada pelo assessor.
       </p>
     </div>
+
+    ${!editable ? `
+    <div class="readonly-banner" role="status" aria-label="Aviso de modo somente leitura">
+      <span class="readonly-icon">🔒</span>
+      <div>
+        <strong>Modo de Consulta (Somente Leitura):</strong>
+        <span>Os critérios, justificativas e conclusão técnica desta etapa estão desabilitados para o perfil ativo. Alterne para o perfil Editor/Assessor ou Administrador para editar.</span>
+      </div>
+    </div>
+    ` : ''}
 
     <!-- Contexto do Processo em Análise -->
     ${renderContextoProcessoAtivo()}
@@ -315,7 +333,7 @@ export function renderPertinenciaScreen(): string {
         </div>
       </div>
       <div class="scenario-selector-controls">
-        <select id="select-cenario-pertinencia" class="form-select" aria-label="Selecione um cenário didático de pertinência">
+        <select id="select-cenario-pertinencia" class="form-select" aria-label="Selecione um cenário didático de pertinência" ${!canLoadScenarios ? 'disabled' : ''}>
           <option value="cenario-01" ${cenarioPertinenciaSelecionadoId === 'cenario-01' ? 'selected' : ''}>
             Cenário 1 — Pertinência Regular (Todos os critérios Sim • PERTINENTE)
           </option>
@@ -335,7 +353,7 @@ export function renderPertinenciaScreen(): string {
             [Personalizado] Limpar campos para avaliação manual
           </option>
         </select>
-        <button type="button" id="btn-carregar-cenario-pert" class="btn btn-secondary">Carregar Cenário</button>
+        <button type="button" id="btn-carregar-cenario-pert" class="btn btn-secondary" ${!canLoadScenarios ? 'disabled' : ''}>Carregar Cenário</button>
       </div>
     </div>
 
@@ -416,6 +434,7 @@ export function renderPertinenciaScreen(): string {
             rows="3" 
             placeholder="Ex.: Documento de Formalização da Demanda (DFD), ETP nº 04/2026 (fls. 12/28), Nota Técnica nº 02/2026..."
             required
+            ${!editable ? 'disabled' : ''}
             aria-describedby="err-pert-evidencias hint-pert-evidencias"
           >${pert.evidencias || ''}</textarea>
           <div class="form-hint" id="hint-pert-evidencias">Indique com precisão as peças processuais e relatórios que sustentam a análise fática (RN02).</div>
@@ -433,6 +452,7 @@ export function renderPertinenciaScreen(): string {
             rows="3" 
             placeholder="Registre a motivação detalhada e conclusiva do assessor sobre a oportunidade e pertinência pública..."
             required
+            ${!editable ? 'disabled' : ''}
             aria-describedby="err-pert-justificativa hint-pert-justificativa"
           >${pert.justificativa || ''}</textarea>
           <div class="form-hint" id="hint-pert-justificativa">A justificativa do assessor expressa a convicção técnica motivada exigida pela governança pública.</div>
@@ -451,6 +471,7 @@ export function renderPertinenciaScreen(): string {
             value="${pert.providencia || ''}" 
             placeholder="Ex.: Prosseguir com a verificação de conformidade jurídica / Notificar área demandante para saneamento..."
             required
+            ${!editable ? 'disabled' : ''}
             aria-describedby="err-pert-providencia"
           />
           <span id="err-pert-providencia" class="field-error-text">${res.erros.providencia || ''}</span>
@@ -484,6 +505,10 @@ export function renderPertinenciaScreen(): string {
  * Extrai os dados do formulário de pertinência diretamente do DOM.
  */
 export function extrairDadosDoFormularioPertinencia(): Pertinencia {
+  if (!podeEditar()) {
+    return pertinenciaAtiva;
+  }
+
   const getRadioVal = (id: string): boolean | null => {
     const checked = document.querySelector(`input[name="criterio-${id}"]:checked`) as HTMLInputElement | null;
     if (!checked) return null;
@@ -657,6 +682,11 @@ export function initPertinenciaEvents(
   const btnCarregar = document.getElementById('btn-carregar-cenario-pert');
 
   const aplicarCenario = () => {
+    if (!podeCarregarCenarios()) {
+      alert('ℹ️ O carregamento de cenários didáticos está desabilitado para o perfil ativo (somente consulta).');
+      return;
+    }
+
     const cenarioKey = selectCenario?.value || 'cenario-01';
     cenarioPertinenciaSelecionadoId = cenarioKey;
 
@@ -752,6 +782,13 @@ export function initPertinenciaEvents(
   // Submissão do Formulário e Avanço para a Etapa 3 (Conformidade)
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    if (!podeEditar()) {
+      // Perfil somente leitura: navega diretamente sem validação de bloqueio
+      onNavegarConformidade();
+      return;
+    }
+
     const dados = extrairDadosDoFormularioPertinencia();
     pertinenciaAtiva = dados;
     const res = validarPertinencia(dados);

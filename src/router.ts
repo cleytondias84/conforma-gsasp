@@ -30,8 +30,18 @@ import {
   salvarRascunhoAtual,
   recuperarUltimoRascunho,
   formatarCarimboSalvamento,
-  AVISO_PERSISTENCIA_LOCAL
+  obterDiagnosticoArmazenamento,
+  AVISO_PERSISTENCIA_LOCAL,
+  type DiagnosticoArmazenamento
 } from './services/armazenamento';
+import {
+  getPapelAtivo,
+  setPapelAtivo,
+  getInfoPapelAtivo,
+  podeEditar,
+  podeSalvarRascunho,
+  type PapelUsuario
+} from './auth/papeis';
 
 export interface StageInfo {
   id: string;
@@ -97,6 +107,9 @@ export const STAGES: StageInfo[] = [
  * Renderiza o cabeçalho fixo com identidade institucional e aviso de protótipo.
  */
 function renderHeader(): string {
+  const papelAtivo = getPapelAtivo();
+  const infoPapel = getInfoPapelAtivo();
+
   return `
     <header class="header">
       <div class="header-inner">
@@ -106,8 +119,28 @@ function renderHeader(): string {
           </a>
           <p class="brand-subtitle">Sistema de Conformidade e Apoio à Decisão &bull; GSASP/SESP-MT</p>
         </div>
-        <div class="header-badge-container">
-          <span class="badge-didatico">Protótipo didático — somente dados fictícios</span>
+        <div class="header-controls">
+          <div class="role-selector-container">
+            <label for="select-papel-usuario" class="role-label">
+              <span class="role-icon">👤</span> Ver como:
+            </label>
+            <select id="select-papel-usuario" class="role-select" aria-label="Simulação de papel de usuário (didático)">
+              <option value="assessor" ${papelAtivo === 'assessor' ? 'selected' : ''}>Editor / Assessor (GSASP)</option>
+              <option value="administrador" ${papelAtivo === 'administrador' ? 'selected' : ''}>Administrador (Demonstração)</option>
+              <option value="aprovador" ${papelAtivo === 'aprovador' ? 'selected' : ''}>Aprovador / Validador Executivo</option>
+              <option value="leitor" ${papelAtivo === 'leitor' ? 'selected' : ''}>Leitor (Somente Consulta)</option>
+            </select>
+          </div>
+          <div class="header-badge-container">
+            <span class="badge-didatico">Protótipo didático — somente dados fictícios</span>
+          </div>
+        </div>
+      </div>
+      <div class="role-banner" role="status" aria-label="Papel ativo na demonstração">
+        <div class="role-banner-content">
+          <span class="role-pill role-pill-${infoPapel.id}">${infoPapel.rotuloCurto}</span>
+          <span class="role-desc"><strong>${infoPapel.nome}:</strong> ${infoPapel.descricaoUso}</span>
+          <span class="role-limite"><em>(${infoPapel.limiteAtuacao})</em></span>
         </div>
       </div>
     </header>
@@ -152,32 +185,60 @@ function renderStepper(currentStepNumber: number): string {
 
 let ultimoSalvamentoTimestamp: string | null = null;
 let rascunhoInicializado: boolean = false;
+let diagnosticoArmazenamento: DiagnosticoArmazenamento | null = null;
+let statusConexaoOnline: boolean = typeof navigator !== 'undefined' ? navigator.onLine : true;
+let ouvintesConexaoRegistrados: boolean = false;
 
 /**
- * Renderiza a barra executiva de persistência local (IndexedDB) no topo de cada etapa.
+ * Renderiza a barra executiva de persistência local no topo de cada etapa.
  */
 function renderBarraPersistencia(): string {
+  const podeSalvar = podeSalvarRascunho();
+  const tipoStorage = diagnosticoArmazenamento?.tipo || 'indexedDB';
+  const isMemoria = tipoStorage === 'memoria';
+  const isLocalStorage = tipoStorage === 'localStorage';
+
+  const tituloStorage = isMemoria
+    ? 'Armazenamento em Memória Volátil'
+    : isLocalStorage
+    ? 'Persistência Local (localStorage)'
+    : 'Persistência Local (IndexedDB)';
+
+  const iconeStorage = isMemoria ? '⚠️' : '💾';
+
   return `
-    <div class="storage-bar" role="region" aria-label="Status do salvamento local no navegador">
+    <div class="storage-bar ${isMemoria ? 'storage-bar-warning' : ''}" role="region" aria-label="Status do salvamento local no navegador">
       <div class="storage-bar-main">
         <div class="storage-info">
-          <span class="storage-icon">💾</span>
+          <span class="storage-icon">${iconeStorage}</span>
           <div>
-            <strong class="storage-title">Persistência Local (IndexedDB)</strong>
+            <div class="storage-title-row">
+              <strong class="storage-title">${tituloStorage}</strong>
+              <span class="connection-pill ${statusConexaoOnline ? 'connection-online' : 'connection-offline'}" title="${statusConexaoOnline ? 'Conexão de rede ativa' : 'Navegador operando offline com telas e dados servidos pelo cache do Service Worker'}">
+                ${statusConexaoOnline ? '🌐 Online' : '📡 Modo Offline (Cache Local Ativo)'}
+              </span>
+            </div>
             <span class="storage-time" id="status-ultimo-salvamento">
               Último salvamento: ${formatarCarimboSalvamento(ultimoSalvamentoTimestamp)}
             </span>
           </div>
         </div>
         <div class="storage-actions">
-          <button type="button" id="btn-salvar-rascunho-global" class="btn btn-secondary btn-small" title="Salva o rascunho de todas as etapas no IndexedDB deste navegador">
-            💾 Salvar Rascunho
+          <button type="button" id="btn-salvar-rascunho-global" class="btn btn-secondary btn-small" title="${podeSalvar ? (isMemoria ? 'Salva temporariamente em memória nesta sessão' : 'Salva o rascunho de todas as etapas no armazenamento deste navegador') : 'Desabilitado no perfil atual (somente consulta)'}" ${!podeSalvar ? 'disabled' : ''}>
+            ${isMemoria ? '⚠️ Salvar na Sessão' : '💾 Salvar Rascunho'}
           </button>
-          <button type="button" id="btn-recuperar-rascunho-global" class="btn btn-secondary btn-small" title="Recupera o último rascunho salvo do IndexedDB">
+          <button type="button" id="btn-recuperar-rascunho-global" class="btn btn-secondary btn-small" title="Recupera o último rascunho salvo do armazenamento">
             📂 Retomar Rascunho Salvo
           </button>
         </div>
       </div>
+
+      ${isMemoria ? `
+      <div class="storage-memory-alert" role="alert">
+        <strong>⚠️ Atenção — Armazenamento apenas em memória:</strong> os dados NÃO persistirão após fechar ou recarregar esta página. Para persistência de longa duração de suas análises, utilize um navegador compatível com IndexedDB ou localStorage sem restrições de armazenamento local.
+      </div>
+      ` : ''}
+
       <p class="storage-disclaimer">
         ${AVISO_PERSISTENCIA_LOCAL}
       </p>
@@ -396,9 +457,26 @@ export function renderRoute(): void {
     ${renderFooter()}
   `;
 
+  // Listener do Seletor de Papéis de Usuário (Simulação Didática - S2.5)
+  const selectPapel = document.getElementById('select-papel-usuario') as HTMLSelectElement | null;
+  selectPapel?.addEventListener('change', () => {
+    const novoPapel = selectPapel.value as PapelUsuario;
+    // Se o papel ativo anterior permitia edição, sincroniza o estado antes de mudar para preservar digitações
+    if (podeEditar()) {
+      sincronizarEstadoDaTelaAtiva();
+    }
+    setPapelAtivo(novoPapel);
+    renderRoute();
+  });
+
   // Listeners da Barra de Persistência Local (IndexedDB)
   const btnSalvar = document.getElementById('btn-salvar-rascunho-global');
   btnSalvar?.addEventListener('click', async () => {
+    if (!podeSalvarRascunho()) {
+      alert('ℹ️ O perfil ativo está em modo somente consulta e não possui permissão para salvar rascunhos.');
+      return;
+    }
+
     btnSalvar.textContent = 'Salvando...';
     try {
       // Sincroniza imediatamente o estado a partir do formulário aberto no DOM
@@ -411,9 +489,15 @@ export function renderRoute(): void {
         'rascunho'
       );
       ultimoSalvamentoTimestamp = res.salvoEm;
+      try {
+        diagnosticoArmazenamento = await obterDiagnosticoArmazenamento();
+      } catch {
+        // Ignora
+      }
       const el = document.getElementById('status-ultimo-salvamento');
       if (el) el.textContent = `Último salvamento: ${formatarCarimboSalvamento(res.salvoEm)}`;
-      alert(`✅ Rascunho salvo com sucesso no IndexedDB deste navegador!\n\nSalvo em: ${formatarCarimboSalvamento(res.salvoEm)}\nProcesso: ${getProcessoAtivo().numero || '(Em preenchimento)'}\n\nAtenção: O salvamento do rascunho preserva as edições locais e não se confunde com aprovação jurídica da análise.`);
+      const tipoMsg = diagnosticoArmazenamento?.tipo === 'memoria' ? 'em memória volátil desta sessão' : 'no armazenamento local deste navegador';
+      alert(`✅ Rascunho salvo com sucesso ${tipoMsg}!\n\nSalvo em: ${formatarCarimboSalvamento(res.salvoEm)}\nProcesso: ${getProcessoAtivo().numero || '(Em preenchimento)'}\n\nAtenção: O salvamento do rascunho preserva as edições locais e não se confunde com aprovação jurídica da análise.`);
     } catch (e) {
       alert(`Erro ao salvar rascunho localmente: ${(e as Error).message}`);
     } finally {
@@ -425,8 +509,13 @@ export function renderRoute(): void {
   btnRecuperar?.addEventListener('click', async () => {
     try {
       const recuperado = await recuperarUltimoRascunho();
+      try {
+        diagnosticoArmazenamento = await obterDiagnosticoArmazenamento();
+      } catch {
+        // Ignora
+      }
       if (!recuperado) {
-        alert('ℹ️ Nenhum rascunho salvo anteriormente foi encontrado no IndexedDB deste navegador.');
+        alert('ℹ️ Nenhum rascunho salvo anteriormente foi encontrado no armazenamento deste navegador.');
         return;
       }
       setProcessoAtivo(recuperado.processo);
@@ -435,17 +524,19 @@ export function renderRoute(): void {
       setCondicionantesAtivas(recuperado.condicionantes);
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
-      alert(`✅ Rascunho recuperado com sucesso do IndexedDB!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
+      alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
     } catch (e) {
-      alert(`Erro ao recuperar rascunho do IndexedDB: ${(e as Error).message}`);
+      alert(`Erro ao recuperar rascunho do armazenamento: ${(e as Error).message}`);
     }
   });
 
   if (currentStage?.id === 'identificacao') {
     initIdentificacaoEvents(async () => {
-      // Salva rascunho automaticamente ao avançar
-      sincronizarEstadoDaTelaAtiva();
-      await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+      // Salva rascunho automaticamente ao avançar se permitido
+      if (podeSalvarRascunho()) {
+        sincronizarEstadoDaTelaAtiva();
+        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+      }
       window.location.hash = '#/pertinencia';
     });
 
@@ -453,6 +544,10 @@ export function renderRoute(): void {
     const nextBtn = document.querySelector('.stage-actions a.btn-primary');
     if (nextBtn) {
       nextBtn.addEventListener('click', (e) => {
+        if (!podeEditar()) {
+          // Perfil somente leitura (Leitor / Aprovador): navega livremente sem acionar validação impeditiva
+          return;
+        }
         e.preventDefault();
         const form = document.getElementById('form-identificacao') as HTMLFormElement | null;
         if (form) {
@@ -465,13 +560,17 @@ export function renderRoute(): void {
   if (currentStage?.id === 'pertinencia') {
     initPertinenciaEvents(
       async () => {
-        // Salva rascunho automaticamente ao avançar
-        sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        // Salva rascunho automaticamente ao avançar se permitido
+        if (podeSalvarRascunho()) {
+          sincronizarEstadoDaTelaAtiva();
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        }
         window.location.hash = '#/conformidade';
       },
       () => {
-        sincronizarEstadoDaTelaAtiva();
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
         window.location.hash = '#/identificacao';
       }
     );
@@ -480,6 +579,9 @@ export function renderRoute(): void {
     const nextBtn = document.querySelector('.stage-actions a.btn-primary');
     if (nextBtn) {
       nextBtn.addEventListener('click', (e) => {
+        if (!podeEditar()) {
+          return;
+        }
         e.preventDefault();
         const form = document.getElementById('form-pertinencia') as HTMLFormElement | null;
         if (form) {
@@ -492,13 +594,17 @@ export function renderRoute(): void {
   if (currentStage?.id === 'conformidade') {
     initConformidadeEvents(
       async () => {
-        // Salva rascunho automaticamente ao avançar
-        sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        // Salva rascunho automaticamente ao avançar se permitido
+        if (podeSalvarRascunho()) {
+          sincronizarEstadoDaTelaAtiva();
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        }
         window.location.hash = '#/achados';
       },
       () => {
-        sincronizarEstadoDaTelaAtiva();
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
         window.location.hash = '#/pertinencia';
       }
     );
@@ -507,6 +613,9 @@ export function renderRoute(): void {
     const nextBtn = document.querySelector('.stage-actions a.btn-primary');
     if (nextBtn) {
       nextBtn.addEventListener('click', (e) => {
+        if (!podeEditar()) {
+          return;
+        }
         e.preventDefault();
         const form = document.getElementById('form-conformidade') as HTMLFormElement | null;
         if (form) {
@@ -526,9 +635,28 @@ export function renderRoute(): void {
 export async function initRouter(): Promise<void> {
   window.addEventListener('hashchange', renderRoute);
 
-  // Na inicialização, tenta recuperar o último rascunho salvo do IndexedDB
+  // Registra ouvintes para acompanhar o status de conectividade em tempo real (PWA Offline)
+  if (!ouvintesConexaoRegistrados && typeof window !== 'undefined') {
+    ouvintesConexaoRegistrados = true;
+    window.addEventListener('online', () => {
+      statusConexaoOnline = true;
+      renderRoute();
+    });
+    window.addEventListener('offline', () => {
+      statusConexaoOnline = false;
+      renderRoute();
+    });
+  }
+
+  // Na inicialização, obtém diagnóstico da camada de armazenamento e retoma rascunho se disponível
   if (!rascunhoInicializado) {
     rascunhoInicializado = true;
+    try {
+      diagnosticoArmazenamento = await obterDiagnosticoArmazenamento();
+    } catch {
+      // Falha não bloqueante
+    }
+
     try {
       const recuperado = await recuperarUltimoRascunho();
       if (recuperado) {

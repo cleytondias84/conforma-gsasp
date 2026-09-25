@@ -55,7 +55,7 @@ Commit por tarefa, exemplo: chore: inicia estrutura do CONFORMA GSASP (S1.1).
     - **Navegação Offline:** Homologada manualmente pelo usuário; navegação completa pelas 6 etapas após corte de rede com recarregamento bem-sucedido via cache do Service Worker.
     - **Verificação de Console:** Confirmado console limpo durante o teste em janela anônima. Os erros anteriormente observados no console (`Uncaught (in promise) {}` e `Language detection is not supported for this page`) não foram reproduzidos no teste sem extensões (tanto via automação em perfil temporário limpo quanto em janela anônima pelo usuário). Registra-se que os erros anteriores não foram reproduzidos no teste sem extensões, sem afirmar que toda a aplicação está livre de erros e sem atribuir conclusivamente as duas mensagens à extensão externa.
   - *Confirmação de publicação em produção:* Confirmado pelo usuário que a versão publicada no GitHub Pages abriu e que as seis etapas funcionaram normalmente.
-- **Sprint 2 — Em andamento:** Execução iniciada pela tarefa S2.1.
+- **Sprint 2 — Concluída:** Todas as 6 tarefas (S2.1 a S2.6) foram concluídas e homologadas com testes manuais aprovados pelo usuário.
 
 ## Sprint 2 — Formulário de conformidade e persistência local
 
@@ -140,9 +140,49 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     2. Atualização da página (F5) no navegador confirmando a recuperação automática imediata dos dados preenchidos.
     3. Fechamento e reabertura da aba/navegador no mesmo perfil confirmando que os dados persistem no IndexedDB.
     4. Inclusão de item de checklist e condicionante personalizada na Etapa 3 (Conformidade), com correção da captura em tempo real e recuperação da condicionante incompleta testada e confirmada pelo usuário.
-- **Próxima tarefa da Sprint 2:** S2.5 (src/auth/papeis.ts, seletor de perfil e perfis demonstrativos com simulação visível de permissões).
+- **Tarefa S2.5 (Papéis de Usuário e Controle de Permissões Simuladas) — 100% Concluída e Homologada:**
+  - *Implementação técnica:* `src/auth/papeis.ts`, `src/auth/papeis.test.ts`, integração no cabeçalho e roteador (`src/router.ts`), telas de Identificação (`src/pages/identificacao.ts`), Pertinência (`src/pages/pertinencia.ts`) e Conformidade (`src/pages/conformidade.ts`), e estilos dedicados em `src/style.css`.
+  - *Critérios de aceite atendidos:*
+    - **Matriz de permissões dos 4 perfis regulamentares (Seção 3 de docs/contexto.md):**
+      1. `Administrador`: permissões operacionais e de configuração para testes amplos.
+      2. `Editor / Assessor`: permissão completa para preenchimento, edição, adição/exclusão de itens/condicionantes e instrução técnica.
+      3. `Leitor (Somente Consulta)`: consulta irrestrita a todas as 6 etapas, com bloqueio estrito de edição, gravação de rascunhos, carga de cenários e adição/exclusão de itens. Navegação livre entre as telas sem bloqueio por pendências de formulário.
+      4. `Aprovador / Validador Executivo`: consulta e apreciação executiva do resultado sem permissão de edição direta de itens instrutórios nem assinatura institucional fictícia.
+    - **Harmonização de nomenclatura:** Documentada e aplicada a correspondência onde "Aprovador" reflete a apreciação/validação executiva (sem assinatura eletrônica), enquanto o "Editor/Assessor" executa a validação técnica da instrução processual.
+    - **Indicação ostensiva de simulação didática:** Banner explicativo permanente no cabeçalho (`.role-banner`) com insígnias visuais coloridas (`.role-pill`), descrição da finalidade e limite estrito de atuação, além de banner de aviso (`.readonly-banner`) nas telas em modo somente leitura. Alerta explícito de que os perfis não constituem autenticação institucional nem aprovação jurídica real.
+    - **Preservação de dados e rascunhos na alternância de perfis:**
+      - A troca de perfis pelo seletor "Ver como" preserva integralmente os dados em memória e no IndexedDB.
+      - Extração segura do formulário: quando em modo somente leitura, as funções de extração retornam o estado em memória ativo, blindando os dados contra sobrescrita com campos vazios por estarem desabilitados no DOM.
+      - Ao alternar entre perfis, o estado do formulário ativo é sincronizado antes da troca caso o perfil de origem permitisse edição.
+    - **Preservação das funcionalidades anteriores:** Mantida a navegação por hash, validações da Identificação e Pertinência, checklist e condicionantes da Conformidade, persistência no IndexedDB e manifesto/cache do PWA.
+    - **Suíte de testes automatizados:** 29 testes unitários aprovados via `npm test` (7 testes dedicados aos papéis e permissões).
+    - **Compilação de produção:** Aprovada sem erros via `npm.cmd run build` (tsc + vite build).
+  - *Testes manuais homologados pelo usuário (25/09/2026):*
+    1. Assessor consegue editar e salvar rascunho.
+    2. Leitor não consegue editar, carregar cenários nem salvar; os dados permanecem visíveis.
+    3. Leitor navega pelas seis etapas, com ações de alteração bloqueadas.
+    4. Ao voltar para Assessor, a edição é liberada e os dados e o perfil permanecem após F5.
+- **Tarefa S2.6 (Revisão do Cache do PWA e Retomada Offline) — 100% Concluída e Homologada:**
+  - *Implementação técnica:* `vite.config.ts`, `dist/sw.js`, `src/auth/papeis.ts`, `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts` e `src/style.css`.
+  - *Critérios de aceite atendidos:*
+    - **Cache de telas e recursos estáticos do PWA:** Precache automático de 31 ativos pelo Workbox Service Worker (`sw.js`), abrangendo HTML, JS, CSS, ícones/manifesto e arquivos de cenários sintéticos (`data/*.json`). Rota de navegação (`NavigationRoute`) configurada para `/conforma-gsasp/index.html`, assegurando que recarregamentos em qualquer rota funcionem sem internet após a primeira visita.
+    - **Retomada offline do rascunho completo:** A inicialização assíncrona do roteador recupera automaticamente do IndexedDB todos os dados da análise (Processo, Pertinência, Checklist e Condicionantes), permitindo retomar rascunhos locais sem conexão com a internet.
+    - **Preservação do perfil ativo e permissões:** Implementada persistência síncrona do perfil de usuário em `localStorage` com fallback para `sessionStorage`, garantindo que perfis selecionados persistam em janelas avulsas do PWA standalone e recarregamentos offline.
+    - **Alerta explícito de escopo local:** Mantido aviso permanente na barra executiva (`.storage-disclaimer`) informando que os rascunhos ficam neste navegador e não são sincronizados entre computadores nem enviados para a nuvem.
+    - **Tratamento e aviso de armazenamento em memória volátil:** Função `obterDiagnosticoArmazenamento()` integrada à barra superior. Caso o navegador bloqueie o IndexedDB e o localStorage (ex.: modo anônimo estrito ou cotas esgotadas), a interface exibe aviso ostensivo em vermelho (`.storage-memory-alert`): *"⚠️ Atenção — Armazenamento apenas em memória: os dados NÃO persistirão após fechar ou recarregar esta página."*
+    - **Indicador de conectividade em tempo real:** Integrado indicador visual dinâmico (`.connection-pill`) na barra de persistência com atualização automática via eventos `online` e `offline` (`🌐 Online` vs `📡 Modo Offline (Cache Local Ativo)`).
+    - **Testes automatizados e compilação:** 30 testes unitários aprovados via `npm test` e compilação de produção com empacotamento PWA aprovada via `npm.cmd run build` com 0 erros.
+  - *Testes manuais homologados pelo usuário (25/09/2026):*
+    1. Salvamento do rascunho online com identificação, pertinência, checklist e condicionante personalizada.
+    2. Indicador alterado para Offline ao simular desconexão pelo painel Network.
+    3. Recarregamento com F5 offline: sistema abriu e recuperou todos os dados salvos.
+    4. Navegação pelas seis etapas offline como Leitor, com edição bloqueada.
+    5. Perfil Leitor e dados preservados após F5 offline.
+    6. Ao restaurar a conexão, indicador voltou para Online e foi possível retornar ao perfil Editor/Assessor.
+- **Sprint 2 — Conclusão Oficial:** Todas as 6 tarefas da Sprint 2 (S2.1 a S2.6) foram concluídas, testadas e aprovadas pelo usuário. O fluxo das etapas de Identificação, Pertinência e Conformidade, com condicionantes jurídicas, perfis de acesso simulados, persistência no IndexedDB e suporte PWA offline está integralmente funcional.
+- **Próxima tarefa:** S3.1 (Catalogar regras aprovadas em docs/regras-funcionais.md, vinculadas a contexto.md).
 - **Caminho atual do projeto:** `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
-- **Comandos para retomar o servidor local:**
+- **Comandos para manter o servidor local:**
   ```powershell
   npm.cmd run build
   npm.cmd run preview

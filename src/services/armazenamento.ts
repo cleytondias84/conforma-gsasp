@@ -367,7 +367,7 @@ class LocalStorageAdapter implements IRepositorioArmazenamento {
       disponivel,
       mensagem: disponivel
         ? 'Operando em modo de compatibilidade (localStorage). Dados salvos localmente neste navegador.'
-        : 'Operando em memória volátil. As alterações serão perdidas se a aba for fechada.',
+        : 'Operando em memória volátil. Os dados NÃO persistirão após fechar ou recarregar esta página.',
       ultimoSalvamento: lista.length > 0 ? lista[0].atualizadoEm : null,
       totalSalvos: lista.length
     };
@@ -497,3 +497,12 @@ export function formatarCarimboSalvamento(isoDate: string | null | undefined): s
     return isoDate;
   }
 }
+
+/**
+ * Retorna o diagnóstico atual da camada de armazenamento (IndexedDB, localStorage ou Memória).
+ */
+export async function obterDiagnosticoArmazenamento(): Promise<DiagnosticoArmazenamento> {
+  const repo = obterRepositorioArmazenamento();
+  return await repo.getDiagnostico();
+}
+

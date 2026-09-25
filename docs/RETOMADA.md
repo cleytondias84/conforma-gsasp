@@ -13,7 +13,7 @@ Data do último registro: 24/09/2026.
   - Repositório oficial: [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
   - Site publicado: [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
   - Conferência em produção confirmada pelo usuário em 24/09/2026.
-- **Sprint 2 — Formulário de conformidade e persistência local (S2.1, S2.2, S2.3 e S2.4 homologadas):**
+- **Sprint 2 — Formulário de conformidade e persistência local:** 100% CONCLUÍDA E HOMOLOGADA (S2.1 a S2.6).
   - `S2.1` (Identificação do Instrumento): 100% homologada.
   - `S2.2` (Pertinência Institucional): 100% homologada.
   - `S2.3` (Conformidade Documental e Condicionantes): 100% homologada.
@@ -23,17 +23,33 @@ Data do último registro: 24/09/2026.
     - Preservação integral dos dados preenchidos nas três etapas ativas: Identificação (`Processo`), Pertinência (`Pertinencia`) e Conformidade (`ItemConformidade[]` e `Condicionante[]`), incluindo personalizações criadas pelo usuário e condicionantes com preenchimento parcial/incompleto.
     - **Ajuste e validação de regressão:** Resolvida a captura de digitação via evento `input` em tempo real e sincronização do DOM antes do salvamento (`sincronizarEstadoDaTelaAtiva()`). Teste da condicionante incompleta realizado e aprovado pelo usuário em 24/09/2026.
     - 22 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm.cmd run build` com 0 erros.
+  - `S2.5` (Papéis de Usuário e Permissões Simuladas): 100% HOMOLOGADA.
+    - Implementado em `src/auth/papeis.ts`, `src/auth/papeis.test.ts`, `src/router.ts`, `src/pages/identificacao.ts`, `src/pages/pertinencia.ts`, `src/pages/conformidade.ts` e `src/style.css`.
+    - Matriz com 4 papéis documentados em `docs/contexto.md`: `Administrador`, `Editor / Assessor`, `Leitor (Somente Consulta)` e `Aprovador / Validador Executivo`.
+    - Indicação explícita e visual de que os perfis são simulações didáticas sem autenticação institucional nem aprovação legal.
+    - Perfil `Leitor` bloqueia todas as alterações (edição de campos, carga de cenários, adição/exclusão de itens e salvamento de rascunhos), mantendo navegação e consulta livres pelas 6 etapas.
+    - Preservação total de dados e rascunhos ao alternar de perfil, com blindagem de extração de dados para que campos desabilitados não sobrescrevam dados em memória.
+    - 4 testes manuais homologados pelo usuário em 25/09/2026 (Assessor edita/salva; Leitor bloqueado para alterações; Leitor navega pelas 6 etapas; volta para Assessor sem perda e com persistência após F5).
+  - `S2.6` (Revisão do Cache do PWA e Retomada Offline): 100% HOMOLOGADA.
+    - Implementado em `vite.config.ts`, `dist/sw.js`, `src/auth/papeis.ts`, `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts` e `src/style.css`.
+    - Precache Workbox de 31 ativos (`index.html`, bundle JS/CSS, manifest, ícones e arquivos `data/*.json`), garantindo carregamento de todas as telas sem internet após a primeira visita.
+    - Retomada offline garantida de rascunho salvo no IndexedDB (Identificação, Pertinência, Checklist e Condicionantes).
+    - Preservação de perfis simulados reforçada com persistência em `localStorage` e `sessionStorage`.
+    - Alerta transparente de armazenamento local sem sincronização remota mantido na barra executiva.
+    - Diagnóstico de armazenamento em tempo real com aviso obrigatório destacado (`.storage-memory-alert`) caso opere apenas em memória volátil.
+    - Indicador de conectividade em tempo real (`.connection-pill`: `🌐 Online` vs `📡 Modo Offline (Cache Local Ativo)`).
+    - 30 testes unitários aprovados via `npm test` e compilação `npm.cmd run build` com 0 erros.
+    - 6 testes manuais homologados pelo usuário em 25/09/2026: salvamento de rascunho completo online; detecção de desconexão pelo indicador; recarregamento F5 offline com recuperação integral dos dados; navegação pelas 6 etapas offline como Leitor; perfil Leitor e dados preservados após F5 offline; restauração da conexão com retorno ao perfil Editor/Assessor.
 
 ---
 
 ## 2. Próximo Passo Exato
 
-1. **Sprint 2 — Iniciar Tarefa S2.5:**
-   - Implementar `src/auth/papeis.ts` e o seletor de perfil no cabeçalho/interface.
-   - Perfis demonstrativos e controle de permissões simuladas:
-     - Administrador / Assessor / Validador / Leitor.
-     - Indicação visível de simulação; perfil Leitor não altera dados.
-   - Não publicar alterações na branch `main` sem validação prévia.
+1. **Sprint 3 — Iniciar Tarefa S3.1 (Motor de Regras, Achados e Riscos):**
+   - Catalogar as regras aprovadas em `docs/regras-funcionais.md`, vinculadas a `contexto.md`.
+   - Mapear para cada regra: condição, dados necessários, saída esperada e fonte/motivo legal ou regulamentar demonstrativo.
+   - Destacar lacunas de dados e garantir que regras não presumam conclusões ou pesos inventados sem validação humana.
+   - Manter alterações isoladas localmente; não mesclar nem publicar na branch `main` nesta fase.
 
 2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell

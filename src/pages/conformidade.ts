@@ -12,6 +12,7 @@ import {
 } from '../domain/validacao';
 import { getProcessoAtivo } from './identificacao';
 import { getPertinenciaAtiva } from './pertinencia';
+import { podeEditar, podeAdicionarRemoverItens, podeCarregarCenarios } from '../auth/papeis';
 
 // Cenários didáticos determinísticos com dados estritamente fictícios
 export const CENARIOS_CONFORMIDADE_DEMO: Record<string, { checklist: ItemConformidade[]; condicionantes: Condicionante[] }> = {
@@ -394,6 +395,8 @@ function renderQuadroEstatisticas(res: ResultadoValidacaoConformidade): string {
  * Renderiza um item individual do checklist de instrução processual.
  */
 function renderItemChecklistHtml(item: ItemConformidade, index: number, res: ResultadoValidacaoConformidade): string {
+  const editable = podeEditar();
+  const canAddRemove = podeAdicionarRemoverItens();
   const num = index + 1;
   const erroJustificativa = res.erros[`chk_${item.id}_justificativa`];
   const erroDescricao = res.erros[`chk_${item.id}_descricao`];
@@ -411,10 +414,11 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
             value="${item.descricao}" 
             placeholder="Descrição do requisito ou documento..." 
             aria-label="Descrição do item ${num}"
+            ${!editable ? 'disabled' : ''}
           />
           ${erroDescricao ? `<span class="field-error-text">${erroDescricao}</span>` : ''}
         </div>
-        <button type="button" class="btn-remove-item" data-remove-chk="${item.id}" title="Remover este item do checklist">
+        <button type="button" class="btn-remove-item" data-remove-chk="${item.id}" title="Remover este item do checklist" ${!canAddRemove ? 'disabled' : ''}>
           🗑️
         </button>
       </div>
@@ -422,19 +426,19 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
       <div class="checklist-item-controls">
         <div class="status-selector-group" role="radiogroup" aria-label="Status do item ${num}">
           <label class="status-option-label ${item.status === 'ok' ? 'is-selected status-ok' : ''}">
-            <input type="radio" name="chk_status_${item.id}" value="ok" ${item.status === 'ok' ? 'checked' : ''} class="status-radio" />
+            <input type="radio" name="chk_status_${item.id}" value="ok" ${item.status === 'ok' ? 'checked' : ''} ${!editable ? 'disabled' : ''} class="status-radio" />
             <span>✓ Conforme (OK)</span>
           </label>
           <label class="status-option-label ${item.status === 'pendente' ? 'is-selected status-pendente' : ''}">
-            <input type="radio" name="chk_status_${item.id}" value="pendente" ${item.status === 'pendente' ? 'checked' : ''} class="status-radio" />
+            <input type="radio" name="chk_status_${item.id}" value="pendente" ${item.status === 'pendente' ? 'checked' : ''} ${!editable ? 'disabled' : ''} class="status-radio" />
             <span>✕ Pendente</span>
           </label>
           <label class="status-option-label ${item.status === 'confirmar' ? 'is-selected status-confirmar' : ''}">
-            <input type="radio" name="chk_status_${item.id}" value="confirmar" ${item.status === 'confirmar' ? 'checked' : ''} class="status-radio" />
+            <input type="radio" name="chk_status_${item.id}" value="confirmar" ${item.status === 'confirmar' ? 'checked' : ''} ${!editable ? 'disabled' : ''} class="status-radio" />
             <span>? A Confirmar</span>
           </label>
           <label class="status-option-label ${item.status === 'nao_aplicavel' ? 'is-selected status-nao-aplicavel' : ''}">
-            <input type="radio" name="chk_status_${item.id}" value="nao_aplicavel" ${item.status === 'nao_aplicavel' ? 'checked' : ''} class="status-radio" />
+            <input type="radio" name="chk_status_${item.id}" value="nao_aplicavel" ${item.status === 'nao_aplicavel' ? 'checked' : ''} ${!editable ? 'disabled' : ''} class="status-radio" />
             <span>⊘ Não Aplicável</span>
           </label>
         </div>
@@ -449,6 +453,7 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
               class="form-input form-input-small" 
               value="${item.referenciaFonte || ''}" 
               placeholder="Ex: Peça 12, Fls. 45-50..." 
+              ${!editable ? 'disabled' : ''}
             />
           </div>
 
@@ -461,6 +466,7 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
               class="form-input form-input-small" 
               value="${item.observacao || ''}" 
               placeholder="Ex: Parecer favorável com recomendações formais..." 
+              ${!editable ? 'disabled' : ''}
             />
           </div>
         </div>
@@ -477,6 +483,7 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
             class="form-textarea form-input-small ${erroJustificativa ? 'has-error' : ''}" 
             rows="2" 
             placeholder="Fundamente por que este requisito não se aplica a este processo específico..."
+            ${!editable ? 'disabled' : ''}
           >${item.justificativaNaoAplicavel || ''}</textarea>
           ${erroJustificativa ? `<span class="field-error-text">${erroJustificativa}</span>` : ''}
         </div>
@@ -490,6 +497,8 @@ function renderItemChecklistHtml(item: ItemConformidade, index: number, res: Res
  * Renderiza um item individual de Condicionante Jurídica.
  */
 function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: ResultadoValidacaoConformidade): string {
+  const editable = podeEditar();
+  const canAddRemove = podeAdicionarRemoverItens();
   const num = index + 1;
   const erroDescricao = res.erros[`cond_${cond.id}_descricao`];
   const erroReferencia = res.erros[`cond_${cond.id}_referencia`];
@@ -499,7 +508,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
     <div class="condicionante-item-card" id="card-cond-${cond.id}">
       <div class="condicionante-item-header">
         <span class="condicionante-badge-num">Condicionante ${num}</span>
-        <button type="button" class="btn-remove-item" data-remove-cond="${cond.id}" title="Remover esta condicionante">
+        <button type="button" class="btn-remove-item" data-remove-cond="${cond.id}" title="Remover esta condicionante" ${!canAddRemove ? 'disabled' : ''}>
           🗑️
         </button>
       </div>
@@ -515,6 +524,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
             class="form-textarea form-input-small" 
             rows="2" 
             placeholder="Transcreva ou resuma a condicionante apontada no parecer jurídico..."
+            ${!editable ? 'disabled' : ''}
           >${cond.descricao || ''}</textarea>
           ${erroDescricao ? `<span class="field-error-text">${erroDescricao}</span>` : ''}
         </div>
@@ -531,6 +541,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
               class="form-input form-input-small" 
               value="${cond.referenciaParecer || ''}" 
               placeholder="Ex: Parecer PGE nº 101/2026, item 14" 
+              ${!editable ? 'disabled' : ''}
             />
             ${erroReferencia ? `<span class="field-error-text">${erroReferencia}</span>` : ''}
           </div>
@@ -539,7 +550,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
             <label for="cond-sit-${cond.id}" class="form-label-small">
               Situação do Atendimento <span class="required-indicator">*</span>:
             </label>
-            <select id="cond-sit-${cond.id}" name="cond_sit_${cond.id}" class="form-select form-input-small cond-situacao-select">
+            <select id="cond-sit-${cond.id}" name="cond_sit_${cond.id}" class="form-select form-input-small cond-situacao-select" ${!editable ? 'disabled' : ''}>
               <option value="atendida" ${cond.situacao === 'atendida' ? 'selected' : ''}>Atendida / Cumprida</option>
               <option value="pendente" ${cond.situacao === 'pendente' ? 'selected' : ''}>Pendente de cumprimento</option>
               <option value="em_cumprimento" ${cond.situacao === 'em_cumprimento' ? 'selected' : ''}>Em cumprimento / Acompanhamento</option>
@@ -557,6 +568,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
             class="form-input form-input-small" 
             value="${cond.evidenciaAtendimento || ''}" 
             placeholder="Ex: Apólice de seguro-garantia anexada à Peça 50 / Falta comprovante..." 
+            ${!editable ? 'disabled' : ''}
           />
         </div>
 
@@ -572,6 +584,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
               class="form-input form-input-small" 
               value="${cond.providencia || ''}" 
               placeholder="Ex: Intimar o fornecedor para apresentar comprovante em 48h..." 
+              ${!editable ? 'disabled' : ''}
             />
             ${erroProvidencia ? `<span class="field-error-text">${erroProvidencia}</span>` : ''}
           </div>
@@ -585,6 +598,7 @@ function renderItemCondicionanteHtml(cond: Condicionante, index: number, res: Re
               class="form-input form-input-small" 
               value="${cond.responsavel || ''}" 
               placeholder="Ex: Setor de Contratos / Licitações" 
+              ${!editable ? 'disabled' : ''}
             />
           </div>
         </div>
@@ -601,6 +615,9 @@ export function renderConformidadeScreen(): string {
   const chk = checklistAtivo;
   const conds = condicionantesAtivas;
   const res = ultimoResultadoConformidade || validarConformidade(chk, conds);
+  const editable = podeEditar();
+  const canLoadScenarios = podeCarregarCenarios();
+  const canAddRemove = podeAdicionarRemoverItens();
 
   return `
     <div class="stage-header">
@@ -610,6 +627,16 @@ export function renderConformidadeScreen(): string {
         As pendências aqui identificadas fornecem subsídios estruturados para a caracterização de achados e riscos nas próximas etapas.
       </p>
     </div>
+
+    ${!editable ? `
+    <div class="readonly-banner" role="status" aria-label="Aviso de modo somente leitura">
+      <span class="readonly-icon">🔒</span>
+      <div>
+        <strong>Modo de Consulta (Somente Leitura):</strong>
+        <span>Os itens de checklist, condicionantes e apontamentos desta etapa estão desabilitados para o perfil ativo. Alterne para o perfil Editor/Assessor ou Administrador para preencher ou modificar itens.</span>
+      </div>
+    </div>
+    ` : ''}
 
     <!-- Contexto do Processo e Pertinência -->
     ${renderContextoProcessoEPertinencia()}
@@ -636,7 +663,7 @@ export function renderConformidadeScreen(): string {
         </div>
       </div>
       <div class="scenario-selector-controls">
-        <select id="select-cenario-conformidade" class="form-select" aria-label="Selecione um cenário didático de conformidade">
+        <select id="select-cenario-conformidade" class="form-select" aria-label="Selecione um cenário didático de conformidade" ${!canLoadScenarios ? 'disabled' : ''}>
           <option value="cenario-01" ${cenarioConformidadeSelecionadoId === 'cenario-01' ? 'selected' : ''}>
             Cenário 1 — Aquisição Regular (Todos os itens Conformes • Condicionantes atendidas)
           </option>
@@ -656,7 +683,7 @@ export function renderConformidadeScreen(): string {
             [Personalizado] Limpar campos para preenchimento manual
           </option>
         </select>
-        <button type="button" id="btn-carregar-cenario-conf" class="btn btn-secondary">Carregar Cenário</button>
+        <button type="button" id="btn-carregar-cenario-conf" class="btn btn-secondary" ${!canLoadScenarios ? 'disabled' : ''}>Carregar Cenário</button>
       </div>
     </div>
 
@@ -686,7 +713,7 @@ export function renderConformidadeScreen(): string {
               Verifique os documentos e requisitos formais. A não aplicabilidade deve ser expressamente justificada.
             </p>
           </div>
-          <button type="button" id="btn-adicionar-item-chk" class="btn btn-secondary btn-small">
+          <button type="button" id="btn-adicionar-item-chk" class="btn btn-secondary btn-small" ${!canAddRemove ? 'disabled' : ''}>
             + Adicionar Item
           </button>
         </div>
@@ -705,7 +732,7 @@ export function renderConformidadeScreen(): string {
               Acompanhamento individualizado das condicionantes fixadas pela PGE ou assessoria jurídica antes da subscrição.
             </p>
           </div>
-          <button type="button" id="btn-adicionar-condicionante" class="btn btn-secondary btn-small">
+          <button type="button" id="btn-adicionar-condicionante" class="btn btn-secondary btn-small" ${!canAddRemove ? 'disabled' : ''}>
             + Adicionar Condicionante
           </button>
         </div>
@@ -737,6 +764,10 @@ export function renderConformidadeScreen(): string {
  * Extrai os dados do checklist e condicionantes do DOM.
  */
 export function extrairDadosDoFormularioConformidade(): { checklist: ItemConformidade[]; condicionantes: Condicionante[] } {
+  if (!podeEditar()) {
+    return { checklist: checklistAtivo, condicionantes: condicionantesAtivas };
+  }
+
   const form = document.getElementById('form-conformidade') as HTMLFormElement | null;
   if (!form) return { checklist: checklistAtivo, condicionantes: condicionantesAtivas };
 
@@ -892,6 +923,11 @@ export function initConformidadeEvents(
   const btnCarregar = document.getElementById('btn-carregar-cenario-conf');
 
   const aplicarCenario = () => {
+    if (!podeCarregarCenarios()) {
+      alert('ℹ️ O carregamento de cenários didáticos está desabilitado para o perfil ativo (somente consulta).');
+      return;
+    }
+
     const cenarioKey = selectCenario?.value || 'cenario-01';
     cenarioConformidadeSelecionadoId = cenarioKey;
 
@@ -937,6 +973,11 @@ export function initConformidadeEvents(
   // Adicionar novo item ao checklist
   const btnAddChk = document.getElementById('btn-adicionar-item-chk');
   btnAddChk?.addEventListener('click', () => {
+    if (!podeAdicionarRemoverItens()) {
+      alert('ℹ️ A inclusão de novos itens está desabilitada para o perfil ativo.');
+      return;
+    }
+
     const { checklist, condicionantes } = extrairDadosDoFormularioConformidade();
     const novoId = `chk-${Date.now()}`;
     checklist.push({
@@ -960,6 +1001,11 @@ export function initConformidadeEvents(
   // Adicionar nova condicionante jurídica
   const btnAddCond = document.getElementById('btn-adicionar-condicionante');
   btnAddCond?.addEventListener('click', () => {
+    if (!podeAdicionarRemoverItens()) {
+      alert('ℹ️ A inclusão de novas condicionantes está desabilitada para o perfil ativo.');
+      return;
+    }
+
     const { checklist, condicionantes } = extrairDadosDoFormularioConformidade();
     const novoId = `cond-${Date.now()}`;
     condicionantes.push({
@@ -987,6 +1033,11 @@ export function initConformidadeEvents(
     const target = e.target as HTMLElement | null;
     const btnRemoveChk = target?.closest<HTMLButtonElement>('[data-remove-chk]');
     if (btnRemoveChk) {
+      if (!podeAdicionarRemoverItens()) {
+        alert('ℹ️ A exclusão de itens está desabilitada para o perfil ativo.');
+        return;
+      }
+
       const id = btnRemoveChk.getAttribute('data-remove-chk');
       const { checklist, condicionantes } = extrairDadosDoFormularioConformidade();
       checklistAtivo = checklist.filter((i) => i.id !== id);
@@ -1003,6 +1054,11 @@ export function initConformidadeEvents(
 
     const btnRemoveCond = target?.closest<HTMLButtonElement>('[data-remove-cond]');
     if (btnRemoveCond) {
+      if (!podeAdicionarRemoverItens()) {
+        alert('ℹ️ A exclusão de condicionantes está desabilitada para o perfil ativo.');
+        return;
+      }
+
       const id = btnRemoveCond.getAttribute('data-remove-cond');
       const { checklist, condicionantes } = extrairDadosDoFormularioConformidade();
       checklistAtivo = checklist;
@@ -1046,6 +1102,13 @@ export function initConformidadeEvents(
   // Submissão do Formulário e Avanço para a Etapa 4 (Achados)
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    if (!podeEditar()) {
+      // Perfil somente leitura: navega diretamente sem validação de bloqueio
+      onNavegarAchados();
+      return;
+    }
+
     const { checklist, condicionantes } = extrairDadosDoFormularioConformidade();
     checklistAtivo = checklist;
     condicionantesAtivas = condicionantes;

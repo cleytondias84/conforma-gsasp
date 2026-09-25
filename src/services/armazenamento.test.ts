@@ -12,6 +12,7 @@ import {
   excluirRascunhoSalvo,
   formatarCarimboSalvamento,
   obterRepositorioArmazenamento,
+  obterDiagnosticoArmazenamento,
   AVISO_PERSISTENCIA_LOCAL
 } from './armazenamento.ts';
 import type { Processo, Pertinencia, ItemConformidade, Condicionante } from '../domain/tipos.ts';
@@ -195,6 +196,11 @@ test('armazenamento: diagnóstico e aviso de não sincronização', async () => 
   const diag = await repo.getDiagnostico();
   assert.ok(diag.mensagem);
   assert.ok(AVISO_PERSISTENCIA_LOCAL.toLowerCase().includes('armazenamento local neste dispositivo'));
+
+  // No ambiente Node (sem window/DOM), o adaptador opera em memória volátil
+  if (diag.tipo === 'memoria') {
+    assert.ok(diag.mensagem.includes('NÃO persistirão após fechar ou recarregar'));
+  }
 });
 
 test('armazenamento: formatarCarimboSalvamento formata data ISO adequadamente', () => {
@@ -283,4 +289,16 @@ test('armazenamento (regressão): salva condicionante personalizada incompleta e
   assert.equal(condRecuperada.situacao, 'pendente');
   assert.equal(condRecuperada.referenciaParecer, '', 'Campos vazios de condicionante incompleta devem ser preservados');
   assert.equal(condRecuperada.providencia, '', 'Campos vazios de condicionante incompleta devem ser preservados');
+});
+
+test('armazenamento (S2.6): obterDiagnosticoArmazenamento informa tipo e alerta de memória volátil', async () => {
+  const diag = await obterDiagnosticoArmazenamento();
+  assert.ok(diag.tipo === 'indexedDB' || diag.tipo === 'localStorage' || diag.tipo === 'memoria');
+  assert.ok(typeof diag.disponivel === 'boolean');
+  assert.ok(diag.mensagem.length > 0);
+
+  // Se estiver em modo volátil, deve informar explicitamente que os dados não persistem após fechar/recarregar
+  if (diag.tipo === 'memoria') {
+    assert.ok(diag.mensagem.includes('NÃO persistirão após fechar ou recarregar'));
+  }
 });
