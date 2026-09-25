@@ -1,7 +1,9 @@
 /**
  * CONFORMA GSASP — Sistema de Roteamento por Hash e Telas das Etapas
- * Implementação da tarefa S1.3 (Navegação e Estrutura Visual)
+ * Implementação da tarefa S1.3 e S2.1
  */
+
+import { renderIdentificacaoScreen, initIdentificacaoEvents } from './pages/identificacao';
 
 export interface StageInfo {
   id: string;
@@ -175,54 +177,6 @@ function renderHomeScreen(): string {
   `;
 }
 
-/**
- * Renderiza a Etapa 1: Identificação (com destaque para os 4 elementos essenciais).
- */
-function renderIdentificacaoScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">1. Identificação do Instrumento</h2>
-      <p class="stage-description">
-        Registro preliminar dos dados do processo. Conforme a regra de negócio (RN01), os <strong>quatro elementos essenciais</strong> têm destaque visual imediato para direcionar a conferência.
-      </p>
-    </div>
-
-    <div class="essentials-grid" aria-label="Elementos essenciais do processo">
-      <div class="essential-card">
-        <div class="essential-tag">Elemento 1</div>
-        <div class="essential-label">Objeto</div>
-        <div class="essential-value">Aquisição de Soluções de TI e Serviços Especializados</div>
-        <p class="essential-hint">Definição clara e precisa da necessidade pública atendida.</p>
-      </div>
-
-      <div class="essential-card">
-        <div class="essential-tag">Elemento 2</div>
-        <div class="essential-label">Tipo / Origem</div>
-        <div class="essential-value">Pregão Eletrônico &bull; Ata de Registro de Preços</div>
-        <p class="essential-hint">Instrumento convocatório e fundamento legal da contratação.</p>
-      </div>
-
-      <div class="essential-card">
-        <div class="essential-tag">Elemento 3</div>
-        <div class="essential-label">Valor</div>
-        <div class="essential-value">R$ 380.000,00</div>
-        <p class="essential-hint">Valor global e dotação orçamentária vinculada.</p>
-      </div>
-
-      <div class="essential-card">
-        <div class="essential-tag">Elemento 4</div>
-        <div class="essential-label">Vigência</div>
-        <div class="essential-value">12 meses (01/01/2026 a 31/12/2026)</div>
-        <p class="essential-hint">Prazos de início, término e cláusulas de prorrogação.</p>
-      </div>
-    </div>
-
-    <div class="note-box">
-      <strong>Aviso da Sprint 1:</strong>
-      Os blocos acima demonstram a estrutura visual e os destaques obrigatórios da tela. Os campos editáveis de formulário e a persistência dos dados serão implementados na Sprint 2.
-    </div>
-  `;
-}
 
 /**
  * Renderiza a Etapa 2: Pertinência Institucional.
@@ -415,6 +369,25 @@ export function renderRoute(): void {
     ${mainHtml}
     ${renderFooter()}
   `;
+
+  // Inicializa eventos específicos da etapa
+  if (currentStage?.id === 'identificacao') {
+    initIdentificacaoEvents(() => {
+      window.location.hash = '#/pertinencia';
+    });
+
+    // Intercepta o botão "Próximo →" inferior para acionar a validação antes de avançar
+    const nextBtn = document.querySelector('.stage-actions a.btn-primary');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('form-identificacao') as HTMLFormElement | null;
+        if (form) {
+          form.requestSubmit();
+        }
+      });
+    }
+  }
 
   // Assegura rolagem suave ao topo ao mudar de rota
   window.scrollTo({ top: 0, behavior: 'smooth' });

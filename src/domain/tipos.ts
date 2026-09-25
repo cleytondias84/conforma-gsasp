@@ -93,6 +93,7 @@ export interface Processo {
   vigenciaFim: string | null;    // Elemento essencial destacado (ISO: YYYY-MM-DD)
   vigenciaNaoAplicavel?: boolean;
   regimeJuridico?: string;
+  contratadoNaoAplicavel?: boolean;
 }
 
 /**

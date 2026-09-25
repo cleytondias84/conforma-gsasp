@@ -24,17 +24,23 @@ Data do último registro: 24/09/2026.
     - **Registro sobre mensagens no console:** As mensagens anteriormente observadas (`Uncaught (in promise) {}` e `Language detection is not supported for this page`) não foram reproduzidas no teste sem extensões (tanto via automação em perfil temporário limpo quanto em janela anônima pelo usuário). Registra-se que os erros anteriores não foram reproduzidos no teste sem extensões, sem afirmar que toda a aplicação está livre de erros e sem atribuir conclusivamente as duas mensagens à Monica.
 - **Repositório oficial:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
 - **Site publicado:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
-- **Sprint 2:** Mantida pendente, sem inicialização.
+- **Confirmação de publicação em produção:** Confirmada pelo usuário em 24/09/2026. A versão publicada no GitHub Pages abriu normalmente e as seis etapas funcionaram como esperado.
+- **Fase atual:** Sprint 2 — Formulário de conformidade e persistência local (S2.1 concluída localmente; S2.2 a S2.6 pendentes).
+- **Tarefa S2.1 (Formulário de Identificação e Validações):**
+  - Concluída e testada localmente.
+  - Implementado em `src/pages/identificacao.ts`, `src/domain/validacao.ts`, `src/domain/validacao.test.ts`, `src/style.css` e `src/router.ts`.
+  - Destaque em tempo real dos 4 elementos essenciais (RN01), validações de consistência cronológica de vigência (RN13), tratamento de campos não aplicáveis (valor, vigência, contratado) e seletor para os 5 cenários didáticos.
+  - 8 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm run build`.
 
 ---
 
-## 2. Próximo Passo Exato ao Retomar
+## 2. Próximo Passo Exato
 
-1. **Sprint 2 (Formulário de conformidade e persistência local):**
-   - Iniciar pela tarefa `S2.1`: Formulário em `src/pages/identificacao.ts` e validações em `src/domain`.
-   - Implementar os campos do formulário conforme especificação de `docs/contexto.md` (tratamento de datas, valores e aplicabilidade).
-2. **Conferência da publicação:**
-   - A conferência da nova versão da S1.6 publicada no GitHub Pages será realizada pelo usuário.
+1. **Sprint 2 — Tarefa S2.2 (Pendente):**
+   - Implementar a Etapa 2: Pertinência Institucional em `src/pages/pertinencia.ts`.
+   - Registrar avaliação obrigatória de competência/necessidade, vínculo com planejamento, benefício ao interesse público, custo/proporcionalidade e economicidade com evidência, conclusão técnica preliminar e providência.
+2. **Avanço controlado:**
+   - Não iniciar a tarefa S2.2 nem publicar alterações até instrução do usuário.
 
 ---
 

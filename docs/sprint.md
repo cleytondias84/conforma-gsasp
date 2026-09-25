@@ -54,7 +54,8 @@ Commit por tarefa, exemplo: chore: inicia estrutura do CONFORMA GSASP (S1.1).
     - **Instalação PWA:** Homologada manualmente pelo usuário em navegador compatível (modo standalone).
     - **Navegação Offline:** Homologada manualmente pelo usuário; navegação completa pelas 6 etapas após corte de rede com recarregamento bem-sucedido via cache do Service Worker.
     - **Verificação de Console:** Confirmado console limpo durante o teste em janela anônima. Os erros anteriormente observados no console (`Uncaught (in promise) {}` e `Language detection is not supported for this page`) não foram reproduzidos no teste sem extensões (tanto via automação em perfil temporário limpo quanto em janela anônima pelo usuário). Registra-se que os erros anteriores não foram reproduzidos no teste sem extensões, sem afirmar que toda a aplicação está livre de erros e sem atribuir conclusivamente as duas mensagens à extensão externa.
-- **Sprint 2:** Mantida pendente, sem inicialização.
+  - *Confirmação de publicação em produção:* Confirmado pelo usuário que a versão publicada no GitHub Pages abriu e que as seis etapas funcionaram normalmente.
+- **Sprint 2 — Em andamento:** Execução iniciada pela tarefa S2.1.
 
 ## Sprint 2 — Formulário de conformidade e persistência local
 
@@ -71,6 +72,19 @@ Objetivo: criar/editar processo fictício e percorrer Identificação → Pertin
 
 Testes: campos obrigatórios e condicionais, dados inválidos, persistência, permissão simulada e retomada. Confirmar primeiro pendências funcionais relativas aos formulários.
 Commit exemplo: feat: adiciona identificação e validações (S2.1).
+
+### Registro de Execução da Sprint 2
+- **Tarefa S2.1 (Formulário de Identificação e Validações de Domínio) — Concluída:**
+  - *Implementação:* Formulário interativo completo em `src/pages/identificacao.ts`, regras e formatadores em `src/domain/validacao.ts`, estilos dedicados em `src/style.css` e integração ao roteador em `src/router.ts`.
+  - *Critérios de aceite atendidos:*
+    - Destaque em tempo real dos 4 elementos essenciais (Objeto, Tipo/Origem, Valor e Vigência) conforme RN01.
+    - Campos de `Processo` mapeados de `contexto.md`: número, instrumento, regime jurídico, objeto, tipo/origem, contratado, CNPJ, valor e vigência.
+    - Tratamento explícito de não aplicabilidade para valor (ex.: aditivos de prazo sem valor ou acordos de cooperação), vigência (prazo indeterminado) e contratado (atos unilaterais).
+    - Validação clara de erros de preenchimento e consistência cronológica de datas de vigência (término >= início) conforme RN13.
+    - Seletor para carga didática rápida dos 5 cenários fictícios de demonstração.
+    - Suíte de testes automatizados em `src/domain/validacao.test.ts` (8 testes unitários aprovados via `npm test`).
+    - Compilação estrita `npm.cmd run build` aprovada com 0 erros (geração de bundle e Service Worker preservados).
+- **Próximas tarefas pendentes da Sprint 2:** S2.2 (Pertinência), S2.3 (Conformidade), S2.4 (Persistência IndexedDB), S2.5 (Papéis de Usuário) e S2.6 (Cache e Retomada Offline).
 
 ## Sprint 3 — Motor de regras, achados e riscos
 
