@@ -1,8 +1,8 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 24/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (com o progresso integral das tarefas S1.1 a S2.4)  
+Data do último registro: 25/09/2026.  
+**Branch de trabalho atual:** `pausa-s2-4` (com o progresso integral das Sprints 1 e 2 homologadas, e catálogo S3.1 revisado)  
 **Caminho local da pasta do projeto:**  
 `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 
@@ -40,16 +40,30 @@ Data do último registro: 24/09/2026.
     - Indicador de conectividade em tempo real (`.connection-pill`: `🌐 Online` vs `📡 Modo Offline (Cache Local Ativo)`).
     - 30 testes unitários aprovados via `npm test` e compilação `npm.cmd run build` com 0 erros.
     - 6 testes manuais homologados pelo usuário em 25/09/2026: salvamento de rascunho completo online; detecção de desconexão pelo indicador; recarregamento F5 offline com recuperação integral dos dados; navegação pelas 6 etapas offline como Leitor; perfil Leitor e dados preservados após F5 offline; restauração da conexão com retorno ao perfil Editor/Assessor.
+- **Sprint 3 — Motor de regras, achados e riscos (Em andamento):**
+  - `S3.1` (Catálogo de Regras Funcionais em docs/regras-funcionais.md): Concluída (Revisão Humana Pendente).
+    - Documento `docs/regras-funcionais.md` elaborado e revisado com 6 regras iniciais (`REG-01` a `REG-06`).
+    - **Revisões de governança incorporadas:**
+      - *Condicionantes (REG-03 e REG-04):* Não classificação automática como `IMPEDITIVA` por falta de providência; não redução de classificação apenas por haver texto de providência; separação rigorosa de: (1) situação do cumprimento, (2) providência planejada, (3) evidência de cumprimento e (4) classificação validada pelo assessor; indicação de "classificação pendente de validação humana" sem presumir natureza, prazo ou efeito; eliminação de expressões absolutistas ("óbice intransponível", "preenchimento comprova providência").
+      - *Vigência Invertida (REG-01):* Tratada inicialmente como inconsistência de datas a conferir, sem presumir erro de digitação nem defeito no documento original autuado; `FORMAL` como sugestão demonstrativa preliminar, nunca conclusão automática.
+      - *Pertinência (REG-02):* Diferenciação cabal entre "Não", "A avaliar" / não informada (`null`) e campo não preenchido; ausência de resposta não é tratada como recusa e não substitui a conclusão humana.
+      - *Não Aplicabilidade (REG-06):* O limite de 5 caracteres atua exclusivamente como validação técnica de interface, explicitando que não comprova justificativa suficiente ou válida.
+      - *Classificações Alternativas e Limitações:* Detalhamento dos dados necessários para dirimir alternativas e registro explícito das limitações estruturais do formulário atual, sem inventar campos.
+    - Catálogo mantido formalmente como **pendente de revisão humana** antes de qualquer implementação em código.
 
 ---
 
 ## 2. Próximo Passo Exato
 
-1. **Sprint 3 — Iniciar Tarefa S3.1 (Motor de Regras, Achados e Riscos):**
-   - Catalogar as regras aprovadas em `docs/regras-funcionais.md`, vinculadas a `contexto.md`.
-   - Mapear para cada regra: condição, dados necessários, saída esperada e fonte/motivo legal ou regulamentar demonstrativo.
-   - Destacar lacunas de dados e garantir que regras não presumam conclusões ou pesos inventados sem validação humana.
-   - Manter alterações isoladas localmente; não mesclar nem publicar na branch `main` nesta fase.
+- **Situação de momento:**
+  - **Sprint 2:** 100% concluída e homologada.
+  - **Tarefa S3.1:** Catálogo de regras funcionais em `docs/regras-funcionais.md` elaborado e corrigido conforme diretrizes de governança, **aguardando revisão humana**.
+  - **Tarefa S3.2:** **Não iniciada** (nenhuma linha de código do motor foi implementada ainda).
+
+1. **Sprint 3 — Validação Humana da S3.1 e Preparação da Tarefa S3.2:**
+   - Obter a homologação / validação humana do usuário sobre o catálogo de regras ajustado em `docs/regras-funcionais.md`.
+   - Após expressa aprovação, implementar as funções do motor em `src/domain/regras.ts` e testes unitários em `src/domain/regras.test.ts` (S3.2).
+   - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
 2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell

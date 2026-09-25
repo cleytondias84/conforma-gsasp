@@ -180,7 +180,17 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     5. Perfil Leitor e dados preservados após F5 offline.
     6. Ao restaurar a conexão, indicador voltou para Online e foi possível retornar ao perfil Editor/Assessor.
 - **Sprint 2 — Conclusão Oficial:** Todas as 6 tarefas da Sprint 2 (S2.1 a S2.6) foram concluídas, testadas e aprovadas pelo usuário. O fluxo das etapas de Identificação, Pertinência e Conformidade, com condicionantes jurídicas, perfis de acesso simulados, persistência no IndexedDB e suporte PWA offline está integralmente funcional.
-- **Próxima tarefa:** S3.1 (Catalogar regras aprovadas em docs/regras-funcionais.md, vinculadas a contexto.md).
+- **Sprint 3 — Em andamento (Iniciada com S3.1):**
+  - **Tarefa S3.1 (Catálogo de Regras Aprovadas em docs/regras-funcionais.md) — Concluída (Revisão Humana Pendente):**
+    - Documento normativo e funcional elaborado e revisado em `docs/regras-funcionais.md`, especificando 6 regras determinísticas (`REG-01` a `REG-06`).
+    - **Ajustes de governança incorporados na revisão:**
+      1. *Condicionantes (REG-03 e REG-04):* Não classificação automática como `IMPEDITIVA` por falta de providência e não redução automática de gravidade apenas por haver texto descritivo de providência; separação estrita das 4 dimensões (situação de cumprimento, providência planejada, evidência de cumprimento e classificação validada pelo assessor); indicação de "classificação pendente de validação humana" na ausência de metadados sobre natureza, prazo e efeito da condicionante; substituição de termos absolutistas ("óbice intransponível", "preenchimento comprova providência") por linguagem demonstrativa e estritamente aderente ao registrado.
+      2. *Vigência Invertida (REG-01):* Tratada inicialmente como inconsistência de datas a conferir, sem presumir erro de digitação nem defeito material no documento autuado; `FORMAL` mantida como sugestão demonstrativa preliminar, nunca conclusão automática.
+      3. *Pertinência (REG-02):* Diferenciação cabal entre resposta expressa "Não", resposta "A avaliar" / não informada (`null`) e ausência de preenchimento; ausência de resposta não é tratada como negativa nem a conclusão humana é substituída por resultado automático.
+      4. *Não Aplicabilidade (REG-06):* O piso de 5 caracteres foi mantido exclusivamente como validação técnica de preenchimento já existente na interface, explicitando que esse limite técnico não atesta suficiência ou validade da fundamentação.
+      5. *Classificações Alternativas e Limitações:* Especificação dos dados necessários para dirimir alternativas e registro explícito das limitações do formulário atual (sem inventar campos ou expandir a tela).
+    - Catálogo mantido formalmente como **pendente de revisão humana** antes de iniciar a implementação do motor em `src/domain/regras.ts` (S3.2).
+- **Próxima tarefa:** S3.2 (Implementar funções em src/domain/regras.ts e testes) — aguardando aprovação humana da S3.1.
 - **Caminho atual do projeto:** `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 - **Comandos para manter o servidor local:**
   ```powershell
