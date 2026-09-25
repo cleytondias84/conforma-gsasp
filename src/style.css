@@ -1534,6 +1534,580 @@ textarea:disabled,
 }
 
 /* ==========================================================================
+   Etapa 4: Apontamento e Validação de Achados (Sprint 3 — S3.3)
+   ========================================================================== */
+
+.processo-context-card {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem 1.25rem;
+}
+
+.context-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.context-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.context-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.context-value {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Painel de Indicadores e Gravidade */
+.achados-kpi-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.kpi-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.kpi-validados .kpi-number { color: #16a34a; }
+.kpi-pendentes .kpi-number { color: #d97706; }
+.kpi-rejeitados .kpi-number { color: #dc2626; }
+
+.achados-gravidade-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+
+.gravidade-item {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.tag-pendente {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px dashed #cbd5e1;
+}
+
+/* Alertas de Instrução e Preenchimento Pendente (RN11) */
+.alerta-instrucao-box {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 5px solid #2563eb;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.alerta-instrucao-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1e40af;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.alerta-instrucao-desc {
+  font-size: 0.85rem;
+  color: #1e3a8a;
+  margin-bottom: 0.65rem;
+  line-height: 1.45;
+}
+
+.alerta-instrucao-list {
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  color: #1e3a8a;
+  line-height: 1.5;
+}
+
+.alerta-campos {
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* Divergências com Juízo Humano da Pertinência (RN02/RN07) */
+.divergencia-humana-box {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 5px solid #d97706;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.divergencia-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #92400e;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.divergencia-desc {
+  font-size: 0.85rem;
+  color: #78350f;
+  margin-bottom: 0.65rem;
+  line-height: 1.45;
+}
+
+.divergencia-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.divergencia-item {
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  color: #78350f;
+  line-height: 1.45;
+}
+
+.divergencia-regra {
+  font-weight: 700;
+  color: #92400e;
+}
+
+.divergencia-nota {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #b45309;
+}
+
+/* Toolbar de Achados */
+.achados-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+/* Formulário de Novo Achado Manual */
+.card-novo-achado {
+  background-color: var(--bg-card);
+  border: 2px dashed #94a3b8;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.novo-achado-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+}
+
+.novo-achado-intro {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.form-novo-achado .form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.form-novo-achado .col-half {
+  flex: 1;
+}
+
+.form-actions-novo {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Card Vazio */
+.achados-vazio-card {
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.achados-vazio-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.achados-vazio-card h4 {
+  font-size: 1.15rem;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+.achados-vazio-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.salvaguarda-box {
+  margin: 1.5rem auto 0 auto;
+  max-width: 650px;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-left: 4px solid var(--primary);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Lista de Cards de Achados */
+.achados-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.achado-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease;
+}
+
+.achado-card.achado-rejeitado {
+  opacity: 0.75;
+  background-color: #fafafa;
+  border-left: 5px solid #ef4444;
+}
+
+.achado-card.achado-desatualizado {
+  border-left: 5px solid #f59e0b;
+  background-color: #fffdf5;
+}
+
+.achado-card-header {
+  margin-bottom: 0.85rem;
+}
+
+.achado-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.achado-rule-badge {
+  background-color: var(--secondary-bg);
+  color: var(--secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.badge-sugestao {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.badge-validado {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.badge-rejeitado {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.achado-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+/* Alerta RN10 (Dados de origem alterados) */
+.alerta-rn10-box {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #92400e;
+}
+
+.alerta-rn10-title {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+/* Barra de Classificações (Sugerida vs Validada) */
+.achado-classificacoes-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.classificacao-col {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.classificacao-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.class-val-box, .class-sug-box {
+  display: inline-flex;
+  align-items: center;
+}
+
+.class-pendente-text {
+  font-size: 0.8rem;
+  color: #b45309;
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* Anatomia do Achado (Grid de 5 Elementos RN03) */
+.achado-detalhes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.detalhe-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detalhe-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detalhe-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.detalhe-conteudo {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.detalhe-evidencia {
+  background-color: #f1f5f9;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+/* Área de Justificativa de Rejeição */
+.achado-justificativa-rejeicao {
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.rejeicao-header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9f1239;
+  margin-bottom: 0.25rem;
+}
+
+.rejeicao-texto {
+  font-size: 0.85rem;
+  color: #881337;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* Área de Ações e Validação Humana */
+.achado-actions-area {
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.acoes-pendente-row, .acoes-validado-row, .acoes-rejeitado-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.validar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.class-selector-inline {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.validado-flag {
+  font-size: 0.82rem;
+  color: #166534;
+  font-weight: 600;
+}
+
+.rejeitado-flag {
+  font-size: 0.82rem;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+/* Formulários Inline de Rejeição e Edição de Gravidade */
+.rejeicao-form-inline, .edicao-classificacao-inline {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.85rem;
+  margin-top: 0.65rem;
+}
+
+.rejeicao-form-title, .edicao-classificacao-title {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-main);
+  margin-bottom: 0.45rem;
+}
+
+.rejeicao-form-actions, .edicao-class-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Rodapé de Navegação da Etapa */
+.stage-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ==========================================================================
    Responsividade
    ========================================================================== */
 
@@ -1606,6 +2180,26 @@ textarea:disabled,
 
   .conformidade-kpi-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .achados-kpi-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .context-grid,
+  .achado-detalhes-grid,
+  .form-novo-achado .form-row {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .stage-nav-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stage-nav-footer .btn {
+    width: 100%;
   }
 
   .storage-bar-main {

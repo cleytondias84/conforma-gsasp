@@ -27,6 +27,12 @@ import {
   sincronizarConformidadeDoFormulario
 } from './pages/conformidade';
 import {
+  renderAchadosScreen,
+  initAchadosEvents,
+  getAchadosAtivos,
+  setAchadosAtivos
+} from './pages/achados';
+import {
   salvarRascunhoAtual,
   recuperarUltimoRascunho,
   formatarCarimboSalvamento,
@@ -304,33 +310,6 @@ function renderHomeScreen(): string {
 
 
 
-/**
- * Renderiza a Etapa 4: Apontamento de Achados.
- */
-function renderAchadosScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">4. Apontamento e Validação de Achados</h2>
-      <p class="stage-description">
-        Identificação de inconsistências ou pendências. Conforme as regras funcionais (RN05 e RN06), sugestões automáticas dependem de confirmação expressa do assessor antes de compor o relatório.
-      </p>
-    </div>
-
-    <div class="preview-card">
-      <h3 class="preview-title">Classificações de Achados (RN04):</h3>
-      <div class="tags-row">
-        <span class="tag-badge tag-impeditivo">IMPEDITIVO</span>
-        <span class="tag-badge tag-relevante">RELEVANTE</span>
-        <span class="tag-badge tag-formal">FORMAL</span>
-        <span class="tag-badge tag-melhoria">MELHORIA</span>
-      </div>
-      <p class="preview-text">
-        Todo achado liga: <strong>Evidência</strong> &rarr; <strong>Regra/Motivo</strong> &rarr; <strong>Impacto</strong> &rarr; <strong>Providência</strong> &rarr; <strong>Responsável</strong>.
-      </p>
-      <p class="preview-status">Status da visualização: Estrutura navegável preparada para receber a interface de revisão de achados na Sprint 3.</p>
-    </div>
-  `;
-}
 
 /**
  * Renderiza a Etapa 5: Avaliação de Riscos.
@@ -486,7 +465,8 @@ export function renderRoute(): void {
         getPertinenciaAtiva(),
         getChecklistAtivo(),
         getCondicionantesAtivas(),
-        'rascunho'
+        'rascunho',
+        getAchadosAtivos()
       );
       ultimoSalvamentoTimestamp = res.salvoEm;
       try {
@@ -522,6 +502,9 @@ export function renderRoute(): void {
       setPertinenciaAtiva(recuperado.pertinencia);
       setChecklistAtivo(recuperado.checklist);
       setCondicionantesAtivas(recuperado.condicionantes);
+      if (recuperado.achados) {
+        setAchadosAtivos(recuperado.achados);
+      }
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
       alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
@@ -535,7 +518,7 @@ export function renderRoute(): void {
       // Salva rascunho automaticamente ao avançar se permitido
       if (podeSalvarRascunho()) {
         sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
       }
       window.location.hash = '#/pertinencia';
     });
@@ -563,7 +546,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
         }
         window.location.hash = '#/conformidade';
       },
@@ -597,7 +580,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
         }
         window.location.hash = '#/achados';
       },
@@ -621,6 +604,63 @@ export function renderRoute(): void {
         if (form) {
           form.requestSubmit();
         }
+      });
+    }
+  }
+
+  if (currentStage?.id === 'achados') {
+    initAchadosEvents(
+      async () => {
+        // Salva rascunho automaticamente ao avançar se permitido
+        if (podeSalvarRascunho()) {
+          sincronizarEstadoDaTelaAtiva();
+          await salvarRascunhoAtual(
+            getProcessoAtivo(),
+            getPertinenciaAtiva(),
+            getChecklistAtivo(),
+            getCondicionantesAtivas(),
+            'rascunho',
+            getAchadosAtivos()
+          );
+        }
+        window.location.hash = '#/riscos';
+      },
+      () => {
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
+        window.location.hash = '#/conformidade';
+      }
+    );
+
+    // Intercepta o botão "Próximo →" inferior para acionar o avanço para riscos
+    const nextBtn = document.querySelector('.stage-actions a.btn-primary');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (podeSalvarRascunho()) {
+          sincronizarEstadoDaTelaAtiva();
+          await salvarRascunhoAtual(
+            getProcessoAtivo(),
+            getPertinenciaAtiva(),
+            getChecklistAtivo(),
+            getCondicionantesAtivas(),
+            'rascunho',
+            getAchadosAtivos()
+          );
+        }
+        window.location.hash = '#/riscos';
+      });
+    }
+
+    const prevBtn = document.querySelector('.stage-actions a.btn-secondary');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
+        window.location.hash = '#/conformidade';
       });
     }
   }
@@ -664,6 +704,9 @@ export async function initRouter(): Promise<void> {
         setPertinenciaAtiva(recuperado.pertinencia);
         setChecklistAtivo(recuperado.checklist);
         setCondicionantesAtivas(recuperado.condicionantes);
+        if (recuperado.achados) {
+          setAchadosAtivos(recuperado.achados);
+        }
         ultimoSalvamentoTimestamp = recuperado.salvoEm;
       }
     } catch {

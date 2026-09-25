@@ -16,6 +16,7 @@ import type {
   Pertinencia,
   ItemConformidade,
   Condicionante,
+  Achado,
   EstadoEdicao
 } from '../domain/tipos';
 
@@ -33,6 +34,7 @@ export interface DadosRascunhoCompleto {
   pertinencia: Pertinencia;
   checklist: ItemConformidade[];
   condicionantes: Condicionante[];
+  achados?: Achado[];
   analiseId: string;
   estadoEdicao: EstadoEdicao;
   salvoEm: string;
@@ -415,7 +417,8 @@ export async function salvarRascunhoAtual(
   pertinencia: Pertinencia,
   checklist: ItemConformidade[],
   condicionantes: Condicionante[],
-  estadoEdicao: EstadoEdicao = 'rascunho'
+  estadoEdicao: EstadoEdicao = 'rascunho',
+  achados?: Achado[]
 ): Promise<{ analiseId: string; salvoEm: string }> {
   const repo = obterRepositorioArmazenamento();
   const agoraIso = new Date().toISOString();
@@ -426,6 +429,7 @@ export async function salvarRascunhoAtual(
     pertinencia: JSON.parse(JSON.stringify(pertinencia)),
     checklist: JSON.parse(JSON.stringify(checklist)),
     condicionantes: JSON.parse(JSON.stringify(condicionantes)),
+    achados: achados ? JSON.parse(JSON.stringify(achados)) : undefined,
     analiseId,
     estadoEdicao,
     salvoEm: agoraIso

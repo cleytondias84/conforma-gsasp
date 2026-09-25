@@ -4,7 +4,7 @@
  * Base: docs/contexto.md (RN02, RN07, RN13) e docs/sprint.md
  */
 
-import type { Pertinencia, ConclusaoPertinencia } from '../domain/tipos';
+import type { Pertinencia, ConclusaoPertinencia } from '../domain/tipos.ts';
 import {
   validarPertinencia,
   sugerirConclusaoPertinencia,
@@ -13,9 +13,9 @@ import {
   formatarDataBR,
   calcularDuracaoVigencia,
   type ResultadoValidacaoPertinencia
-} from '../domain/validacao';
-import { getProcessoAtivo } from './identificacao';
-import { podeEditar, podeCarregarCenarios } from '../auth/papeis';
+} from '../domain/validacao.ts';
+import { getProcessoAtivo } from './identificacao.ts';
+import { podeEditar, podeCarregarCenarios } from '../auth/papeis.ts';
 
 // Cenários didáticos determinísticos de Pertinência Institucional com dados estritamente fictícios
 export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {

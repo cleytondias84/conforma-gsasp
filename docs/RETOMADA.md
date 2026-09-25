@@ -2,9 +2,9 @@
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
 Data do último registro: 25/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (com o progresso integral das Sprints 1 e 2 homologadas, e catálogo S3.1 revisado)  
+**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1 e 2 homologadas; S3.1, S3.2 e S3.3 concluídas e testadas)  
 **Caminho local da pasta do projeto:**  
-`C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
+`C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 
 ---
 
@@ -18,38 +18,49 @@ Data do último registro: 25/09/2026.
   - `S2.2` (Pertinência Institucional): 100% homologada.
   - `S2.3` (Conformidade Documental e Condicionantes): 100% homologada.
   - `S2.4` (Persistência Local com IndexedDB): 100% homologada.
-    - Implementado em `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts`, `src/pages/conformidade.ts`, `src/pages/pertinencia.ts`, `src/pages/identificacao.ts` e `src/style.css`.
-    - Repositório local assíncrono baseado em `IndexedDB` com fallback automático e transparente para `localStorage` e memória volátil.
-    - Preservação integral dos dados preenchidos nas três etapas ativas: Identificação (`Processo`), Pertinência (`Pertinencia`) e Conformidade (`ItemConformidade[]` e `Condicionante[]`), incluindo personalizações criadas pelo usuário e condicionantes com preenchimento parcial/incompleto.
-    - **Ajuste e validação de regressão:** Resolvida a captura de digitação via evento `input` em tempo real e sincronização do DOM antes do salvamento (`sincronizarEstadoDaTelaAtiva()`). Teste da condicionante incompleta realizado e aprovado pelo usuário em 24/09/2026.
-    - 22 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm.cmd run build` com 0 erros.
   - `S2.5` (Papéis de Usuário e Permissões Simuladas): 100% HOMOLOGADA.
-    - Implementado em `src/auth/papeis.ts`, `src/auth/papeis.test.ts`, `src/router.ts`, `src/pages/identificacao.ts`, `src/pages/pertinencia.ts`, `src/pages/conformidade.ts` e `src/style.css`.
-    - Matriz com 4 papéis documentados em `docs/contexto.md`: `Administrador`, `Editor / Assessor`, `Leitor (Somente Consulta)` e `Aprovador / Validador Executivo`.
-    - Indicação explícita e visual de que os perfis são simulações didáticas sem autenticação institucional nem aprovação legal.
-    - Perfil `Leitor` bloqueia todas as alterações (edição de campos, carga de cenários, adição/exclusão de itens e salvamento de rascunhos), mantendo navegação e consulta livres pelas 6 etapas.
-    - Preservação total de dados e rascunhos ao alternar de perfil, com blindagem de extração de dados para que campos desabilitados não sobrescrevam dados em memória.
-    - 4 testes manuais homologados pelo usuário em 25/09/2026 (Assessor edita/salva; Leitor bloqueado para alterações; Leitor navega pelas 6 etapas; volta para Assessor sem perda e com persistência após F5).
   - `S2.6` (Revisão do Cache do PWA e Retomada Offline): 100% HOMOLOGADA.
-    - Implementado em `vite.config.ts`, `dist/sw.js`, `src/auth/papeis.ts`, `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts` e `src/style.css`.
-    - Precache Workbox de 31 ativos (`index.html`, bundle JS/CSS, manifest, ícones e arquivos `data/*.json`), garantindo carregamento de todas as telas sem internet após a primeira visita.
-    - Retomada offline garantida de rascunho salvo no IndexedDB (Identificação, Pertinência, Checklist e Condicionantes).
-    - Preservação de perfis simulados reforçada com persistência em `localStorage` e `sessionStorage`.
-    - Alerta transparente de armazenamento local sem sincronização remota mantido na barra executiva.
-    - Diagnóstico de armazenamento em tempo real com aviso obrigatório destacado (`.storage-memory-alert`) caso opere apenas em memória volátil.
-    - Indicador de conectividade em tempo real (`.connection-pill`: `🌐 Online` vs `📡 Modo Offline (Cache Local Ativo)`).
-    - 30 testes unitários aprovados via `npm test` e compilação `npm.cmd run build` com 0 erros.
-    - 6 testes manuais homologados pelo usuário em 25/09/2026: salvamento de rascunho completo online; detecção de desconexão pelo indicador; recarregamento F5 offline com recuperação integral dos dados; navegação pelas 6 etapas offline como Leitor; perfil Leitor e dados preservados após F5 offline; restauração da conexão com retorno ao perfil Editor/Assessor.
 - **Sprint 3 — Motor de regras, achados e riscos (Em andamento):**
-  - `S3.1` (Catálogo de Regras Funcionais em docs/regras-funcionais.md): Concluída (Revisão Humana Pendente).
-    - Documento `docs/regras-funcionais.md` elaborado e revisado com 6 regras iniciais (`REG-01` a `REG-06`).
-    - **Revisões de governança incorporadas:**
-      - *Condicionantes (REG-03 e REG-04):* Não classificação automática como `IMPEDITIVA` por falta de providência; não redução de classificação apenas por haver texto de providência; separação rigorosa de: (1) situação do cumprimento, (2) providência planejada, (3) evidência de cumprimento e (4) classificação validada pelo assessor; indicação de "classificação pendente de validação humana" sem presumir natureza, prazo ou efeito; eliminação de expressões absolutistas ("óbice intransponível", "preenchimento comprova providência").
-      - *Vigência Invertida (REG-01):* Tratada inicialmente como inconsistência de datas a conferir, sem presumir erro de digitação nem defeito no documento original autuado; `FORMAL` como sugestão demonstrativa preliminar, nunca conclusão automática.
-      - *Pertinência (REG-02):* Diferenciação cabal entre "Não", "A avaliar" / não informada (`null`) e campo não preenchido; ausência de resposta não é tratada como recusa e não substitui a conclusão humana.
-      - *Não Aplicabilidade (REG-06):* O limite de 5 caracteres atua exclusivamente como validação técnica de interface, explicitando que não comprova justificativa suficiente ou válida.
-      - *Classificações Alternativas e Limitações:* Detalhamento dos dados necessários para dirimir alternativas e registro explícito das limitações estruturais do formulário atual, sem inventar campos.
-    - Catálogo mantido formalmente como **pendente de revisão humana** antes de qualquer implementação em código.
+  - `S3.1` (Catálogo de Regras Funcionais em docs/regras-funcionais.md): 100% HOMOLOGADA PARA PROTOTIPAGEM.
+    - Catálogo normativo e funcional estruturado com 6 regras determinísticas (`REG-01` a `REG-06`).
+    - **Aprovação Funcional (25/09/2026):** Aprovado pelo usuário como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (não representa validação jurídica das regras nem aprovação de processos reais).
+    - **Salvaguardas Mandatórias Registradas:**
+      1. Preservação integral das validações existentes de campos obrigatórios e do salvamento de rascunhos locais.
+      2. Condicionante em cumprimento continua pendente de avaliação humana, mesmo com providência preenchida.
+      3. O mínimo técnico de caracteres não comprova adequação ou suficiência da justificativa.
+  - `S3.2` (Motor de Regras em src/domain/regras.ts e Testes): 100% CONCLUÍDA E TESTADA.
+    - Implementado motor puramente determinístico em `src/domain/regras.ts` aplicando as 6 regras do catálogo sem IA externa.
+    - Estrutura completa de achados vinculando Evidência &rarr; Regra/Motivo &rarr; Impacto &rarr; Providência &rarr; Responsável (RN03).
+    - Separação formal de classificação sugerida (`classificacaoSugerida`), estado de validação (`estadoValidacao: 'SUGESTAO_SISTEMA'`) e decisão do assessor (`classificacaoValidada: null`).
+    - "Classificação pendente" tratada rigorosamente como estado de avaliação (`classificacaoSugerida === null`), sem inventar uma quinta gravidade.
+    - Preservação da conclusão humana em divergências da REG-02 com alerta de revisão, sem achado de recusa material.
+    - Ausência de dados ou de achados nunca convertida em aprovação automática para assinatura.
+    - Imutabilidade comprovada: objetos de entrada são tratados como somente leitura.
+    - **48 testes unitários aprovados via `npm test`** (18 testes dedicados da S3.2).
+    - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros**.
+  - `S3.3` (src/pages/achados.ts e Serviço de Validação Humana): 100% CONCLUÍDA E TESTADA.
+    - Implementado em `src/pages/achados.ts`, `src/pages/achados.test.ts`, `src/router.ts`, `src/style.css`, `src/domain/tipos.ts` e `src/services/armazenamento.ts`.
+    - Integração plena com o motor determinístico S3.2 via `sincronizarAchadosComMotor()`.
+    - Exibição de cada sugestão com anatomia RN03: *Regra de Origem*, *Evidência dos Autos*, *Regra/Motivo*, *Impacto Potencial*, *Providência Recomendada* e *Setor Responsável*.
+    - Desacoplamento explícito entre Classificação Sugerida pelo Sistema, Classificação Validada pelo Assessor e Estado de Validação.
+    - Ações completas de revisão: validação direta, alteração de classificação, rejeição com justificativa obrigatória registrada, reabertura para revisão e achados manuais com anatomia completa.
+    - Governança de perfis: bloqueio de operações para perfis somente leitura (Leitor e Aprovador).
+    - Preservação de revisões anteriores sem duplicidades e detecção de alterações nos dados de origem (RN10) com alerta de nova revisão.
+    - Separação visual entre Alertas de Instrução (RN11), Divergências Humanas (RN02/RN07) e Achados de Desconformidade.
+    - Salvaguarda RN11 ostensiva: ausência de achados não constitui aprovação automática para assinatura.
+    - Persistência em rascunhos locais com IndexedDB/localStorage.
+    - **57 testes unitários aprovados via `npm test`** (9 novos testes dedicados da S3.3).
+    - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros**.
+    - **Testes manuais homologados pelo usuário em 25/09/2026:**
+      1. Geração da sugestão REG-05, inicialmente com classificação pendente.
+      2. Bloqueio da validação sem escolha explícita de classificação de gravidade.
+      3. Validação como `RELEVANTE` e posterior alteração da gravidade para `FORMAL`.
+      4. Preservação da validação e da classificação após salvar rascunho e recarregar a página (F5).
+      5. Bloqueio de edição e validação nos perfis `Leitor` e `Aprovador` (modo consulta).
+      6. Aviso de alteração dos dados de origem (RN10) exibido corretamente, sem duplicidade de apontamentos.
+      7. Reabertura para revisão funcional (`reabrirAchadoParaRevisao`).
+      8. Bloqueio da rejeição sem justificativa textual.
+      9. Rejeição com justificativa obrigatória registrada e preservada após salvar e recarregar (F5).
 
 ---
 
@@ -57,18 +68,20 @@ Data do último registro: 25/09/2026.
 
 - **Situação de momento:**
   - **Sprint 2:** 100% concluída e homologada.
-  - **Tarefa S3.1:** Catálogo de regras funcionais em `docs/regras-funcionais.md` elaborado e corrigido conforme diretrizes de governança, **aguardando revisão humana**.
-  - **Tarefa S3.2:** **Não iniciada** (nenhuma linha de código do motor foi implementada ainda).
+  - **Tarefa S3.1:** 100% aprovada para desenvolvimento e testes do protótipo (especificação funcional demonstrativa).
+  - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
+  - **Tarefa S3.3:** Implementada, com 57 testes automatizados aprovados e compilação sem erros; **parcialmente homologada em testes manuais** (revisão de sugestões, perfis, RN10 e persistência confirmados).
+  - **Tarefa S3.4:** **Não iniciada** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
 
-1. **Sprint 3 — Validação Humana da S3.1 e Preparação da Tarefa S3.2:**
-   - Obter a homologação / validação humana do usuário sobre o catálogo de regras ajustado em `docs/regras-funcionais.md`.
-   - Após expressa aprovação, implementar as funções do motor em `src/domain/regras.ts` e testes unitários em `src/domain/regras.test.ts` (S3.2).
+1. **Sprint 3 — Próximo Ponto de Retomada (Conclusão dos Testes Manuais da S3.3):**
+   - **Testar inclusão, persistência e exclusão de achado manual** (esses testes específicos ainda **NÃO** foram confirmados pelo usuário).
+   - Após a homologação humana dos achados manuais, solicitar autorização para iniciar a **S3.4**.
    - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
 2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell
    # 1. Garantir que está na pasta do projeto:
-   cd C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
+   cd C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
 
    # 2. Compilar e rodar os testes:
    npm.cmd test

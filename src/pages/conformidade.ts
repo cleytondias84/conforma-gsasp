@@ -4,15 +4,15 @@
  * Base: docs/contexto.md (RN02, RN03, RN07, RN11, RN13) e docs/sprint.md
  */
 
-import type { ItemConformidade, Condicionante, StatusConformidade, SituacaoCondicionante } from '../domain/tipos';
+import type { ItemConformidade, Condicionante, StatusConformidade, SituacaoCondicionante } from '../domain/tipos.ts';
 import {
   validarConformidade,
   formatarMoeda,
   type ResultadoValidacaoConformidade
-} from '../domain/validacao';
-import { getProcessoAtivo } from './identificacao';
-import { getPertinenciaAtiva } from './pertinencia';
-import { podeEditar, podeAdicionarRemoverItens, podeCarregarCenarios } from '../auth/papeis';
+} from '../domain/validacao.ts';
+import { getProcessoAtivo } from './identificacao.ts';
+import { getPertinenciaAtiva } from './pertinencia.ts';
+import { podeEditar, podeAdicionarRemoverItens, podeCarregarCenarios } from '../auth/papeis.ts';
 
 // Cenários didáticos determinísticos com dados estritamente fictícios
 export const CENARIOS_CONFORMIDADE_DEMO: Record<string, { checklist: ItemConformidade[]; condicionantes: Condicionante[] }> = {

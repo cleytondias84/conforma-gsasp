@@ -144,13 +144,16 @@ export interface Condicionante {
  */
 export interface Achado {
   id: string;
+  regraId?: string;
   titulo: string;
   evidencia: string;      // Fato concreto verificado nos autos
   regraOuMotivo: string;  // Regra normativa, contratual ou editalícia
   impacto: string;        // Risco prático ou prejuízo potencial
   providencia: string;    // O que deve ser feito para corrigir
   responsavel: string;    // Setor ou autoridade responsável pelo saneamento
-  classificacao: ClassificacaoAchado;
+  classificacaoSugerida: ClassificacaoAchado | null; // null quando pendente de validação humana
+  classificacao: ClassificacaoAchado | null;         // Classificação atribuída/validada ou sugestão inicial
+  classificacaoValidada?: ClassificacaoAchado | null; // Decisão humana expressa
   estadoValidacao: EstadoValidacaoAchado;
   justificativaRejeicao?: string;
 }

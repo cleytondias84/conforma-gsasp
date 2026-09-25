@@ -4,15 +4,15 @@
  * Base: docs/contexto.md (RN01, RN13) e docs/sprint.md
  */
 
-import type { Processo } from '../domain/tipos';
+import type { Processo } from '../domain/tipos.ts';
 import {
   validarProcesso,
   formatarMoeda,
   formatarDataBR,
   calcularDuracaoVigencia,
   type ResultadoValidacaoProcesso
-} from '../domain/validacao';
-import { podeEditar, podeCarregarCenarios } from '../auth/papeis';
+} from '../domain/validacao.ts';
+import { podeEditar, podeCarregarCenarios } from '../auth/papeis.ts';
 
 // Cenários didáticos determinísticos com dados estritamente fictícios
 export const CENARIOS_DEMO: Record<string, Processo> = {

@@ -180,18 +180,63 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     5. Perfil Leitor e dados preservados após F5 offline.
     6. Ao restaurar a conexão, indicador voltou para Online e foi possível retornar ao perfil Editor/Assessor.
 - **Sprint 2 — Conclusão Oficial:** Todas as 6 tarefas da Sprint 2 (S2.1 a S2.6) foram concluídas, testadas e aprovadas pelo usuário. O fluxo das etapas de Identificação, Pertinência e Conformidade, com condicionantes jurídicas, perfis de acesso simulados, persistência no IndexedDB e suporte PWA offline está integralmente funcional.
-- **Sprint 3 — Em andamento (Iniciada com S3.1):**
-  - **Tarefa S3.1 (Catálogo de Regras Aprovadas em docs/regras-funcionais.md) — Concluída (Revisão Humana Pendente):**
-    - Documento normativo e funcional elaborado e revisado em `docs/regras-funcionais.md`, especificando 6 regras determinísticas (`REG-01` a `REG-06`).
-    - **Ajustes de governança incorporados na revisão:**
-      1. *Condicionantes (REG-03 e REG-04):* Não classificação automática como `IMPEDITIVA` por falta de providência e não redução automática de gravidade apenas por haver texto descritivo de providência; separação estrita das 4 dimensões (situação de cumprimento, providência planejada, evidência de cumprimento e classificação validada pelo assessor); indicação de "classificação pendente de validação humana" na ausência de metadados sobre natureza, prazo e efeito da condicionante; substituição de termos absolutistas ("óbice intransponível", "preenchimento comprova providência") por linguagem demonstrativa e estritamente aderente ao registrado.
-      2. *Vigência Invertida (REG-01):* Tratada inicialmente como inconsistência de datas a conferir, sem presumir erro de digitação nem defeito material no documento autuado; `FORMAL` mantida como sugestão demonstrativa preliminar, nunca conclusão automática.
-      3. *Pertinência (REG-02):* Diferenciação cabal entre resposta expressa "Não", resposta "A avaliar" / não informada (`null`) e ausência de preenchimento; ausência de resposta não é tratada como negativa nem a conclusão humana é substituída por resultado automático.
-      4. *Não Aplicabilidade (REG-06):* O piso de 5 caracteres foi mantido exclusivamente como validação técnica de preenchimento já existente na interface, explicitando que esse limite técnico não atesta suficiência ou validade da fundamentação.
-      5. *Classificações Alternativas e Limitações:* Especificação dos dados necessários para dirimir alternativas e registro explícito das limitações do formulário atual (sem inventar campos ou expandir a tela).
-    - Catálogo mantido formalmente como **pendente de revisão humana** antes de iniciar a implementação do motor em `src/domain/regras.ts` (S3.2).
-- **Próxima tarefa:** S3.2 (Implementar funções em src/domain/regras.ts e testes) — aguardando aprovação humana da S3.1.
-- **Caminho atual do projeto:** `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
+- **Sprint 3 — Em andamento:**
+  - **Tarefa S3.1 (Catálogo de Regras Funcionais em docs/regras-funcionais.md) — 100% Homologada para Prototipagem:**
+    - Documento normativo e funcional estruturado em `docs/regras-funcionais.md` especificando 6 regras determinísticas (`REG-01` a `REG-06`).
+    - **Aprovação Funcional (25/09/2026):** Aprovado pelo usuário como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (não representa validação jurídica das regras nem aprovação de processos reais).
+    - **Salvaguardas Mandatórias Registradas:**
+      1. Preservação integral das validações existentes de campos obrigatórios e do salvamento de rascunhos locais.
+      2. Condicionante em cumprimento continua pendente de avaliação humana, mesmo com providência preenchida.
+      3. O mínimo técnico de caracteres não comprova adequação ou suficiência da justificativa.
+  - **Tarefa S3.2 (Implementar funções em src/domain/regras.ts e testes) — 100% Concluída:**
+    - *Implementação técnica:* `src/domain/regras.ts`, `src/domain/regras.test.ts` e atualização em `src/domain/tipos.ts`.
+    - *Critérios de aceite atendidos:*
+      1. **Motor determinístico puro:** Aplica as 6 regras do catálogo sem dependência de IA externa, sem chamadas remotas e sem efeitos colaterais. A mesma entrada produz rigorosamente a mesma saída.
+      2. **Estrutura mandatória dos achados (RN03):** Cada apontamento emitido liga: *Evidência* &rarr; *Regra/Motivo* &rarr; *Impacto* &rarr; *Providência* &rarr; *Responsável*.
+      3. **Separação rigorosa de campos (RN04/RN05):** Estrutura `Achado` separa explicitamente a classificação sugerida pelo sistema (`classificacaoSugerida: ClassificacaoAchado | null`), o estado de validação (`estadoValidacao: 'SUGESTAO_SISTEMA'`) e a decisão do assessor (`classificacaoValidada: null`). A "Classificação pendente" é modelada como `classificacaoSugerida === null`, sem inventar uma quinta gravidade.
+      4. **Preservação de decisões humanas e divergências (RN02/RN07):** Na REG-02, a conclusão técnica favorável do assessor é preservada integralmente contra respostas negativas preliminares, emitindo sinalização de divergência humana para revisão sem gerar achado de recusa material.
+      5. **Não conversão em aprovação automática (RN11):** O motor nunca converte ausência de dados ou ausência de achados em conclusão executiva para assinatura.
+      6. **Imutabilidade:** Os dados de entrada são tratados como somente leitura, sem mutação de objetos ou propriedades.
+    - *Testes e compilação:*
+      - **48 testes unitários aprovados via `npm test`** (18 testes dedicados da S3.2 cobrindo todos os cenários de dados incompletos, vigência invertida, condicionantes com/sem providência, divergência humana e governança).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle, precache de 31 ativos e Service Worker intactos).
+  - **Tarefa S3.3 (src/pages/achados.ts e serviço de validação humana) — Implementada (Em Testes Manuais):**
+    - *Implementação técnica:* `src/pages/achados.ts`, `src/pages/achados.test.ts`, integração em `src/router.ts`, estilos em `src/style.css`, suporte em `src/domain/tipos.ts` e `src/services/armazenamento.ts`.
+    - *Critérios de aceite técnicos atendidos:*
+      1. **Integração com o motor S3.2:** A tela sincroniza os dados do processo, pertinência, checklist e condicionantes através de `sincronizarAchadosComMotor()`.
+      2. **Anatomia RN03 completa:** Cada apontamento exibe *Regra de Origem*, *Evidência dos Autos*, *Regra/Motivo*, *Impacto Potencial*, *Providência Recomendada* e *Setor Responsável*.
+      3. **Desacoplamento rigoroso das classificações (RN04/RN05):** Exibe separadamente a Classificação Sugerida pelo Sistema e a Classificação Validada pelo Assessor. Quando o motor não sugere gravidade, exibe ostensivamente *"Classificação pendente de validação humana"*.
+      4. **Ações completas de revisão humana (RN05/RN06):**
+         - Validação com um clique (adotando a gravidade sugerida ou selecionando gravidade se pendente).
+         - Alteração fundamentada da gravidade pelo assessor (`alterarClassificacaoAchado`).
+         - Rejeição fundamentada com justificativa obrigatória registrada (`rejeitarAchado`).
+         - Desfazer / Reabrir para revisão (`reabrirAchadoParaRevisao`).
+         - Inclusão e exclusão de achados manuais com formulário e anatomia RN03 completa (`adicionarAchadoManual`).
+      5. **Controle de perfis de usuário (S2.5):** Usuários no perfil *Leitor* ou *Aprovador* visualizam os achados em modo somente consulta, com controles de validação/rejeição e adição desabilitados.
+      6. **Preservação de revisões e detecção de alterações (RN10):** Ao reexecutar o motor, apontamentos não são duplicados. Se os dados de origem nos autos forem alterados após uma validação humana prévia, o sistema sinaliza ostensivamente a necessidade de nova revisão (`necessitaNovaRevisao: true`).
+      7. **Separação visual estrita de natureza:**
+         - Alertas de Instrução e Preenchimento Pendente (RN11) destacados em quadro azul informativo.
+         - Divergências com o Juízo Humano da Pertinência (RN02/RN07) destacadas em quadro âmbar orientador.
+         - Apontamentos de Desconformidade (RN03/RN04) listados em cartões estruturados.
+      8. **Salvaguarda de governança (RN11):** Nenhuma sugestão é validada automaticamente. A ausência de achados pelo motor não confere e não presume aptidão automática para assinatura.
+      9. **Persistência local integral:** O estado dos achados (incluindo validações, rejeições com justificativas e achados manuais) é salvo e restaurado via `salvarRascunhoAtual` e `recuperarUltimoRascunho`.
+    - *Testes automatizados e compilação verificados:*
+      - **57 testes unitários aprovados via `node --experimental-strip-types --test src/**/*.test.ts`** (9 novos testes dedicados cobrindo sincronização, ações de revisão, achados manuais, persistência e RN10).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (dist/ gerada em 422ms, precache de 31 ativos).
+    - *Itens de validação manual confirmados pelo usuário nesta sessão:*
+      - [x] Geração da sugestão REG-05, inicialmente pendente.
+      - [x] Bloqueio da validação sem classificação.
+      - [x] Validação como RELEVANTE e alteração para FORMAL.
+      - [x] Preservação da validação e classificação após salvar e recarregar.
+      - [x] Bloqueio de edição nos perfis Leitor e Aprovador.
+      - [x] Aviso de alteração dos dados de origem (RN10), sem duplicidade de apontamentos.
+      - [x] Reabertura para revisão (`reabrirAchadoParaRevisao`).
+      - [x] Bloqueio da rejeição sem justificativa.
+      - [x] Rejeição justificada e preservada após salvar e recarregar.
+    - *Próximo ponto de retomada da S3.3:*
+      - **Testar inclusão, persistência e exclusão de achado manual** (esses testes ainda **NÃO** foram confirmados pelo usuário).
+- **Próxima tarefa da Sprint 3:** S3.4 (`src/pages/riscos.ts` e `src/domain/riscos.ts`) — *Não iniciada*.
+- **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 - **Comandos para manter o servidor local:**
   ```powershell
   npm.cmd run build

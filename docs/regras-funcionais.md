@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
-import sys
-
-content = """# CONFORMA GSASP — Catálogo de Regras Funcionais do Motor de Conformidade
+# CONFORMA GSASP — Catálogo de Regras Funcionais do Motor de Conformidade
 
 Documento de especificação técnica e funcional para o futuro Motor de Regras (Sprint 3 — S3.1).  
 **Base normativa e conceitual:** [docs/contexto.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/contexto.md) (Seções 4, 5, 6, 8 e 11) e [docs/sprint.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/sprint.md).  
-**Data de revisão documental:** 25/09/2026 (Revisão da S3.1).  
-**Situação:** Catálogo técnico revisado e em alinhamento conceitual; regras materiais, fontes normativas e classificações preliminares mantidas em caráter estritamente demonstrativo, **pendentes de validação humana e revisão da assessoria técnica/jurídica**.
+**Data de aprovação funcional:** 25/09/2026.  
+**Situação:** Aprovado pelo usuário como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (isso não representa validação jurídica das regras nem aprovação de processos reais).  
+**Salvaguardas Mandatórias Registradas:**  
+- **Preservação das validações existentes:** Mantidas as validações de campos obrigatórios e a integridade do salvamento de rascunhos.  
+- **Condicionantes em cumprimento:** Condicionante em cumprimento continua pendente de avaliação humana, mesmo com providência preenchida.  
+- **Piso técnico de caracteres:** O mínimo de caracteres não comprova adequação nem suficiência jurídica da justificativa.
 
 ---
 
@@ -14,23 +15,28 @@ Documento de especificação técnica e funcional para o futuro Motor de Regras 
 
 O motor de regras do CONFORMA GSASP é um componente de conferência lógica, estruturação de evidências e apoio à decisão, operando sob as seguintes diretrizes fundamentais:
 
-1. **A IA/Sistema confere e organiza; o assessor valida e a autoridade decide (RN02, RN07):**
+1. **A IA/Sistema confere e organiza; o assessor valida e a autoridade decide (RN02, RN07):**  
    Nenhuma regra algorítmica produz conclusão jurídica definitiva, presunção de legalidade ou substitui o juízo discricionário e a responsabilidade da autoridade competente. Todas as saídas e achados automáticos são emitidos sob o rótulo **`SUGESTÃO DO SISTEMA — PENDENTE DE VALIDAÇÃO HUMANA`** (RN05).
 2. **Diferenciação rigorosa entre tipos de apontamentos:**
-   - **Inconsistência de preenchimento na interface (RN13):** Divergência formal ou digitação incompleta nos campos do formulário (ex.: data final anterior à inicial). Deve ser tratada prioritariamente na interface para evitar dados inconsistentes, sendo tratada inicialmente pelo motor como inconsistência de datas a conferir, sem presumir erro de digitação do operador nem vício material no documento original autuado.
-   - **Informação insuficiente ou campo não avaliado (RN11):** Ausência de documento, ausência de resposta fática ou critérios assinalados como pendentes ("A avaliar"). Gera alerta de instrução deficitária ou pendência de preenchimento, nunca autorizando presunção de resposta negativa nem ateste automático de conformidade.
+   - **Inconsistência de preenchimento na interface (RN13):** Divergência formal ou digitação incompleta nos campos do formulário (ex.: data final anterior à inicial). Deve ser tratada prioritariamente na interface para evitar dados inconsistentes, sendo tratada pelo motor como inconsistência de datas a conferir, sem presumir erro de digitação do operador nem vício material no documento original autuado.
+   - **Informação insuficiente ou campo não avaliado (RN11):** Ausência de documento registrado, ausência de resposta fática ou critérios assinalados como pendentes ("A avaliar"). Gera alerta de instrução pendente de preenchimento ou análise, nunca autorizando presunção de resposta negativa nem ateste automático de conformidade.
    - **Achado de desconformidade material (RN03, RN04):** Apontamento substantivo fundamentado decorrente de divergência concreta entre os fatos documentados nos autos e as exigências normativas, pareceres jurídicos vinculantes ou diretrizes institucionais.
-3. **Separação rigorosa das quatro dimensões das Condicionantes Jurídicas (RN03, RN04):**
+3. **Separação rigorosa das quatro dimensões das Condicionantes Jurídicas (RN03, RN04):**  
    O tratamento de condicionantes jurídicas de pareceres anteriores exige distinguir com clareza analítica:
    - **(a) Situação do cumprimento:** Estado formal da condicionante (`atendida`, `pendente`, `em_cumprimento`, `nao_aplicavel`).
    - **(b) Providência planejada:** Ação descrita ou declarada no formulário pelo usuário para buscar o saneamento.
    - **(c) Evidência de cumprimento:** Peça documental concretamente autuada no processo que comprove que a condicionante foi satisfeita.
-   - **(d) Classificação validada pelo assessor:** Avaliação humana de gravidade (`IMPEDITIVO`, `RELEVANTE`, `FORMAL`, `MELHORIA`), atribuída soberanamente pelo assessor segundo a natureza da exigência.
-   *Diretriz mandatória:* O mero registro de uma providência planejada ou declarada **não significa condicionante cumprida** e **não reduz automaticamente a classificação de risco**. Da mesma forma, **não se deve classificar automaticamente toda condicionante sem providência como IMPEDITIVA**, cabendo indicar "classificação pendente de validação humana" na ausência de dados estruturados sobre a natureza e o efeito da condicionante.
-4. **Sem pesos numéricos inventados (RN12):**
-   O sistema não utiliza cálculos quantitativos artificiais ou fórmulas de "score de risco" desprovidas de respaldo normativo. Adota-se exclusivamente a tipologia qualitativa de quatro níveis da RN04 (`IMPEDITIVO`, `RELEVANTE`, `FORMAL`, `MELHORIA`).
-5. **Transparência sobre limitações do formulário e dados ausentes:**
-   Quando a escolha entre classificações alternativas (ex.: `FORMAL` vs. `RELEVANTE`) depender de dados que ainda não existem nos formulários do protótipo (ex.: essencialidade do documento, efeito suspensivo da condicionante, conferência de original autuado), o sistema registra expressamente essa limitação estrutural e mantém a classificação como pendente de validação humana, sem inventar valores fictícios nem ampliar o formulário nesta etapa.
+   - **(d) Classificação validada pelo assessor:** Avaliação humana de gravidade (`IMPEDITIVO`, `RELEVANTE`, `FORMAL`, `MELHORIA`), atribuída soberanamente pelo assessor segundo a natureza da exigência.  
+   *Diretriz mandatória:* O mero registro de uma providência planejada ou declarada **não comprova cumprimento da condicionante** e **não reduz a classificação de risco**. Da mesma forma, **não se deve classificar automaticamente uma condicionante sem providência como IMPEDITIVA**, cabendo manter como `Classificação pendente de validação humana`, sem associações presumidas entre exigência prévia/acompanhamento e determinada gravidade.
+4. **Sem pesos numéricos inventados e significado de "Classificação pendente" (RN04, RN12):**  
+   O sistema não utiliza cálculos quantitativos artificiais ou fórmulas de "score de risco" desprovidas de respaldo normativo. Adota-se exclusivamente a tipologia qualitativa de quatro níveis da RN04 (`IMPEDITIVO`, `RELEVANTE`, `FORMAL`, `MELHORIA`).  
+   *Importante:* A indicação **"Classificação pendente de validação humana" é um estado de avaliação do apontamento**, e **não uma quinta categoria de gravidade**. Significa que o sistema não possui critérios objetivos para cravar a gravidade e incumbe ao assessor atribuir uma das quatro categorias regulamentares.
+5. **Alcance da opção "Não se aplica":**  
+   A opção "Não se aplica" dispensa **exclusivamente a checagem correspondente no protótipo**, permanecendo sempre sujeita à revisão e validação humana. Não constitui ateste institucional de dispensa legal.
+6. **Não presunção de inexistência nos autos processuais:**  
+   O sistema **não deve afirmar que um documento inexiste nos autos** apenas porque não foi registrado ou anexado no formulário do protótipo. O apontamento deve registrar a ausência de registro ou conferência no sistema, cabendo a verificação da existência física/digital nos autos reais ao assessor.
+7. **Transparência sobre limitações do formulário e dados ausentes:**  
+   O sistema não deve emitir sugestões de gravidade baseadas em características que não consegue verificar (ex.: essencialidade do documento, efeito suspensivo da condicionante, conferência de original autuado). Nessas situações, registra-se expressamente a limitação estrutural e mantém-se a classificação pendente de validação humana.
 
 ---
 
@@ -41,11 +47,11 @@ Cada regra deste catálogo segue a anatomia obrigatória da RN03 e as diretrizes
 - **Regras de Negócio Vinculadas:** Mapeamento cruzado com [docs/contexto.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/contexto.md).
 - **Dados Necessários e Condição de Disparo:** Variáveis de entrada existentes e expressão lógica determinística.
 - **Tratamento de Dados Ausentes e Não Aplicabilidade:** Comportamento diante de campos nulos, não avaliados ou dispensados.
-- **Estrutura do Achado Sugerido:** Evidência → Regra/Motivo → Impacto → Providência Recomendada (linguagem demonstrativa, evitando expressões absolutistas como "óbice intransponível").
-- **Classificação Preliminar Sugerida:** Indicação da classificação ou indicação explícita de "Pendente de validação humana".
-- **Critérios para Classificações Alternativas e Limitações do Formulário:** Detalhamento dos dados requeridos para diferenciar alternativas e registro das limitações do modelo de dados atual.
+- **Estrutura do Achado Sugerido:** Evidência → Regra/Motivo → Impacto → Providência Recomendada (linguagem neutra e demonstrativa, sem prescrever documentos específicos sem fundamento validado).
+- **Classificação Preliminar:** Indicação demonstrativa sujeita a validação ou indicação de "Classificação pendente de validação humana".
+- **Critérios para Classificações Alternativas e Limitações do Formulário:** Detalhamento das limitações técnicas do protótipo atual.
 - **Interação com a Interface:** Relação com bloqueios de formulário e persistência de rascunhos.
-- **Fonte Normativa e Situação da Validação:** Base legal e situação da revisão humana.
+- **Fonte Normativa e Situação da Validação:** Base legal/administrativa e situação da revisão humana.
 - **Exemplos Fictícios:** Cenário de disparo vs. cenário regular.
 
 ---
@@ -61,89 +67,87 @@ Cada regra deste catálogo segue a anatomia obrigatória da RN03 e as diretrizes
 | **Regras Vinculadas** | **RN01** (Destaque da vigência), **RN03** (Estrutura do achado), **RN13** (Diferenciação de erro de interface). |
 | **Dados Necessários** | `processo.vigenciaInicio`, `processo.vigenciaFim`, `processo.vigenciaNaoAplicavel`. |
 | **Condição de Disparo** | `processo.vigenciaNaoAplicavel == false` **E** (`processo.vigenciaInicio != null` e `processo.vigenciaFim != null`) **E** `processo.vigenciaFim < processo.vigenciaInicio`. |
-| **Tratamento de Ausências** | Se `vigenciaNaoAplicavel == true`, a regra é **dispensada** (não dispara). Se uma ou ambas as datas forem nulas/vazias, não dispara esta regra, gerando alerta de instrução pendente de preenchimento. |
+| **Tratamento de Ausências e Não Aplicabilidade** | Se `vigenciaNaoAplicavel == true`, a checagem de datas é **dispensada no protótipo** (sujeito à revisão humana). Se uma ou ambas as datas forem nulas/vazias, não dispara esta regra, gerando alerta de instrução pendente de preenchimento. |
 | **Interação com a Interface** | Na Etapa 1 (Identificação), o formulário sinaliza a inconsistência e impede o avanço do perfil Editor/Assessor para proteger a higiene dos dados. Em rascunhos retomados ou na navegação como Leitor, o motor identifica as datas cadastradas e gera o apontamento analítico. |
 | **Evidência Registrada** | Data final de vigência cadastrada (`processo.vigenciaFim`) anterior à data inicial de vigência (`processo.vigenciaInicio`). |
 | **Regra / Motivo** | Princípio da continuidade dos ajustes contratuais, segurança jurídica e coerência temporal dos atos administrativos (Lei nº 14.133/2021, art. 105). O período de vigência delimita temporalmente a eficácia dos direitos e obrigações. |
-| **Impacto Potencial** | Inconsistência no cômputo do prazo do instrumento, risco de execução financeira sem respaldo temporal regular ou necessidade de retificação formal do termo. |
-| **Providência Recomendada** | Conferir se a discrepância decorre de transcrição das datas para o sistema ou se reflete exatamente o texto da minuta autuada no processo físico/digital. Sendo divergência na inserção dos dados, retificar no sistema; se o texto da minuta autuada contiver a divergência temporal, submeter ao setor demandante para juntada de certidão saneadora ou errata formal antes da subscrição. |
-| **Classificação Sugerida** | **Sugestão demonstrativa preliminar: `FORMAL` (como inconsistência de datas a conferir)**, nunca conclusão automática. A definição final de gravidade requer conferência pelo assessor. |
-| **Dados para Alternativas e Limitações** | *Alternativas:* `FORMAL` (quando a minuta física for regular e apenas a digitação no sistema divergir) vs. `RELEVANTE` (quando a minuta anexada aos autos contiver a cláusula defeituosa).<br>*Limitação do formulário:* O sistema atualmente não dispõe de campo estruturado para atestar "conferido no documento autuado". Logo, o sistema não presume a causa, sugerindo `FORMAL` de modo meramente indicativo e confiando a classificação ao assessor humano. |
-| **Fonte e Situação** | *Fonte:* Prática administrativa de conformidade e art. 105 da Lei nº 14.133/2021. *Situação:* **Proposta demonstrativa pendente de validação humana.** |
+| **Impacto Potencial** | Inconsistência no cômputo do prazo do instrumento, risco de execução sem respaldo temporal regular ou necessidade de retificação formal do termo. |
+| **Providência Recomendada** | Conferir a fonte documental, corrigir eventual erro de cadastro na interface ou, caso a divergência conste no documento original autuado, solicitar a retificação adequada ao setor responsável antes da subscrição. *(Orientação neutra, sem prescrever documento obrigatório específico sem fundamento validado).* |
+| **Classificação Sugerida** | **Sugestão demonstrativa preliminar: `FORMAL` (como inconsistência de datas a conferir)**, sujeita à validação humana. A definição final de gravidade requer conferência pelo assessor. |
+| **Dados para Alternativas e Limitações** | *Alternativas:* `FORMAL` (se a divergência for mero equívoco de preenchimento no formulário) vs. `RELEVANTE` (se o erro temporal constar na minuta autuada no processo físico/digital).<br>*Limitação do formulário:* O sistema não dispõe de campo para atestar a conferência do documento original autuado. Logo, não presume a causa, sugerindo `FORMAL` de modo indicativo e confiando a classificação ao assessor. |
+| **Fonte e Situação** | *Fonte:* Prática administrativa de conformidade e art. 105 da Lei nº 14.133/2021. *Situação:* **Proposta demonstrativa pendente de aprovação humana.** |
 | **Exemplo que Dispara** | `vigenciaInicio: "2026-03-01"`, `vigenciaFim: "2026-02-01"` (Cenário 5). |
 | **Exemplo que Não Dispara**| `vigenciaInicio: "2026-03-01"`, `vigenciaFim: "2027-03-01"` ou `vigenciaNaoAplicavel: true`. |
 
 ---
 
-### REG-02 — Pertinência Institucional Não Demonstrada ou em Avaliação
+### REG-02 — Pertinência Institucional Não Demonstrada, em Avaliação ou com Divergência
 
 | Campo | Especificação |
 |---|---|
 | **Identificador** | `REG-02-PERTINENCIA-NAO-DEMONSTRADA` |
-| **Nome** | Pertinência Institucional Não Demonstrada ou com Critérios sob Avaliação |
+| **Nome** | Pertinência Institucional Não Demonstrada, em Avaliação ou com Divergência Registrada |
 | **Regras Vinculadas** | **RN02** (Filtro obrigatório de pertinência), **RN03** (Estrutura do achado), **RN04** (Classificação), **RN08** (Conclusão técnica), **RN11** (Dados incompletos). |
 | **Dados Necessários** | `pertinencia.conclusao`, `pertinencia.respostas`, `pertinencia.justificativa`. |
-| **Tratamento Diferenciado das Respostas** | - **Resposta expressa "Não" (`false`):** Indica manifestação técnica desfavorável ao critério avaliado.<br>- **Resposta "A avaliar" / Não informada (`null`):** Indica que o critério ainda não foi analisado ou que faltam peças nos autos para firmar convicção. **Não deve ser presumida como resposta negativa ("Não")**.<br>- **Campo não preenchido:** Trata-se de análise incompleta que demanda complemento de instrução, não autorizando juízo de recusa substantiva automática. |
+| **Diferenciação dos Três Estados de Avaliação** | 1. **Não Pertinente (`NAO_PERTINENTE`):** Manifestação técnica conclusiva do assessor indicando que o objeto contraria as competências, prioridades ou conveniência institucional do órgão. Sugestão preliminar demonstrativa: **`IMPEDITIVO`**.<br>2. **Pertinência Não Demonstrada (`NAO_DEMONSTRADA`):** Manifestação técnica conclusiva do assessor de que a instrução processual atual não comprovou a necessidade, o vínculo ou a vantajocidade, demandando complementação/saneamento. Sugestão preliminar demonstrativa: **`RELEVANTE`**.<br>3. **Avaliação Ainda Não Concluída (`conclusao == null`):**<br>- *Se existir resposta expressa "Não" (`false`) em qualquer critério:* Gera apontamento analítico de que há critério desfavorável assinalado sem conclusão firmada. Classificação: **`Classificação pendente de validação humana`**.<br>- *Se os critérios estiverem em "A avaliar" (`null`) ou vazios:* Trata-se de instrução incompleta (RN11); gera alerta de pendência de preenchimento, sem presumir resposta negativa. |
 | **Condição de Disparo** | `pertinencia.conclusao == 'NAO_DEMONSTRADA'` **OU** `pertinencia.conclusao == 'NAO_PERTINENTE'` **OU** (`pertinencia.conclusao == null` **E** qualquer resposta dos 5 critérios for expressamente `false`). |
-| **Tratamento de Critérios "A avaliar"** | Se `pertinencia.conclusao == null` e os critérios estiverem sem preenchimento ou em `null` ("A avaliar"), o motor **não gera achado de recusa material**, mas sim alerta de instrução pendente de conclusão humana (RN02/RN11). |
-| **Interação com a Interface** | Na Etapa 2, a conclusão humana do assessor é campo obrigatório para o fechamento regular. A sugestão indicativa do sistema orienta a triagem, mas **a conclusão selecionada pelo usuário prevalece sempre** sobre o cálculo algorítmico, registrando aviso informativo se houver divergência. |
-| **Evidência Registrada** | Conclusão humana indicando que a pertinência não restou demonstrada nos autos ou registro de resposta expressamente negativa em critérios de conveniência/competência. |
+| **Tratamento de Conclusão Humana Divergente** | Se o assessor assinalar resposta "Não" em algum critério preliminar, mas selecionar conclusão técnica favorável (`PERTINENTE` ou `PERTINENTE_COM_JUSTIFICATIVA`), **a conclusão humana é preservada integralmente** (RN02/RN07). O motor **não gera achado de recusa material**, mas emite um **alerta informativo de divergência** na interface para que a contradição seja revista e fundamentada nos autos. |
+| **Evidência Registrada** | Conclusão humana indicando que a pertinência não restou demonstrada/pertinente nos autos, ou registro de resposta preliminar expressamente negativa sem conclusão firmada. |
 | **Regra / Motivo** | A conformidade jurídica e orçamentária depende do vínculo entre o objeto e os objetivos estratégicos, competências e conveniência do órgão público (RN02). A contratação deve atender ao interesse público comprovado. |
-| **Impacto Potencial** | Risco de realização de despesa pública desprovida de motivação fática suficiente, vulnerabilidade a questionamentos por órgãos de controle e potencial antieconomicidade. |
-| **Providência Recomendada** | Devolver os autos ao setor demandante para juntada de documentação complementar justificando a pertinência, ou emitir manifestação técnica fundamentada para subsidiar a decisão superior. |
-| **Classificação Sugerida** | **`IMPEDITIVO`** (se `conclusao == 'NAO_PERTINENTE'`) ou **`RELEVANTE`** (se `conclusao == 'NAO_DEMONSTRADA'`, cabendo complementação da instrução). |
-| **Dados para Alternativas e Limitações** | *Alternativas:* A escolha entre `IMPEDITIVO` e `RELEVANTE` baseia-se na seleção explícita da conclusão pelo assessor (`NAO_PERTINENTE` vs `NAO_DEMONSTRADA`) e no teor da sua justificativa técnica.<br>*Limitação do formulário:* Não há classificação automática sobre a gravidade da ausência de cada critério isolado; a ponderação decorre estritamente da avaliação humana do assessor. |
-| **Fonte e Situação** | *Fonte:* Práticas de governança de contratações públicas e RN02 de `docs/contexto.md`. *Situação:* **Aprovada para o protótipo com prevalência humana.** |
+| **Impacto Potencial** | Risco de despesa pública sem motivação fática suficiente, vulnerabilidade a questionamentos por órgãos de controle e potencial antieconomicidade. |
+| **Providência Recomendada** | Restituir os autos ao setor demandante para juntada de justificativas complementares, ou emitir manifestação técnica circunstanciada fundamentando a decisão a ser submetida à autoridade superior. |
+| **Classificação** | - Se `conclusao == 'NAO_PERTINENTE'`: sugestão demonstrativa **`IMPEDITIVO`** (sujeita à validação).<br>- Se `conclusao == 'NAO_DEMONSTRADA'`: sugestão demonstrativa **`RELEVANTE`** (sujeita à validação).<br>- Se `conclusao == null` com resposta negativa: **`Classificação pendente de validação humana`**. |
+| **Fonte e Situação** | *Fonte:* Práticas de governança de contratações públicas e RN02 de `docs/contexto.md`. *Situação:* **Proposta demonstrativa pendente de aprovação humana.** |
 | **Exemplo que Dispara** | `conclusao: "NAO_DEMONSTRADA"`, `respostas: { vinculoPlanejamento: false, ... }` (Cenário 4). |
 | **Exemplo que Não Dispara**| `conclusao: "PERTINENTE"`, respostas validadas e justificativa registrada nos autos. |
 
 ---
 
-### REG-03 — Condicionante Jurídica Pendente sem Registro de Providência
+### REG-03 — Condicionante Jurídica Pendente ou em Cumprimento sem Providência Declarada
 
 | Campo | Especificação |
 |---|---|
-| **Identificador** | `REG-03-CONDICIONANTE-PENDENTE-SEM-PROVIDENCIA` |
-| **Nome** | Condicionante Jurídica Pendente sem Registro de Providência no Formulário |
+| **Identificador** | `REG-03-CONDICIONANTE-SEM-PROVIDENCIA` |
+| **Nome** | Condicionante Jurídica Pendente ou em Cumprimento sem Providência Declarada no Formulário |
 | **Regras Vinculadas** | **RN03** (Estrutura do achado), **RN04** (Classificação), **RN07** (Apoio à decisão), **RN11** (Instrução pendente). |
 | **Dados Necessários** | `condicionante.descricao`, `condicionante.referenciaParecer`, `condicionante.situacao`, `condicionante.providencia`. |
-| **Separação das 4 Dimensões** | 1. **Situação do cumprimento:** Declarada como `pendente`.<br>2. **Providência planejada:** Não informada no formulário (`providencia == null` ou em branco).<br>3. **Evidência de cumprimento:** Não juntada aos autos.<br>4. **Classificação validada pelo assessor:** **Pendente de validação humana**. |
-| **Condição de Disparo** | `condicionante.situacao == 'pendente'` **E** (`condicionante.providencia == null` ou `condicionante.providencia.trim() == ""`). |
-| **Diretriz de Classificação** | **Não classificar automaticamente como IMPEDITIVA.** O sistema não dispõe de dados para presumir a natureza da condicionante (se suspensiva/precedente à assinatura ou resolutiva/de acompanhamento durante a execução). O apontamento alerta a ausência de plano de providência, mas sua gravidade depende da valoração do assessor. |
-| **Interação com a Interface** | Na Etapa 3 (Conformidade), a interface exige o registro de providência para avanço no perfil Editor. Em rascunhos retomados ou importações onde a condicionante figure sem ação descrita, o motor gera este apontamento informativo. |
-| **Evidência Registrada** | Condicionante consignada em manifestação jurídica (`referenciaParecer`) classificada como pendente, sem que conste ação de saneamento declarada no formulário. |
+| **Estados Cobertos** | Condicionante com situação **`pendente`** OU **`em_cumprimento`**, com campo de providência vazio (`providencia == null` ou em branco). |
+| **Condição de Disparo** | (`condicionante.situacao == 'pendente'` **OU** `condicionante.situacao == 'em_cumprimento'`) **E** (`condicionante.providencia == null` ou `condicionante.providencia.trim() == ""`). |
+| **Diretriz de Classificação** | **`Classificação pendente de validação humana`**. O sistema não presume que a ausência de providência declarada torne a condicionante `IMPEDITIVA`, nem associa a exigência a uma gravidade pré-fixada. A indicação de gravidade é prerrogativa do assessor humano. |
+| **Interação com a Interface** | Na Etapa 3 (Conformidade), a interface adverte o usuário e orienta o registro de providência. Em rascunhos retomados ou importações onde a condicionante figure sem ação descrita, o motor gera este apontamento informativo. |
+| **Evidência Registrada** | Condicionante jurídica assinalada como pendente ou em cumprimento, sem registro de providência de saneamento no formulário. |
 | **Regra / Motivo** | Manifestações jurídicas com ressalvas ou condicionantes requerem tratamento administrativo para atendimento das orientações fixadas pelo órgão consultivo. |
-| **Impacto Potencial** | Risco de celebração ou prosseguimento da contratação sem observância das recomendações expedidas pela consultoria jurídica. |
-| **Providência Recomendada** | Avaliar o teor do parecer jurídico para identificar se a exigência é condicionante prévia e indispensável à assinatura do ajuste ou providência mitigatória a ser executada durante a vigência, definindo a ação e o setor responsável. |
-| **Classificação Sugerida** | **`Classificação pendente de validação humana`** (com sugestão indicativa de que condicionantes prévias de eficácia jurídica costumam ser avaliadas como `IMPEDITIVO` ou `RELEVANTE`, a critério do assessor). |
-| **Dados para Alternativas e Limitações** | *Alternativas:* Para classificar com precisão como `IMPEDITIVO`, `RELEVANTE` ou `FORMAL`, é indispensável avaliar o conteúdo jurídico da exigência (efeito suspensivo, prazo fatal, impacto na legalidade da despesa).<br>*Limitação do formulário:* O formulário atual não possui campos para "tipo de efeito da condicionante" nem "momento exigido para cumprimento". Portanto, o sistema registra essa limitação funcional e **não presume esses dados**, deixando a classificação a cargo do assessor. |
-| **Fonte e Situação** | *Fonte:* Boas práticas de instrução processual e controle preventivo de legalidade. *Situação:* **Proposta demonstrativa revisada pendente de validação humana.** |
+| **Impacto Potencial** | Risco de celebração ou prosseguimento da contratação sem encaminhamento das recomendações expedidas pela consultoria jurídica. |
+| **Providência Recomendada** | Examinar o parecer jurídico para identificar a ação saneadora necessária, definindo a providência administrativa, o setor responsável e o cronograma de atendimento. |
+| **Classificação** | **`Classificação pendente de validação humana`** (sem sugestões predeterminadas de gravidade, cabendo ao assessor valorar segundo o conteúdo da manifestação jurídica). |
+| **Limitação do Formulário** | O formulário atual não possui campos estruturados para metadados de efeito jurídico da condicionante (suspensivo ou resolutivo). O sistema registra essa limitação e não presume dados inexistentes. |
+| **Fonte e Situação** | *Fonte:* Boas práticas de instrução processual e controle preventivo de legalidade. *Situação:* **Proposta demonstrativa revisada pendente de aprovação humana.** |
 | **Exemplo que Dispara** | Condicionante "Apresentar comprovação de capacidade técnica", `situacao: "pendente"`, `providencia: ""`. |
-| **Exemplo que Não Dispara**| Condicionante com `situacao: "atendida"` ou com providência e classificação homologadas. |
+| **Exemplo que Não Dispara**| Condicionante com `situacao: "atendida"` ou com `providencia` preenchida (esta última tratada pela REG-04). |
 
 ---
 
-### REG-04 — Condicionante Jurídica Pendente com Providência Declarada
+### REG-04 — Condicionante Jurídica Pendente ou em Cumprimento com Providência Declarada
 
 | Campo | Especificação |
 |---|---|
-| **Identificador** | `REG-04-CONDICIONANTE-PENDENTE-COM-PROVIDENCIA` |
-| **Nome** | Condicionante Jurídica Pendente com Providência Declarada no Formulário |
+| **Identificador** | `REG-04-CONDICIONANTE-COM-PROVIDENCIA` |
+| **Nome** | Condicionante Jurídica Pendente ou em Cumprimento com Providência Declarada no Formulário |
 | **Regras Vinculadas** | **RN03** (Estrutura do achado), **RN04** (Classificação), **RN08** (Assinatura com ressalva/saneamento). |
-| **Dados Necessários** | `condicionante.descricao`, `condicionante.referenciaParecer`, `condicionante.situacao`, `condicionante.providencia`, `condicionante.evidenciaAtendimento`. |
-| **Separação das 4 Dimensões** | 1. **Situação do cumprimento:** Declarada como `pendente` ou `em_cumprimento`.<br>2. **Providência planejada:** Texto descritivo preenchido no formulário pelo usuário.<br>3. **Evidência de cumprimento:** Pendente de comprovação material autuada no processo.<br>4. **Classificação validada pelo assessor:** **Pendente de validação humana**. |
+| **Dados Necessários** | `condicionante.descricao`, `condicionante.referenciaParecer`, `condicionante.situacao`, `condicionante.providencia`. |
+| **Estados Cobertos** | Condicionante com situação **`pendente`** OU **`em_cumprimento`**, com campo de providência preenchido (`providencia != null` e não vazio). |
 | **Condição de Disparo** | (`condicionante.situacao == 'pendente'` **OU** `condicionante.situacao == 'em_cumprimento'`) **E** (`condicionante.providencia != null` e `condicionante.providencia.trim() != ""`). |
-| **Diretriz de Governança** | **Não reduzir a classificação apenas porque existe uma providência escrita.** O preenchimento do campo de providência registra a intenção ou medida administrativa planejada, mas não atesta que a condicionante esteja cumprida nem elimina os riscos jurídicos da sua pendência material. |
-| **Interação com a Interface** | Permite o registro detalhado da providência e do responsável na Etapa 3. O motor captura os dados e estrutura o apontamento para conferência da suficiência e do cronograma na Etapa 4. |
-| **Evidência Registrada** | Condicionante jurídica assinalada como pendente ou em cumprimento, constando no formulário o registro da providência declarada (`condicionante.providencia`). |
-| **Regra / Motivo** | A conformidade plena com o parecer jurídico exige a comprovação efetiva do saneamento das condicionantes antes da prática do ato ou a gestão rigorosa de suas ressalvas durante a execução. |
-| **Impacto Potencial** | Risco de início ou prosseguimento contratual baseado apenas em plano de ação, sem a efetiva juntada documental comprobatória aos autos processuais. |
-| **Providência Recomendada** | Verificar se a providência informada atende integralmente ao que foi determinado pelo parecer jurídico, se deve ser cumprida antes da assinatura ou durante a vigência, e monitorar a juntada da respectiva evidência de cumprimento aos autos. |
-| **Classificação Sugerida** | **`Classificação pendente de validação humana`** (sugestão indicativa demonstrativa: `RELEVANTE` se a condicionante for prévia à formalização do ato, ou `FORMAL` se for mera providência de governança a acompanhar). |
-| **Dados para Alternativas e Limitações** | *Alternativas:* A redução ou elevação da gravidade depende da suficiência da medida proposta, do risco de descumprimento e da existência de prazo fixado pela PGE.<br>*Limitação do formulário:* O sistema não avalia a qualidade semântica da providência digitada nem confere se a peça de evidência foi anexada ao SEI/processo físico. Essa limitação está registrada, incumbindo ao assessor validar a classificação. |
-| **Fonte e Situação** | *Fonte:* Gestão de riscos de contratação e RN03/RN04 de `docs/contexto.md`. *Situação:* **Proposta demonstrativa revisada pendente de validação humana.** |
+| **Distinção Fundamental** | **Providência planejada/declarada NÃO comprova cumprimento da condicionante.** O preenchimento do campo descreve a medida administrativa proposta ou em curso, mas não substitui a comprovação documental autuada no processo. A providência declarada **não reduz automaticamente a classificação de risco**. |
+| **Interação com a Interface** | Permite o registro da ação e do responsável na Etapa 3. O motor captura os dados e estrutura o apontamento para conferência do cumprimento e suficiência da medida. |
+| **Evidência Registrada** | Condicionante jurídica assinalada como pendente ou em cumprimento, constando no formulário o registro de providência declarada (`condicionante.providencia`). |
+| **Regra / Motivo** | A conformidade com a manifestação jurídica requer a comprovação documental do saneamento das condicionantes antes da prática do ato ou a gestão rigorosa de suas ressalvas durante a execução. |
+| **Impacto Potencial** | Risco de celebração ou prosseguimento contratual amparado em plano de ação sem a efetiva constatação do cumprimento nos autos processuais. |
+| **Providência Recomendada** | Verificar se a providência informada atende integralmente ao parecer jurídico e acompanhar a efetiva juntada da respectiva comprovação documental aos autos. |
+| **Classificação** | **`Classificação pendente de validação humana`** (retiradas quaisquer associações presumidas entre exigência prévia/acompanhamento e determinada gravidade). |
+| **Limitação do Formulário** | O sistema não valida semântica de providências nem confere autos eletrônicos externos. O assessor humano deve examinar a suficiência e atribuir a gravidade. |
+| **Fonte e Situação** | *Fonte:* Gestão de riscos de contratação e RN03/RN04 de `docs/contexto.md`. *Situação:* **Proposta demonstrativa revisada pendente de aprovação humana.** |
 | **Exemplo que Dispara** | Condicionante "Apresentar certidão de regularidade perante o FGTS", `situacao: "em_cumprimento"`, `providencia: "Solicitada emissão à contratada via ofício nº 12/2026"`. |
-| **Exemplo que Não Dispara**| Condicionante com `situacao: "atendida"` e registro do documento comprobatório anexado. |
+| **Exemplo que Não Dispara**| Condicionante com `situacao: "atendida"` e documento comprobatório autuado. |
 
 ---
 
@@ -156,53 +160,54 @@ Cada regra deste catálogo segue a anatomia obrigatória da RN03 e as diretrizes
 | **Regras Vinculadas** | **RN03** (Estrutura do achado), **RN05** (Sugestão indicativa), **RN11** (Instrução insuficiente). |
 | **Dados Necessários** | `itemChecklist.descricao`, `itemChecklist.status`, `itemChecklist.observacao`. |
 | **Condição de Disparo** | `itemChecklist.status == 'confirmar'`. |
-| **Tratamento de Ausências** | Se o item estiver como `confirmar` e o campo de observação estiver em branco, gera recomendação para detalhamento da dúvida técnica que justificou a marcação. |
-| **Interação com a Interface** | Permite ao assessor assinalar na Etapa 3 que um documento ainda não foi localizado ou que sua validade precisa de diligência. Na Etapa 4, o motor converte a marcação em achado sugestivo de conferência pendente. |
+| **Tratamento de Ausências** | Se o item estiver como `confirmar` e o campo de observação estiver em branco, recomenda-se detalhar a dúvida técnica que motivou a marcação. |
+| **Não Presunção de Inexistência nos Autos** | O apontamento reflete dúvida ou pendência de conferência no formulário; **não afirma que o documento inexiste nos autos processuais físicos/digitais**, cabendo a conferência concreta ao assessor. |
 | **Evidência Registrada** | Item do checklist de conformidade documental assinalado com o status "A confirmar". |
-| **Regra / Motivo** | A instrução processual deve assegurar a presença e higidez das peças obrigatórias. A existência de dúvida não suprida impede o ateste seguro de regularidade (RN11). |
-| **Impacto Potencial** | Risco de prosseguimento com instrução documental deficiente, gerando nulidades procedimentais ou impossibilidade de comprovação dos requisitos legais. |
-| **Providência Recomendada** | Realizar diligência no processo para verificar a existência, validade e adequação do documento ou certidão, atualizando o status para `ok` após a constatação ou registrando a pendência formal. |
-| **Classificação Sugerida** | **`Classificação pendente de validação humana`** (sugestão indicativa: `RELEVANTE` para peças estruturais da despesa ou `FORMAL` para registros acessórios). |
-| **Dados para Alternativas e Limitações** | *Alternativas:* Para determinar se o achado é `RELEVANTE` ou `FORMAL`, é necessário saber se a peça pendente de confirmação é requisito essencial de validade do ato (ex.: autorização da autoridade competente, empenho prévio) ou documento meramente complementar.<br>*Limitação do formulário:* O checklist atual não contém metadados sobre a essencialidade jurídica de cada item. Essa limitação é documentada para que o assessor decida a gravidade segundo o contexto concreto. |
-| **Fonte e Situação** | *Fonte:* Checklist procedimental da Administração Pública e RN11 de `docs/contexto.md`. *Situação:* **Aprovada para o protótipo com prevalência humana.** |
+| **Regra / Motivo** | A instrução processual deve assegurar a higidez das peças obrigatórias. A existência de dúvida não suprida no formulário impede o ateste seguro de regularidade (RN11). |
+| **Impacto Potencial** | Risco de prosseguimento da análise com peça documental não localizada ou em dúvida no formulário. |
+| **Providência Recomendada** | Realizar diligência no processo para verificar a existência, validade e adequação do documento ou certidão, atualizando o status para `ok` após constatação ou registrando a pendência formal. |
+| **Classificação** | **`Classificação pendente de validação humana`** *(removidas sugestões de gravidade baseadas em características que o sistema não consegue verificar, como essencialidade do documento)*. |
+| **Limitação do Formulário** | O checklist atual não possui metadados sobre a essencialidade jurídica da peça. O sistema registra essa limitação e confia a classificação ao assessor humano. |
+| **Fonte e Situação** | *Fonte:* Checklist procedimental da Administração Pública e RN11 de `docs/contexto.md`. *Situação:* **Proposta demonstrativa pendente de aprovação humana.** |
 | **Exemplo que Dispara** | Item "Certidão de Regularidade Fiscal", `status: "confirmar"`, `observacao: "Verificar se a certidão anexada às fls. 30 encontra-se dentro do prazo de validade"`. |
-| **Exemplo que Não Dispara**| Item com `status: "ok"` e referência de folhas/documento nos autos. |
+| **Exemplo que Não Dispara**| Item com `status: "ok"` e referência de documento nos autos. |
 
 ---
 
-### REG-06 — Item Marcado como "Não Aplicável" sem Justificativa Fundamentada
+### REG-06 — Item Marcado como Não Aplicável com Justificativa Ausente ou Abaixo do Mínimo Técnico
 
 | Campo | Especificação |
 |---|---|
 | **Identificador** | `REG-06-NAO-APLICABILIDADE-SEM-JUSTIFICATIVA` |
-| **Nome** | Item Dispensado sem Justificativa Circunstanciada no Formulário |
+| **Nome** | Item Marcado como Não Aplicável com Justificativa Ausente ou Abaixo do Mínimo Técnico de Preenchimento |
 | **Regras Vinculadas** | **RN03** (Estrutura do achado), **RN04** (Classificação), **RN13** (Consistência de preenchimento). |
 | **Dados Necessários** | `itemChecklist.descricao`, `itemChecklist.status`, `itemChecklist.justificativaNaoAplicavel`. |
 | **Condição de Disparo** | `itemChecklist.status == 'nao_aplicavel'` **E** (`itemChecklist.justificativaNaoAplicavel == null` ou `itemChecklist.justificativaNaoAplicavel.trim().length < 5`). |
-| **Papel do Limite de 5 Caracteres** | **Validação puramente técnica de preenchimento:** O piso de 5 caracteres atua unicamente como trava sintática na interface para impedir que o campo seja enviado em branco ou com caracteres dispersos. **Esse limite técnico NÃO atesta nem comprova que a justificativa seja suficiente, motivada ou juridicamente válida.** O mérito e a adequação da justificativa dependem sempre de validação humana. |
-| **Interação com a Interface** | Na Etapa 3 (Conformidade), a validação de tela impede que o usuário avance deixando o campo vazio se marcou "Não aplicável". Em rascunhos retomados, o motor audita o checklist e sinaliza a falta de motivação. |
-| **Evidência Registrada** | Item do checklist documental assinalado como não aplicável sem preenchimento ou com justificativa declarada inferior a 5 caracteres. |
-| **Regra / Motivo** | Princípio da motivação dos atos administrativos (Lei nº 14.133/2021). O afastamento de requisito documental padronizado exige justificativa expressa demonstrando a incompatibilidade com o objeto. |
-| **Impacto Potencial** | Risco de dispensa indevida de formalidade legal imperativa decorrente de erro operacional ou falta de registro das razões administrativas. |
-| **Providência Recomendada** | Registrar justificativa fundamentada indicando a base fática ou jurídica que torna o documento dispensável no caso concreto, ou reintegrar o item à conferência. |
-| **Classificação Sugerida** | **`Classificação pendente de validação humana`** (sugestão indicativa demonstrativa: `FORMAL` para simples saneamento de redação ou `RELEVANTE` se a peça for exigência legal cogente). |
-| **Dados para Alternativas e Limitações** | *Alternativas:* Para discernir entre `FORMAL` e `RELEVANTE`, faz-se necessário examinar se o documento dispensado é passível de dispensa legal fundamentada ou se constitui exigência legal inderrogável.<br>*Limitação do formulário:* O formulário não processa linguagem natural nem analisa a procedência legal do texto digitado. O sistema registra a limitação e confia a análise de mérito ao assessor. |
-| **Fonte e Situação** | *Fonte:* Teoria dos motivos determinantes e RN13 de `docs/contexto.md`. *Situação:* **Aprovada para o protótipo com trava técnica e avaliação de mérito humana.** |
+| **Significado do Limite Técnico de 5 Caracteres** | **Trava sintática de interface:** O piso de 5 caracteres atua unicamente como validação técnica de preenchimento na interface.  <br>- **Menos de 5 caracteres NÃO comprova falta de fundamento jurídico;**  <br>- **Cinco ou mais caracteres também NÃO comprovam justificativa adequada ou motivada.**  <br>A avaliação de mérito e suficiência jurídica da justificativa cabe sempre ao assessor humano. |
+| **Alcance do "Não se Aplica"** | A marcação "Não se aplica" dispensa **somente a checagem correspondente no protótipo**, permanecendo sujeita à revisão humana. |
+| **Título Exato do Achado Sugerido** | **“Item marcado como não aplicável com justificativa ausente ou abaixo do mínimo técnico de preenchimento.”** |
+| **Evidência Registrada** | Item do checklist documental assinalado como não aplicável sem justificativa preenchida ou com texto inferior ao mínimo técnico de 5 caracteres. |
+| **Regra / Motivo** | Princípio da motivação dos atos administrativos (Lei nº 14.133/2021). A dispensa de exigência padrão requer motivação expressa demonstrando a incompatibilidade com o objeto. |
+| **Impacto Potencial** | Risco de dispensa de item da instrução sem o registro da justificativa cabível no formulário. |
+| **Providência Recomendada** | Registrar justificativa circunstanciada indicando as razões fáticas ou jurídicas que justificam o afastamento do item no caso concreto, ou reintegrar o item à conferência. |
+| **Classificação** | **`Classificação pendente de validação humana`** *(removidas sugestões de gravidade baseadas em características que o sistema não consegue verificar, como cogência da peça)*. |
+| **Limitação do Formulário** | O sistema não processa linguagem natural nem analisa a validade jurídica da fundamentação digitada. Essa limitação é documentada e a validação do mérito é confiada ao assessor. |
+| **Fonte e Situação** | *Fonte:* Teoria dos motivos determinantes e RN13 de `docs/contexto.md`. *Situação:* **Proposta demonstrativa pendente de aprovação humana.** |
 | **Exemplo que Dispara** | Item "Matriz de Riscos", `status: "nao_aplicavel"`, `justificativaNaoAplicavel: ""` ou `"n/a"`. |
-| **Exemplo que Não Dispara**| Item assinalado como não aplicável com justificativa circunstanciada registrada pelo assessor. |
+| **Exemplo que Não Dispara**| Item com `status: "nao_aplicavel"` e justificativa circunstanciada registrada pelo assessor. |
 
 ---
 
 ## 4. Matriz de Síntese e Mapeamento de Classificações Preliminares
 
-| Código da Regra | Gatilho Lógico no Estado | Classificação Preliminar Sugerida | Dados Necessários para Decisão | Limitações do Modelo Atual | Soberania da Validação Humana |
+| Código da Regra | Gatilho Lógico no Estado | Classificação Sugerida ou Estado | Dados Necessários para Decisão Humana | Limitações do Modelo Atual | Soberania da Validação Humana |
 |---|---|---|---|---|---|
-| `REG-01-VIGENCIA-INCONSISTENTE` | `fim < inicio` e vigência aplicável | **`FORMAL`** *(sugestão demonstrativa preliminar)* | Saber se o erro está apenas na digitação ou se consta na minuta autuada. | Sem campo de conferência de documento original autuado. | Assessor avalia se é erro de interface ou vício da minuta e define classificação. |
-| `REG-02-PERTINENCIA-NAO-DEMONSTRADA` | Conclusão humana `NAO_DEMONSTRADA` / `NAO_PERTINENTE` ou eixos `false` | **`IMPEDITIVO`** ou **`RELEVANTE`** *(conforme conclusão humana)* | Conclusão do assessor e justificativa fática registrada. | Não presume respostas "A avaliar" como negativas. | Assessor decide a pertinência; sistema nunca sobrepõe sugestão à conclusão humana. |
-| `REG-03-CONDICIONANTE-PENDENTE-SEM-PROVIDENCIA` | Condicionante `pendente` sem providência preenchida | **`Pendente de validação humana`** | Natureza jurídica (prévia ou resolutiva), prazo e efeito suspensivo. | Sem tipologia estruturada de condicionante no formulário. | Assessor avalia a natureza da condicionante e atribui soberanamente a gravidade. |
-| `REG-04-CONDICIONANTE-PENDENTE-COM-PROVIDENCIA` | Condicionante `pendente`/`em_cumprimento` com providência | **`Pendente de validação humana`** | Efetividade da providência declarada e juntada de evidência aos autos. | Prova de juntada não é verificada automaticamente no sistema. | Assessor verifica se a providência atende ao parecer e se a evidência foi juntada. |
-| `REG-05-DOCUMENTO-A-CONFIRMAR` | Item do checklist marcado como `confirmar` | **`Pendente de validação humana`** | Essencialidade jurídica da peça para a validade do ajuste. | Checklist atual não categoriza itens em essenciais ou acessórios. | Assessor verifica a peça nos autos e classifica a relevância da pendência. |
-| `REG-06-NAO-APLICABILIDADE-SEM-JUSTIFICATIVA` | Item `nao_aplicavel` com justificativa < 5 caracteres | **`Pendente de validação humana`** | Legitimidade fática e jurídica da dispensa do requisito. | Trava de 5 caracteres é apenas técnica; não avalia mérito. | Assessor valida se a fundamentação é jurídica e formalmente cabível. |
+| `REG-01-VIGENCIA-INCONSISTENTE` | `fim < inicio` e vigência aplicável | **`FORMAL`** *(sugestão demonstrativa preliminar)* | Saber se o erro está apenas na digitação ou se consta na minuta autuada. | Sem campo de conferência de documento original autuado. | Assessor confere a fonte e define soberanamente a classificação. |
+| `REG-02-PERTINENCIA-NAO-DEMONSTRADA` | Conclusão humana `NAO_PERTINENTE` ou `NAO_DEMONSTRADA`, ou critérios `false` sem conclusão | - `NAO_PERTINENTE`: **`IMPEDITIVO`**<br>- `NAO_DEMONSTRADA`: **`RELEVANTE`**<br>- Sem conclusão com "Não": **`Classificação pendente`** | Conclusão do assessor e justificativa fática registrada. | Não presume respostas "A avaliar" como negativas. | Assessor decide a pertinência; conclusão humana favorável divergente é preservada com alerta. |
+| `REG-03-CONDICIONANTE-SEM-PROVIDENCIA` | Condicionante `pendente` ou `em_cumprimento` com providência vazia | **`Classificação pendente de validação humana`** | Natureza jurídica (prévia ou resolutiva), prazo e efeito suspensivo. | Sem tipologia estruturada de condicionante no formulário. | Assessor avalia a natureza da condicionante e atribui soberanamente a gravidade. |
+| `REG-04-CONDICIONANTE-COM-PROVIDENCIA` | Condicionante `pendente` ou `em_cumprimento` com providência preenchida | **`Classificação pendente de validação humana`** | Efetividade da providência declarada e juntada de evidência aos autos. | Providência planejada não comprova cumprimento; sem checagem de autos eletrônicos externos. | Assessor verifica se a providência atende ao parecer e se o cumprimento foi comprovado. |
+| `REG-05-DOCUMENTO-A-CONFIRMAR` | Item do checklist marcado como `confirmar` | **`Classificação pendente de validação humana`** | Essencialidade jurídica da peça para a validade do ajuste. | Checklist atual não categoriza itens em essenciais ou acessórios. | Assessor verifica a peça nos autos e classifica a relevância da pendência. |
+| `REG-06-NAO-APLICABILIDADE-SEM-JUSTIFICATIVA` | Item `nao_aplicavel` com justificativa < 5 caracteres | **`Classificação pendente de validação humana`** | Legitimidade fática e jurídica da dispensa do requisito. | Piso de 5 caracteres é apenas trava de interface; não avalia suficiência jurídica. | Assessor valida se a fundamentação é cabível e suficiente nos autos. |
 
 ---
 
@@ -245,15 +250,10 @@ Para assegurar fidelidade aos requisitos desta etapa e evitar suposições indev
 1. **Limitações do Modelo de Dados do Protótipo (Sem ampliação não autorizada):**
    - *Origem da inconsistência de vigência:* O formulário não possui campo para marcar se o erro ocorreu na digitação do sistema ou no documento original assinado.
    - *Tipologia de condicionantes jurídicas:* O formulário possui apenas `situacao`, `descricao`, `referenciaParecer`, `providencia`, `responsavel` e `evidenciaAtendimento`. Não há metadados sobre efeito suspensivo ou momento legal de eficácia.
-   - *Essencialidade de itens do checklist:* Não há diferenciação prévia entre requisitos de nulidade absoluta e formalidades secundárias.
+   - *Essencialidade de itens do checklist:* Não há diferenciação prévia entre requisitos de nulidade absoluta e formalidades secundárias.  
    *Decisão:* Essas limitações ficam formalmente registradas. **Nenhum campo fictício será adicionado e nenhum formulário será alterado nesta tarefa.**
 2. **Classificações Mantidas como Pendentes de Validação Humana:**
-   - Em observância à governança, condicionantes pendentes (`REG-03` e `REG-04`), conferências em aberto (`REG-05`) e dispensas de itens (`REG-06`) não receberão classificações de gravidade impostas de forma determinística/inflexível pelo motor, sugerindo preferencialmente `Classificação pendente de validação humana` e facultando a escolha qualificada ao assessor.
-3. **Revisão Humana do Catálogo:**
-   - O catálogo documental da S3.1 permanece formalmente registrado como **pendente de revisão humana** prévia antes de qualquer codificação do motor na tarefa S3.2.
-"""
-
-with open("c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/regras-funcionais.md", "w", encoding="utf-8") as f:
-    f.write(content.strip() + "\n")
-
-print("regras-funcionais.md successfully updated!")
+   - Em estrita observância à governança, condicionantes (`REG-03` e `REG-04`), conferências em aberto (`REG-05`) e dispensas de itens (`REG-06`) não receberão classificações de gravidade impostas de forma determinística/inflexível pelo motor, mantendo a indicação `Classificação pendente de validação humana` e facultando a escolha qualificada ao assessor.
+   - Reafirma-se que "Classificação pendente" é um estado de avaliação do apontamento, não uma quinta categoria de gravidade.
+3. **Aprovação Funcional do Catálogo:**
+   - O catálogo documental da S3.1 foi formalmente aprovado pelo usuário em 25/09/2026 como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (S3.2), sem constituir validação jurídica das regras nem aprovação de processos reais.
