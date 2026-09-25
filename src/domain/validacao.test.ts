@@ -10,9 +10,20 @@ import {
   formatarMoeda,
   formatarDataBR,
   calcularDuracaoVigencia,
-  validarFormatoCNPJ
+  validarFormatoCNPJ,
+  validarPertinencia,
+  sugerirConclusaoPertinencia,
+  formatarConclusaoPertinencia,
+  validarConformidade,
+  formatarStatusConformidade,
+  formatarSituacaoCondicionante
 } from './validacao.ts';
-import type { Processo } from './tipos.ts';
+import type {
+  Processo,
+  Pertinencia,
+  ItemConformidade,
+  Condicionante
+} from './tipos.ts';
 
 test('validarProcesso: processo válido completo deve ser aprovado', () => {
   const p: Processo = {
@@ -156,3 +167,193 @@ test('formatadores e utilitários de domínio', () => {
   assert.equal(validarFormatoCNPJ('11.111.111/0001-11'), true);
   assert.equal(validarFormatoCNPJ('123'), false);
 });
+
+// ==========================================
+// TESTES DE PERTINÊNCIA INSTITUCIONAL (S2.2)
+// ==========================================
+
+test('validarPertinencia: pertinência regular completa (Cenário 1) deve ser aprovada', () => {
+  const pert: Pertinencia = {
+    respostas: {
+      competenciaNecessidade: true,
+      vinculoPlanejamento: true,
+      beneficioInteressePublico: true,
+      custoProporcionalidade: true,
+      economicidade: true
+    },
+    evidencias: 'Documento Demonstrativo nº 01/2026: renovação do parque tecnológico.',
+    justificativa: 'Necessidade plenamente aderente aos objetivos estratégicos.',
+    conclusao: 'PERTINENTE',
+    providencia: 'Prosseguir com o trâmite regular para assinatura.'
+  };
+
+  const res = validarPertinencia(pert);
+  assert.equal(res.valido, true);
+  assert.equal(Object.keys(res.erros).length, 0);
+  assert.equal(res.sugestaoIndicativa, 'PERTINENTE');
+});
+
+test('validarPertinencia: pertinência vazia deve acusar erros obrigatórios (RN02)', () => {
+  const res = validarPertinencia({});
+  assert.equal(res.valido, false);
+  assert.ok(res.erros.respostas, 'Deve exigir avaliação de critérios');
+  assert.ok(res.erros.conclusao, 'Deve exigir conclusão (RN02)');
+  assert.ok(res.erros.evidencias, 'Deve exigir evidências dos autos');
+  assert.ok(res.erros.justificativa, 'Deve exigir justificativa técnica');
+  assert.ok(res.erros.providencia, 'Deve exigir providência');
+});
+
+test('sugerirConclusaoPertinencia: regras determinísticas dos 5 filtros', () => {
+  // Todos verdadeiros -> PERTINENTE
+  assert.equal(
+    sugerirConclusaoPertinencia({
+      competenciaNecessidade: true,
+      vinculoPlanejamento: true,
+      beneficioInteressePublico: true,
+      custoProporcionalidade: true,
+      economicidade: true
+    }),
+    'PERTINENTE'
+  );
+
+  // Cenário 4 (critérios falsos/nulos de planejamento/custo) -> NAO_DEMONSTRADA
+  assert.equal(
+    sugerirConclusaoPertinencia({
+      competenciaNecessidade: true,
+      vinculoPlanejamento: false,
+      beneficioInteressePublico: null,
+      custoProporcionalidade: false,
+      economicidade: null
+    }),
+    'NAO_DEMONSTRADA'
+  );
+
+  // Cenário 5 (competência ou benefício falsos) -> NAO_PERTINENTE
+  assert.equal(
+    sugerirConclusaoPertinencia({
+      competenciaNecessidade: false,
+      vinculoPlanejamento: false,
+      beneficioInteressePublico: false,
+      custoProporcionalidade: false,
+      economicidade: false
+    }),
+    'NAO_PERTINENTE'
+  );
+});
+
+test('validarPertinencia: decisão humana divergente da sugestão do sistema é aceita com aviso (RN02)', () => {
+  const pert: Pertinencia = {
+    respostas: {
+      competenciaNecessidade: true,
+      vinculoPlanejamento: false,
+      beneficioInteressePublico: true,
+      custoProporcionalidade: true,
+      economicidade: true
+    },
+    evidencias: 'Nota explicativa da unidade gestora anexada à fl. 32.',
+    justificativa: 'Apesar de não constar expressamente no plano inicial, o objeto foi justificado por urgência operacional.',
+    conclusao: 'PERTINENTE_COM_JUSTIFICATIVA',
+    providencia: 'Admitir o prosseguimento com recomendação de ajuste no plano setorial.'
+  };
+
+  const res = validarPertinencia(pert);
+  assert.equal(res.valido, true);
+  assert.equal(Object.keys(res.erros).length, 0);
+  assert.ok(res.avisos.conclusao, 'Deve alertar que a conclusão humana difere da sugestão');
+  assert.match(formatarConclusaoPertinencia(pert.conclusao), /PERTINENTE COM JUSTIFICATIVA/);
+});
+
+// ==========================================
+// TESTES DE CONFORMIDADE E CONDICIONANTES (S2.3)
+// ==========================================
+
+test('validarConformidade: checklist regular e condicionantes atendidas devem ser válidos', () => {
+  const checklist: ItemConformidade[] = [
+    {
+      id: 'chk-1',
+      descricao: 'Parecer Jurídico Referencial',
+      status: 'ok',
+      referenciaFonte: 'Peça 10'
+    },
+    {
+      id: 'chk-2',
+      descricao: 'Dotação Orçamentária',
+      status: 'ok',
+      referenciaFonte: 'Peça 12'
+    }
+  ];
+
+  const condicionantes: Condicionante[] = [
+    {
+      id: 'cond-1',
+      descricao: 'Juntada de certidões negativas fiscais atualizadas.',
+      referenciaParecer: 'Parecer PGE nº 101/2026, item 14',
+      situacao: 'atendida',
+      evidenciaAtendimento: 'Certidões anexadas à Peça 15'
+    }
+  ];
+
+  const res = validarConformidade(checklist, condicionantes);
+  assert.equal(res.valido, true);
+  assert.equal(Object.keys(res.erros).length, 0);
+  assert.equal(res.estatisticas.totalItens, 2);
+  assert.equal(res.estatisticas.itensOk, 2);
+  assert.equal(res.estatisticas.condicionantesAtendidas, 1);
+});
+
+test('validarConformidade: item nao_aplicavel exige justificativa fundamentada', () => {
+  const checklistSemJustificativa: ItemConformidade[] = [
+    {
+      id: 'chk-aditivo-valor',
+      descricao: 'Adequação Orçamentária Imediata',
+      status: 'nao_aplicavel',
+      justificativaNaoAplicavel: '' // Vazio!
+    }
+  ];
+
+  const resErro = validarConformidade(checklistSemJustificativa, []);
+  assert.equal(resErro.valido, false);
+  assert.ok(resErro.erros['chk_chk-aditivo-valor_justificativa'], 'Deve exigir justificativa');
+
+  const checklistComJustificativa: ItemConformidade[] = [
+    {
+      id: 'chk-aditivo-valor',
+      descricao: 'Adequação Orçamentária Imediata',
+      status: 'nao_aplicavel',
+      justificativaNaoAplicavel: 'Termo aditivo restrito à dilatação temporal sem acréscimo de despesa.'
+    }
+  ];
+
+  const resOk = validarConformidade(checklistComJustificativa, []);
+  assert.equal(resOk.valido, true);
+  assert.equal(resOk.erros['chk_chk-aditivo-valor_justificativa'], undefined);
+  assert.equal(resOk.estatisticas.itensNaoAplicaveis, 1);
+});
+
+test('validarConformidade: condicionante pendente exige providência saneadora', () => {
+  const condicionantes: Condicionante[] = [
+    {
+      id: 'cond-pendente',
+      descricao: 'Apresentar comprovação de garantia da execução contratual.',
+      referenciaParecer: 'Parecer Jurídico nº 55/2026, item 8',
+      situacao: 'pendente',
+      providencia: '' // Vazio!
+    }
+  ];
+
+  const res = validarConformidade([{ id: '1', descricao: 'Item teste', status: 'ok' }], condicionantes);
+  assert.equal(res.valido, false);
+  assert.ok(res.erros['cond_cond-pendente_providencia'], 'Deve exigir providência');
+
+  condicionantes[0].providencia = 'Intimar contratada para juntada da apólice em 48h.';
+  const resCorrigido = validarConformidade([{ id: '1', descricao: 'Item teste', status: 'ok' }], condicionantes);
+  assert.equal(resCorrigido.valido, true);
+});
+
+test('formatarStatusConformidade e formatarSituacaoCondicionante', () => {
+  assert.match(formatarStatusConformidade('ok'), /Conforme/);
+  assert.match(formatarStatusConformidade('nao_aplicavel'), /Não se aplica/);
+  assert.match(formatarSituacaoCondicionante('atendida'), /Atendida/);
+  assert.match(formatarSituacaoCondicionante('em_cumprimento'), /Em cumprimento/);
+});
+

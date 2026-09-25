@@ -526,7 +526,7 @@ function atualizarQuatroElementosAoVivo(p: Processo): void {
 /**
  * Lê os dados atuais do formulário do DOM e monta o objeto Processo.
  */
-function extrairDadosDoFormulario(): Processo {
+export function extrairDadosDoFormulario(): Processo {
   const f = document.getElementById('form-identificacao') as HTMLFormElement | null;
   if (!f) return processoAtivo;
 
@@ -559,6 +559,15 @@ function extrairDadosDoFormulario(): Processo {
     vigenciaNaoAplicavel,
     contratadoNaoAplicavel
   };
+}
+
+/**
+ * Sincroniza o estado em memória do Processo com os valores presentes no formulário do DOM.
+ */
+export function sincronizarIdentificacaoDoFormulario(): Processo {
+  const dados = extrairDadosDoFormulario();
+  processoAtivo = dados;
+  return dados;
 }
 
 /**

@@ -3,7 +3,35 @@
  * Implementação da tarefa S1.3 e S2.1
  */
 
-import { renderIdentificacaoScreen, initIdentificacaoEvents } from './pages/identificacao';
+import {
+  renderIdentificacaoScreen,
+  initIdentificacaoEvents,
+  getProcessoAtivo,
+  setProcessoAtivo,
+  sincronizarIdentificacaoDoFormulario
+} from './pages/identificacao';
+import {
+  renderPertinenciaScreen,
+  initPertinenciaEvents,
+  getPertinenciaAtiva,
+  setPertinenciaAtiva,
+  sincronizarPertinenciaDoFormulario
+} from './pages/pertinencia';
+import {
+  renderConformidadeScreen,
+  initConformidadeEvents,
+  getChecklistAtivo,
+  setChecklistAtivo,
+  getCondicionantesAtivas,
+  setCondicionantesAtivas,
+  sincronizarConformidadeDoFormulario
+} from './pages/conformidade';
+import {
+  salvarRascunhoAtual,
+  recuperarUltimoRascunho,
+  formatarCarimboSalvamento,
+  AVISO_PERSISTENCIA_LOCAL
+} from './services/armazenamento';
 
 export interface StageInfo {
   id: string;
@@ -122,6 +150,41 @@ function renderStepper(currentStepNumber: number): string {
   `;
 }
 
+let ultimoSalvamentoTimestamp: string | null = null;
+let rascunhoInicializado: boolean = false;
+
+/**
+ * Renderiza a barra executiva de persistência local (IndexedDB) no topo de cada etapa.
+ */
+function renderBarraPersistencia(): string {
+  return `
+    <div class="storage-bar" role="region" aria-label="Status do salvamento local no navegador">
+      <div class="storage-bar-main">
+        <div class="storage-info">
+          <span class="storage-icon">💾</span>
+          <div>
+            <strong class="storage-title">Persistência Local (IndexedDB)</strong>
+            <span class="storage-time" id="status-ultimo-salvamento">
+              Último salvamento: ${formatarCarimboSalvamento(ultimoSalvamentoTimestamp)}
+            </span>
+          </div>
+        </div>
+        <div class="storage-actions">
+          <button type="button" id="btn-salvar-rascunho-global" class="btn btn-secondary btn-small" title="Salva o rascunho de todas as etapas no IndexedDB deste navegador">
+            💾 Salvar Rascunho
+          </button>
+          <button type="button" id="btn-recuperar-rascunho-global" class="btn btn-secondary btn-small" title="Recupera o último rascunho salvo do IndexedDB">
+            📂 Retomar Rascunho Salvo
+          </button>
+        </div>
+      </div>
+      <p class="storage-disclaimer">
+        ${AVISO_PERSISTENCIA_LOCAL}
+      </p>
+    </div>
+  `;
+}
+
 /**
  * Renderiza os botões "Anterior" e "Próximo".
  */
@@ -178,54 +241,7 @@ function renderHomeScreen(): string {
 }
 
 
-/**
- * Renderiza a Etapa 2: Pertinência Institucional.
- */
-function renderPertinenciaScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">2. Pertinência Institucional</h2>
-      <p class="stage-description">
-        Filtro prévio obrigatório (RN02). A simples conformidade jurídica ou disponibilidade financeira não comprovam, isoladamente, a pertinência do gasto público.
-      </p>
-    </div>
 
-    <div class="preview-card">
-      <h3 class="preview-title">Critérios avaliados nesta etapa:</h3>
-      <ul class="preview-list">
-        <li><strong>Competência e Necessidade:</strong> O objeto é de competência do órgão e estritamente necessário às suas finalidades?</li>
-        <li><strong>Vínculo e Planejamento:</strong> A despesa está alinhada ao Plano Estratégico e às metas da SESP-MT?</li>
-        <li><strong>Benefício ao Interesse Público:</strong> Os resultados esperados atendem concretamente à segurança pública?</li>
-        <li><strong>Proporcionalidade e Economicidade:</strong> O custo estimado é proporcional ao benefício gerado?</li>
-      </ul>
-      <p class="preview-status">Status da visualização: Estrutura navegável preparada para receber os controles de validação na Sprint 2.</p>
-    </div>
-  `;
-}
-
-/**
- * Renderiza a Etapa 3: Conformidade Documental.
- */
-function renderConformidadeScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">3. Conformidade Documental e Jurídica</h2>
-      <p class="stage-description">
-        Verificação do checklist instrucional do processo e conferência individualizada do atendimento de condicionantes estabelecidas pela PGE ou assessoria jurídica.
-      </p>
-    </div>
-
-    <div class="preview-card">
-      <h3 class="preview-title">Itens do checklist e condicionantes:</h3>
-      <ul class="preview-list">
-        <li><strong>Parecer Jurídico:</strong> Existência de parecer referencial ou específico aprovado.</li>
-        <li><strong>Condicionantes:</strong> Verificação explícita de cumprimento de cada recomendação jurídica antes do envio para assinatura.</li>
-        <li><strong>Instrução Formal:</strong> Dotação orçamentária, nota de empenho, garantia contratual e designação de fiscal e gestor.</li>
-      </ul>
-      <p class="preview-status">Status da visualização: Estrutura navegável preparada para receber a lista interativa de itens na Sprint 2.</p>
-    </div>
-  `;
-}
 
 /**
  * Renderiza a Etapa 4: Apontamento de Achados.
@@ -307,6 +323,15 @@ function renderResultadoScreen(): string {
 }
 
 /**
+ * Garante que qualquer digitação pendente no DOM seja sincronizada para o estado da tela ativa antes de salvar.
+ */
+export function sincronizarEstadoDaTelaAtiva(): void {
+  sincronizarIdentificacaoDoFormulario();
+  sincronizarPertinenciaDoFormulario();
+  sincronizarConformidadeDoFormulario();
+}
+
+/**
  * Função principal do roteador que lê a hash da URL e renderiza a tela correspondente.
  */
 export function renderRoute(): void {
@@ -356,6 +381,7 @@ export function renderRoute(): void {
     mainHtml = `
       <main class="main-content">
         ${renderStepper(currentStage.stepNumber)}
+        ${renderBarraPersistencia()}
         <div class="card stage-card">
           ${stageContentHtml}
           ${renderNavigationButtons(currentStage.stepNumber)}
@@ -370,9 +396,56 @@ export function renderRoute(): void {
     ${renderFooter()}
   `;
 
-  // Inicializa eventos específicos da etapa
+  // Listeners da Barra de Persistência Local (IndexedDB)
+  const btnSalvar = document.getElementById('btn-salvar-rascunho-global');
+  btnSalvar?.addEventListener('click', async () => {
+    btnSalvar.textContent = 'Salvando...';
+    try {
+      // Sincroniza imediatamente o estado a partir do formulário aberto no DOM
+      sincronizarEstadoDaTelaAtiva();
+      const res = await salvarRascunhoAtual(
+        getProcessoAtivo(),
+        getPertinenciaAtiva(),
+        getChecklistAtivo(),
+        getCondicionantesAtivas(),
+        'rascunho'
+      );
+      ultimoSalvamentoTimestamp = res.salvoEm;
+      const el = document.getElementById('status-ultimo-salvamento');
+      if (el) el.textContent = `Último salvamento: ${formatarCarimboSalvamento(res.salvoEm)}`;
+      alert(`✅ Rascunho salvo com sucesso no IndexedDB deste navegador!\n\nSalvo em: ${formatarCarimboSalvamento(res.salvoEm)}\nProcesso: ${getProcessoAtivo().numero || '(Em preenchimento)'}\n\nAtenção: O salvamento do rascunho preserva as edições locais e não se confunde com aprovação jurídica da análise.`);
+    } catch (e) {
+      alert(`Erro ao salvar rascunho localmente: ${(e as Error).message}`);
+    } finally {
+      btnSalvar.textContent = '💾 Salvar Rascunho';
+    }
+  });
+
+  const btnRecuperar = document.getElementById('btn-recuperar-rascunho-global');
+  btnRecuperar?.addEventListener('click', async () => {
+    try {
+      const recuperado = await recuperarUltimoRascunho();
+      if (!recuperado) {
+        alert('ℹ️ Nenhum rascunho salvo anteriormente foi encontrado no IndexedDB deste navegador.');
+        return;
+      }
+      setProcessoAtivo(recuperado.processo);
+      setPertinenciaAtiva(recuperado.pertinencia);
+      setChecklistAtivo(recuperado.checklist);
+      setCondicionantesAtivas(recuperado.condicionantes);
+      ultimoSalvamentoTimestamp = recuperado.salvoEm;
+      renderRoute();
+      alert(`✅ Rascunho recuperado com sucesso do IndexedDB!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
+    } catch (e) {
+      alert(`Erro ao recuperar rascunho do IndexedDB: ${(e as Error).message}`);
+    }
+  });
+
   if (currentStage?.id === 'identificacao') {
-    initIdentificacaoEvents(() => {
+    initIdentificacaoEvents(async () => {
+      // Salva rascunho automaticamente ao avançar
+      sincronizarEstadoDaTelaAtiva();
+      await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
       window.location.hash = '#/pertinencia';
     });
 
@@ -389,15 +462,87 @@ export function renderRoute(): void {
     }
   }
 
+  if (currentStage?.id === 'pertinencia') {
+    initPertinenciaEvents(
+      async () => {
+        // Salva rascunho automaticamente ao avançar
+        sincronizarEstadoDaTelaAtiva();
+        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        window.location.hash = '#/conformidade';
+      },
+      () => {
+        sincronizarEstadoDaTelaAtiva();
+        window.location.hash = '#/identificacao';
+      }
+    );
+
+    // Intercepta o botão "Próximo →" inferior para acionar a validação de pertinência antes de avançar
+    const nextBtn = document.querySelector('.stage-actions a.btn-primary');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('form-pertinencia') as HTMLFormElement | null;
+        if (form) {
+          form.requestSubmit();
+        }
+      });
+    }
+  }
+
+  if (currentStage?.id === 'conformidade') {
+    initConformidadeEvents(
+      async () => {
+        // Salva rascunho automaticamente ao avançar
+        sincronizarEstadoDaTelaAtiva();
+        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho');
+        window.location.hash = '#/achados';
+      },
+      () => {
+        sincronizarEstadoDaTelaAtiva();
+        window.location.hash = '#/pertinencia';
+      }
+    );
+
+    // Intercepta o botão "Próximo →" inferior para acionar a validação de conformidade antes de avançar
+    const nextBtn = document.querySelector('.stage-actions a.btn-primary');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('form-conformidade') as HTMLFormElement | null;
+        if (form) {
+          form.requestSubmit();
+        }
+      });
+    }
+  }
+
   // Assegura rolagem suave ao topo ao mudar de rota
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
- * Inicializa os ouvintes do roteador.
+ * Inicializa os ouvintes do roteador e retoma rascunho persistido.
  */
-export function initRouter(): void {
+export async function initRouter(): Promise<void> {
   window.addEventListener('hashchange', renderRoute);
+
+  // Na inicialização, tenta recuperar o último rascunho salvo do IndexedDB
+  if (!rascunhoInicializado) {
+    rascunhoInicializado = true;
+    try {
+      const recuperado = await recuperarUltimoRascunho();
+      if (recuperado) {
+        setProcessoAtivo(recuperado.processo);
+        setPertinenciaAtiva(recuperado.pertinencia);
+        setChecklistAtivo(recuperado.checklist);
+        setCondicionantesAtivas(recuperado.condicionantes);
+        ultimoSalvamentoTimestamp = recuperado.salvoEm;
+      }
+    } catch {
+      // Falha não bloqueante na inicialização
+    }
+  }
+
   // Primeira renderização
   renderRoute();
 }

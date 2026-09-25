@@ -2,45 +2,52 @@
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
 Data do último registro: 24/09/2026.  
-**Branch de trabalho atual:** `main` (após integração da branch `pausa-s1-6`)
+**Branch de trabalho atual:** `pausa-s2-4` (com o progresso integral das tarefas S1.1 a S2.4)  
+**Caminho local da pasta do projeto:**  
+`C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 
 ---
 
 ## 1. Status Geral do Projeto
-- **Fase atual:** Sprint 1 — Fundação, arquitetura e PWA (100% CONCLUÍDA E HOMOLOGADA).
-- **Tarefas concluídas e homologadas:**
-  - `S0.2`: Diagnóstico e verificação de ambiente (Node, npm, Python, Git).
-  - `S1.1`: Fundação e arquitetura inicial (Vite, TypeScript, CSS puro, `.gitignore`).
-  - `S1.2`: Modelagem dos dados em `src/domain/tipos.ts` (entidades, 4 conclusões, validação humana, campos opcionais).
-  - `S1.3`: Navegação client-side por hash, 6 etapas, stepper, acessibilidade, aviso de dados fictícios e 4 elementos essenciais na Identificação.
-  - `S1.4`: Geração de 5 cenários fictícios determinísticos em `public/data/` e suíte de testes com 12 testes no `pytest` (`scripts/test_gerar_dados.py`).
-  - `S1.5`: Configuração de base (`/conforma-gsasp/`), documentação (`README.md`), automação CI/CD (`.github/workflows/deploy.yml`) e publicação no GitHub Pages (`https://cleytondias84.github.io/conforma-gsasp/`).
-  - `S1.6`: Instalação e cache PWA (100% implementada e homologada).
-    - **Implementação técnica:** Plugin `vite-plugin-pwa` configurado em `vite.config.ts` com Workbox e Service Worker automático (`sw.js`); manifesto Web (`manifest.webmanifest`) com tema `#0f172a`, idioma `pt-BR`, escopo `/conforma-gsasp/`, `start_url: '/conforma-gsasp/#/'` e modo `standalone`; ícones completos gerados via `scripts/gerar_icones.py` em `public/`; precache de 31 ativos essenciais (HTML, CSS, JS, ícones e dados sintéticos em `/data/*.json`).
-    - **Testes manuais homologados pelo usuário:**
-      1. *Instalação do PWA:* Aprovada no Chrome/Edge em modo standalone.
-      2. *Modo Offline:* Aprovada com corte de rede via DevTools, recarregamento da página e navegação pelas seis etapas (`#/identificacao`, `#/pertinencia`, `#/conformidade`, `#/achados`, `#/riscos`, `#/resultado`).
-      3. *Verificação de Console:* Confirmado console limpo durante o teste em janela anônima.
-    - **Registro sobre mensagens no console:** As mensagens anteriormente observadas (`Uncaught (in promise) {}` e `Language detection is not supported for this page`) não foram reproduzidas no teste sem extensões (tanto via automação em perfil temporário limpo quanto em janela anônima pelo usuário). Registra-se que os erros anteriores não foram reproduzidos no teste sem extensões, sem afirmar que toda a aplicação está livre de erros e sem atribuir conclusivamente as duas mensagens à Monica.
-- **Repositório oficial:** [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
-- **Site publicado:** [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
-- **Confirmação de publicação em produção:** Confirmada pelo usuário em 24/09/2026. A versão publicada no GitHub Pages abriu normalmente e as seis etapas funcionaram como esperado.
-- **Fase atual:** Sprint 2 — Formulário de conformidade e persistência local (S2.1 concluída localmente; S2.2 a S2.6 pendentes).
-- **Tarefa S2.1 (Formulário de Identificação e Validações):**
-  - Concluída e testada localmente.
-  - Implementado em `src/pages/identificacao.ts`, `src/domain/validacao.ts`, `src/domain/validacao.test.ts`, `src/style.css` e `src/router.ts`.
-  - Destaque em tempo real dos 4 elementos essenciais (RN01), validações de consistência cronológica de vigência (RN13), tratamento de campos não aplicáveis (valor, vigência, contratado) e seletor para os 5 cenários didáticos.
-  - 8 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm run build`.
+- **Sprint 1 — Fundação, arquitetura e PWA:** 100% CONCLUÍDA, PUBLICADA E CONFERIDA.
+  - Repositório oficial: [https://github.com/cleytondias84/conforma-gsasp](https://github.com/cleytondias84/conforma-gsasp)
+  - Site publicado: [https://cleytondias84.github.io/conforma-gsasp/](https://cleytondias84.github.io/conforma-gsasp/)
+  - Conferência em produção confirmada pelo usuário em 24/09/2026.
+- **Sprint 2 — Formulário de conformidade e persistência local (S2.1, S2.2, S2.3 e S2.4 homologadas):**
+  - `S2.1` (Identificação do Instrumento): 100% homologada.
+  - `S2.2` (Pertinência Institucional): 100% homologada.
+  - `S2.3` (Conformidade Documental e Condicionantes): 100% homologada.
+  - `S2.4` (Persistência Local com IndexedDB): 100% homologada.
+    - Implementado em `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts`, `src/pages/conformidade.ts`, `src/pages/pertinencia.ts`, `src/pages/identificacao.ts` e `src/style.css`.
+    - Repositório local assíncrono baseado em `IndexedDB` com fallback automático e transparente para `localStorage` e memória volátil.
+    - Preservação integral dos dados preenchidos nas três etapas ativas: Identificação (`Processo`), Pertinência (`Pertinencia`) e Conformidade (`ItemConformidade[]` e `Condicionante[]`), incluindo personalizações criadas pelo usuário e condicionantes com preenchimento parcial/incompleto.
+    - **Ajuste e validação de regressão:** Resolvida a captura de digitação via evento `input` em tempo real e sincronização do DOM antes do salvamento (`sincronizarEstadoDaTelaAtiva()`). Teste da condicionante incompleta realizado e aprovado pelo usuário em 24/09/2026.
+    - 22 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm.cmd run build` com 0 erros.
 
 ---
 
 ## 2. Próximo Passo Exato
 
-1. **Sprint 2 — Tarefa S2.2 (Pendente):**
-   - Implementar a Etapa 2: Pertinência Institucional em `src/pages/pertinencia.ts`.
-   - Registrar avaliação obrigatória de competência/necessidade, vínculo com planejamento, benefício ao interesse público, custo/proporcionalidade e economicidade com evidência, conclusão técnica preliminar e providência.
-2. **Avanço controlado:**
-   - Não iniciar a tarefa S2.2 nem publicar alterações até instrução do usuário.
+1. **Sprint 2 — Iniciar Tarefa S2.5:**
+   - Implementar `src/auth/papeis.ts` e o seletor de perfil no cabeçalho/interface.
+   - Perfis demonstrativos e controle de permissões simuladas:
+     - Administrador / Assessor / Validador / Leitor.
+     - Indicação visível de simulação; perfil Leitor não altera dados.
+   - Não publicar alterações na branch `main` sem validação prévia.
+
+2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
+   ```powershell
+   # 1. Garantir que está na pasta do projeto:
+   cd C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
+
+   # 2. Compilar e rodar os testes:
+   npm.cmd test
+   npm.cmd run build
+
+   # 3. Iniciar o servidor de pré-visualização:
+   npm.cmd run preview
+   # Endereço: http://localhost:4173/conforma-gsasp/
+   ```
 
 ---
 
@@ -52,7 +59,7 @@ Data do último registro: 24/09/2026.
 ```powershell
 git clone https://github.com/cleytondias84/conforma-gsasp.git
 cd conforma-gsasp
-git checkout pausa-s1-6
+git checkout pausa-s2-4
 ```
 
 #### 2. Preparar o ambiente Node.js / Frontend

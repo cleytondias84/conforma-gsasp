@@ -84,7 +84,70 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - Seletor para carga didática rápida dos 5 cenários fictícios de demonstração.
     - Suíte de testes automatizados em `src/domain/validacao.test.ts` (8 testes unitários aprovados via `npm test`).
     - Compilação estrita `npm.cmd run build` aprovada com 0 erros (geração de bundle e Service Worker preservados).
-- **Próximas tarefas pendentes da Sprint 2:** S2.2 (Pertinência), S2.3 (Conformidade), S2.4 (Persistência IndexedDB), S2.5 (Papéis de Usuário) e S2.6 (Cache e Retomada Offline).
+  - *Testes manuais homologados pelo usuário (24/09/2026):*
+    1. Cartão Objeto acompanha a digitação em tempo real (RN01).
+    2. Cenário sem valor financeiro (Cenário 2) desabilita o campo, exibe a indicação correta e permite avançar.
+    3. Vigência invertida (Cenário 5) bloqueia o avanço exibindo erro claro (RN13); corrigir o término para 01/02/2027 permite prosseguir.
+- **Tarefa S2.2 (Pertinência Institucional) — 100% Concluída e Homologada:**
+  - *Implementação técnica:* Formulário interativo da Etapa 2 em `src/pages/pertinencia.ts`, integração ao roteador por hash em `src/router.ts`, regras determinísticas e validadores em `src/domain/validacao.ts`, testes unitários em `src/domain/validacao.test.ts` e estilização executiva em `src/style.css`.
+  - *Critérios de aceite atendidos:*
+    - Exibição contextual do processo ativo vindo da Identificação (Número, Instrumento, Objeto, Valor e Vigência).
+    - Avaliação dos 5 eixos de pertinência: Competência/Necessidade, Vínculo ao Planejamento, Benefício ao Interesse Público, Proporcionalidade e Economicidade com opções acessíveis (Sim/Não/A avaliar).
+    - Campos obrigatórios com validação de preenchimento (RN13): Evidências Documentais dos autos (mínimo 5 caracteres), Justificativa Técnica do Assessor (mínimo 10 caracteres) e Providência Recomendada.
+    - Sugestão indicativa algorítmica calculada dinamicamente em tempo real (`sugerirConclusaoPertinencia`), destacada com badge "Pendente de Validação Humana (RN02)".
+    - Seletor da Conclusão Técnica do Assessor com as 4 opções regulamentares: `PERTINENTE`, `PERTINENTE_COM_JUSTIFICATIVA`, `NAO_DEMONSTRADA` e `NAO_PERTINENTE`.
+    - Alerta explicativo de soberania da avaliação humana (RN02/RN07) quando a decisão do assessor divergir da sugestão automática do sistema, garantindo que o algoritmo não substitua o juízo humano.
+    - Seletor didático para carga rápida dos cenários de teste fictícios.
+    - Navegação bidirecional: botões "← Voltar à Identificação" e "Avançar para Conformidade →" integrados à validação de formulário.
+    - 12 testes unitários aprovados via `npm test`.
+    - Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros.
+  - *Testes manuais homologados pelo usuário (24/09/2026):*
+    1. Cenário regular: critérios em "Sim", sugestão "PERTINENTE" e avanço permitido.
+    2. Conclusão humana divergente: aviso exibido e avanço permitido com os campos preenchidos.
+    3. Cenário 4: respostas previstas carregadas e sugestão "PERTINÊNCIA NÃO DEMONSTRADA".
+    4. Campos obrigatórios vazios: avanço bloqueado, resumo de pendências e campos destacados.
+- **Tarefa S2.3 (Conformidade Documental e Condicionantes) — 100% Concluída e Homologada:**
+  - *Implementação técnica:* Formulário interativo da Etapa 3 em `src/pages/conformidade.ts`, integração ao roteador por hash em `src/router.ts`, regras determinísticas e validadores em `src/domain/validacao.ts`, testes unitários em `src/domain/validacao.test.ts` e estilização executiva em `src/style.css`.
+  - *Critérios de aceite atendidos:*
+    - Cartão contextual exibindo dados do processo ativo da Etapa 1 e a conclusão técnica da pertinência da Etapa 2.
+    - Aviso metodológico explícito de não presunção de conclusão jurídica (RN02/RN07).
+    - Painel dinâmico de KPIs de conformidade (Conformes, Pendentes, A Confirmar, Não Aplicáveis e Condicionantes Pendentes).
+    - Checklist com 4 opções de status (`ok`, `pendente`, `confirmar`, `nao_aplicavel`).
+    - Justificativa obrigatória da não aplicabilidade (mínimo 5 caracteres) ao selecionar `nao_aplicavel` (RN13).
+    - Acompanhamento individual de condicionantes de pareceres jurídicos (`atendida`, `pendente`, `em_cumprimento`, `nao_aplicavel`) com exigência de providência e responsável quando pendente/em cumprimento.
+    - Inclusão e exclusão dinâmica de itens e condicionantes personalizados com atualização imediata dos contadores.
+    - Seletor didático para carga rápida dos 5 cenários fictícios.
+    - 16 testes unitários aprovados via `npm test` e compilação de produção aprovada via `npm.cmd run build` com 0 erros.
+  - *Testes manuais homologados pelo usuário (24/09/2026):*
+    1. Cenário regular: indicadores corretos e avanço para Achados.
+    2. Item não aplicável: bloqueio sem justificativa e avanço após preenchimento.
+    3. Condicionante pendente: bloqueio sem providência e avanço após restauração.
+    4. Inclusão e exclusão de itens e condicionantes com atualização dos contadores.
+- **Tarefa S2.4 (Persistência Local com IndexedDB) — 100% Concluída e Homologada:**
+  - *Implementação técnica:* `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/router.ts`, `src/pages/conformidade.ts`, `src/pages/pertinencia.ts`, `src/pages/identificacao.ts` e `src/style.css`.
+  - *Critérios de aceite atendidos:*
+    - Repositório local assíncrono baseado em `IndexedDB` (`conforma_gsasp_db`, objectStore `rascunhos_analise`) com fallback seguro para `localStorage` e memória volátil.
+    - Preservação completa e estruturada dos dados das três etapas ativas: Identificação (`Processo`), Pertinência (`Pertinencia`) e Conformidade (`ItemConformidade[]` e `Condicionante[]`), preservando inclusive adições, exclusões e edições de itens/condicionantes personalizados.
+    - Salvamento flexível de rascunhos incompletos: permite salvar o estado em qualquer momento sem exigir preenchimento prévio de todos os campos ou bloqueios de validação formal.
+    - Princípio de soberania e conformidade (RN02/RN07): distinção explícita de que salvar rascunho preserva apenas o trabalho local de edição e não se confunde com validação técnica, conclusão ou aprovação jurídica.
+    - Transparência de escopo local: aviso visual explícito de que os dados ficam gravados exclusivamente no navegador deste computador, sem sincronização na nuvem nem envio para servidores remotos.
+    - Barra executiva de persistência (`.storage-bar`) integrada no topo da interface com indicador visual de status do banco local, data/hora formatada do último salvamento, botão manual "💾 Salvar Rascunho" e botão "📂 Retomar Rascunho Salvo".
+    - Salvamento automático de rascunho durante a navegação entre etapas e recuperação automática no carregamento inicial da aplicação.
+    - Tratamento de falhas e erros de quota/bloqueio com feedback visual na interface sem perda silenciosa de dados.
+    - 22 testes unitários aprovados via `npm test` (incluindo teste específico de regressão para condicionantes incompletas) e compilação de produção aprovada via `npm.cmd run build` com 0 erros.
+  - *Testes manuais homologados pelo usuário (24/09/2026):*
+    1. Salvamento manual de rascunho incompleto via botão "💾 Salvar Rascunho" com confirmação de carimbo de data/hora atualizado.
+    2. Atualização da página (F5) no navegador confirmando a recuperação automática imediata dos dados preenchidos.
+    3. Fechamento e reabertura da aba/navegador no mesmo perfil confirmando que os dados persistem no IndexedDB.
+    4. Inclusão de item de checklist e condicionante personalizada na Etapa 3 (Conformidade), com correção da captura em tempo real e recuperação da condicionante incompleta testada e confirmada pelo usuário.
+- **Próxima tarefa da Sprint 2:** S2.5 (src/auth/papeis.ts, seletor de perfil e perfis demonstrativos com simulação visível de permissões).
+- **Caminho atual do projeto:** `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
+- **Comandos para retomar o servidor local:**
+  ```powershell
+  npm.cmd run build
+  npm.cmd run preview
+  # Endereço: http://localhost:4173/conforma-gsasp/
+  ```
 
 ## Sprint 3 — Motor de regras, achados e riscos
 
