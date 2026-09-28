@@ -1,10 +1,10 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 25/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1 e 2 homologadas; S3.1, S3.2 e S3.3 concluídas e testadas)  
+Data do último registro: 28/09/2026.  
+**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1 e 2 homologadas; S3.1, S3.2 e S3.3 concluídas e homologadas)  
 **Caminho local da pasta do projeto:**  
-`C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
+`C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 
 ---
 
@@ -38,7 +38,7 @@ Data do último registro: 25/09/2026.
     - Imutabilidade comprovada: objetos de entrada são tratados como somente leitura.
     - **48 testes unitários aprovados via `npm test`** (18 testes dedicados da S3.2).
     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros**.
-  - `S3.3` (src/pages/achados.ts e Serviço de Validação Humana): 100% CONCLUÍDA E TESTADA.
+  - `S3.3` (src/pages/achados.ts e Serviço de Validação Humana): 100% CONCLUÍDA E HOMOLOGADA.
     - Implementado em `src/pages/achados.ts`, `src/pages/achados.test.ts`, `src/router.ts`, `src/style.css`, `src/domain/tipos.ts` e `src/services/armazenamento.ts`.
     - Integração plena com o motor determinístico S3.2 via `sincronizarAchadosComMotor()`.
     - Exibição de cada sugestão com anatomia RN03: *Regra de Origem*, *Evidência dos Autos*, *Regra/Motivo*, *Impacto Potencial*, *Providência Recomendada* e *Setor Responsável*.
@@ -51,7 +51,7 @@ Data do último registro: 25/09/2026.
     - Persistência em rascunhos locais com IndexedDB/localStorage.
     - **57 testes unitários aprovados via `npm test`** (9 novos testes dedicados da S3.3).
     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros**.
-    - **Testes manuais homologados pelo usuário em 25/09/2026:**
+    - **Testes manuais consolidados e homologados pelo usuário (25/09 e 28/09/2026):**
       1. Geração da sugestão REG-05, inicialmente com classificação pendente.
       2. Bloqueio da validação sem escolha explícita de classificação de gravidade.
       3. Validação como `RELEVANTE` e posterior alteração da gravidade para `FORMAL`.
@@ -61,6 +61,9 @@ Data do último registro: 25/09/2026.
       7. Reabertura para revisão funcional (`reabrirAchadoParaRevisao`).
       8. Bloqueio da rejeição sem justificativa textual.
       9. Rejeição com justificativa obrigatória registrada e preservada após salvar e recarregar (F5).
+      10. Inclusão do achado manual com estado VALIDADO e classificação FORMAL.
+      11. Preservação do achado manual após Salvar Rascunho e recarregar a página (F5).
+      12. Exclusão do achado manual preservada após Salvar Rascunho e recarregar a página (F5), mantendo a sugestão preexistente sobre condicionante jurídica.
 
 ---
 
@@ -70,12 +73,12 @@ Data do último registro: 25/09/2026.
   - **Sprint 2:** 100% concluída e homologada.
   - **Tarefa S3.1:** 100% aprovada para desenvolvimento e testes do protótipo (especificação funcional demonstrativa).
   - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
-  - **Tarefa S3.3:** Implementada, com 57 testes automatizados aprovados e compilação sem erros; **parcialmente homologada em testes manuais** (revisão de sugestões, perfis, RN10 e persistência confirmados).
-  - **Tarefa S3.4:** **Não iniciada** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
+  - **Tarefa S3.3:** 100% concluída e homologada (57 testes unitários e 12 testes manuais aprovados).
+  - **Tarefa S3.4:** **Ainda não iniciada** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
 
-1. **Sprint 3 — Próximo Ponto de Retomada (Conclusão dos Testes Manuais da S3.3):**
-   - **Testar inclusão, persistência e exclusão de achado manual** (esses testes específicos ainda **NÃO** foram confirmados pelo usuário).
-   - Após a homologação humana dos achados manuais, solicitar autorização para iniciar a **S3.4**.
+1. **Sprint 3 — Próximo Ponto de Retomada (Iniciar Tarefa S3.4 no Trabalho):**
+   - Iniciar a tarefa **S3.4** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
+   - Implementar a matriz de riscos cobrindo as 4 dimensões (`juridica`, `financeira`, `operacional`, `controle`) e 4 níveis (`baixo`, `moderado`, `alto`, `critico`), com justificação humana e vinculação aos achados validados da S3.3.
    - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
 2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**

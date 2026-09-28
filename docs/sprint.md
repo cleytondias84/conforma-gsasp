@@ -200,7 +200,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - *Testes e compilação:*
       - **48 testes unitários aprovados via `npm test`** (18 testes dedicados da S3.2 cobrindo todos os cenários de dados incompletos, vigência invertida, condicionantes com/sem providência, divergência humana e governança).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle, precache de 31 ativos e Service Worker intactos).
-  - **Tarefa S3.3 (src/pages/achados.ts e serviço de validação humana) — Implementada (Em Testes Manuais):**
+  - **Tarefa S3.3 (src/pages/achados.ts e serviço de validação humana) — 100% Concluída e Homologada:**
     - *Implementação técnica:* `src/pages/achados.ts`, `src/pages/achados.test.ts`, integração em `src/router.ts`, estilos em `src/style.css`, suporte em `src/domain/tipos.ts` e `src/services/armazenamento.ts`.
     - *Critérios de aceite técnicos atendidos:*
       1. **Integração com o motor S3.2:** A tela sincroniza os dados do processo, pertinência, checklist e condicionantes através de `sincronizarAchadosComMotor()`.
@@ -223,7 +223,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - *Testes automatizados e compilação verificados:*
       - **57 testes unitários aprovados via `node --experimental-strip-types --test src/**/*.test.ts`** (9 novos testes dedicados cobrindo sincronização, ações de revisão, achados manuais, persistência e RN10).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (dist/ gerada em 422ms, precache de 31 ativos).
-    - *Itens de validação manual confirmados pelo usuário nesta sessão:*
+    - *Testes manuais consolidados e homologados pelo usuário (25/09 e 28/09/2026):*
       - [x] Geração da sugestão REG-05, inicialmente pendente.
       - [x] Bloqueio da validação sem classificação.
       - [x] Validação como RELEVANTE e alteração para FORMAL.
@@ -233,9 +233,10 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] Reabertura para revisão (`reabrirAchadoParaRevisao`).
       - [x] Bloqueio da rejeição sem justificativa.
       - [x] Rejeição justificada e preservada após salvar e recarregar.
-    - *Próximo ponto de retomada da S3.3:*
-      - **Testar inclusão, persistência e exclusão de achado manual** (esses testes ainda **NÃO** foram confirmados pelo usuário).
-- **Próxima tarefa da Sprint 3:** S3.4 (`src/pages/riscos.ts` e `src/domain/riscos.ts`) — *Não iniciada*.
+      - [x] Inclusão do achado manual com estado VALIDADO e classificação FORMAL.
+      - [x] Preservação do achado manual após Salvar Rascunho e recarregar a página (F5).
+      - [x] Exclusão do achado manual preservada após Salvar Rascunho e recarregar a página (F5), mantendo a sugestão preexistente sobre condicionante jurídica.
+- **Próxima tarefa da Sprint 3:** S3.4 (`src/pages/riscos.ts` e `src/domain/riscos.ts`) — *Ainda não iniciada*.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 - **Comandos para manter o servidor local:**
   ```powershell
