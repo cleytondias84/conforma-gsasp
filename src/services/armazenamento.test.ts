@@ -15,7 +15,7 @@ import {
   obterDiagnosticoArmazenamento,
   AVISO_PERSISTENCIA_LOCAL
 } from './armazenamento.ts';
-import type { Processo, Pertinencia, ItemConformidade, Condicionante } from '../domain/tipos.ts';
+import type { Processo, Pertinencia, ItemConformidade, Condicionante, Achado, Risco } from '../domain/tipos.ts';
 
 test('armazenamento: salva e recupera rascunho completo preservando dados', async () => {
   const repo = obterRepositorioArmazenamento();
@@ -302,3 +302,104 @@ test('armazenamento (S2.6): obterDiagnosticoArmazenamento informa tipo e alerta 
     assert.ok(diag.mensagem.includes('NÃO persistirão após fechar ou recarregar'));
   }
 });
+
+test('armazenamento (S3.4): salva e recupera riscos avaliados com justificativa e vínculos', async () => {
+  const repo = obterRepositorioArmazenamento();
+  await repo.limparTudo();
+
+  const processo: Processo = {
+    id: 'proc-riscos-01',
+    numero: 'SESP-RISCOS-2026/001',
+    instrumento: 'Termo Aditivo',
+    contratado: 'Fornecedor Fictício',
+    cnpj: '00.000.000/0001-99',
+    objeto: 'Objeto para teste de riscos e persistência',
+    tipoOrigem: 'Inexigibilidade',
+    valor: 350000,
+    vigenciaInicio: '2026-06-01',
+    vigenciaFim: '2027-06-01'
+  };
+
+  const pertinencia: Pertinencia = {
+    respostas: {
+      competenciaNecessidade: true,
+      vinculoPlanejamento: true,
+      beneficioInteressePublico: true,
+      custoProporcionalidade: true,
+      economicidade: true
+    },
+    evidencias: 'Nota Técnica nº 05/2026',
+    justificativa: 'Pertinência plenamente demonstrada para a segurança pública.',
+    conclusao: 'PERTINENTE',
+    providencia: 'Avançar para conformidade.'
+  };
+
+  const achados: Achado[] = [
+    {
+      id: 'ach-t1',
+      titulo: 'Condicionante pendente de comprovação',
+      evidencia: 'Certidão não anexada',
+      regraOuMotivo: 'Parecer PGE',
+      impacto: 'Risco de nulidade',
+      providencia: 'Anexar certidão',
+      responsavel: 'Setor de Contratos',
+      classificacaoSugerida: 'RELEVANTE',
+      classificacao: 'RELEVANTE',
+      classificacaoValidada: 'RELEVANTE',
+      estadoValidacao: 'VALIDADO'
+    }
+  ];
+
+  const riscos: Risco[] = [
+    {
+      dimensao: 'juridica',
+      nivel: 'alto',
+      justificativa: 'Condicionante jurídica ainda em fase de saneamento.',
+      achadosRelacionados: ['ach-t1']
+    },
+    {
+      dimensao: 'financeira',
+      nivel: 'baixo',
+      justificativa: 'Disponibilidade financeira confirmada pela Diretoria Orçamentária.',
+      achadosRelacionados: []
+    },
+    {
+      dimensao: 'operacional',
+      nivel: 'moderado',
+      justificativa: 'Acompanhamento necessário durante os primeiros 60 dias.',
+      achadosRelacionados: []
+    },
+    {
+      dimensao: 'controle',
+      nivel: 'baixo',
+      justificativa: 'Publicidade tempestiva no portal transparência.',
+      achadosRelacionados: []
+    }
+  ];
+
+  await salvarRascunhoAtual(
+    processo,
+    pertinencia,
+    [],
+    [],
+    'rascunho',
+    achados,
+    riscos
+  );
+
+  const recuperado = await recuperarUltimoRascunho();
+  assert.ok(recuperado, 'Deve recuperar rascunho com riscos');
+  assert.ok(recuperado.riscos, 'Campo riscos deve estar presente');
+  assert.equal(recuperado.riscos.length, 4);
+
+  const riscoJuridico = recuperado.riscos.find((r) => r.dimensao === 'juridica');
+  assert.ok(riscoJuridico);
+  assert.equal(riscoJuridico.nivel, 'alto');
+  assert.equal(riscoJuridico.justificativa, 'Condicionante jurídica ainda em fase de saneamento.');
+  assert.deepEqual(riscoJuridico.achadosRelacionados, ['ach-t1']);
+
+  const riscoFinanceiro = recuperado.riscos.find((r) => r.dimensao === 'financeira');
+  assert.ok(riscoFinanceiro);
+  assert.equal(riscoFinanceiro.nivel, 'baixo');
+});
+

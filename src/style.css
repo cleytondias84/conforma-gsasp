@@ -2108,6 +2108,502 @@ textarea:disabled,
 }
 
 /* ==========================================================================
+   Etapa 5: Avaliação de Riscos (S3.4)
+   ========================================================================== */
+
+/* Cartão de Governança RN12 */
+.governance-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 5px solid #2563eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.governance-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.governance-icon {
+  font-size: 1.5rem;
+}
+
+.governance-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+.governance-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.governance-body p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.governance-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Painel de KPIs de Riscos */
+.riscos-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.kpi-numero {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.kpi-rotulo {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.kpi-critico {
+  border-color: #fca5a5;
+  background-color: #fef2f2;
+}
+.kpi-critico .kpi-numero {
+  color: #dc2626;
+}
+
+.kpi-alto {
+  border-color: #fdba74;
+  background-color: #fff7ed;
+}
+.kpi-alto .kpi-numero {
+  color: #ea580c;
+}
+
+.kpi-moderado {
+  border-color: #fde68a;
+  background-color: #fffbeb;
+}
+.kpi-moderado .kpi-numero {
+  color: #d97706;
+}
+
+.kpi-baixo {
+  border-color: #86efac;
+  background-color: #f0fdf4;
+}
+.kpi-baixo .kpi-numero {
+  color: #16a34a;
+}
+
+.kpi-pendente {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.kpi-completo {
+  border-color: #a7f3d0;
+  background-color: #ecfdf5;
+}
+.kpi-completo .kpi-numero {
+  color: #059669;
+}
+
+/* Tags de Níveis de Risco */
+.tag-risco-baixo {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.tag-risco-moderado {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.tag-risco-alto {
+  background-color: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+}
+
+.tag-risco-critico {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.tag-risco-pendente {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Dimensões de Risco — Cards */
+.riscos-dimensoes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.risco-dimensao-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.risco-dimensao-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.risco-card-baixo {
+  border-left: 6px solid #16a34a;
+}
+
+.risco-card-moderado {
+  border-left: 6px solid #d97706;
+}
+
+.risco-card-alto {
+  border-left: 6px solid #ea580c;
+}
+
+.risco-card-critico {
+  border-left: 6px solid #dc2626;
+}
+
+.risco-card-pendente {
+  border-left: 6px solid #94a3b8;
+}
+
+.risco-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.risco-card-title-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.risco-card-icone {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.risco-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.25rem 0;
+}
+
+.risco-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Perguntas Orientadoras Demonstrativas */
+.perguntas-orientadoras-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.84rem;
+}
+
+.perguntas-orientadoras-toggle {
+  cursor: pointer;
+  font-weight: 600;
+  color: #334155;
+  user-select: none;
+}
+
+.perguntas-orientadoras-lista {
+  margin: 0.6rem 0 0.2rem 1.2rem;
+  padding: 0;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.perguntas-orientadoras-lista li {
+  margin-bottom: 0.25rem;
+}
+
+/* Seletor de Nível */
+.risco-seletor-nivel-container {
+  margin-bottom: 1.25rem;
+}
+
+.risco-campo-label {
+  display: block;
+  font-size: 0.88rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.risco-niveis-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.btn-nivel-risco {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.15rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  opacity: 0.75;
+}
+
+.btn-nivel-risco:hover:not(:disabled) {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.btn-nivel-risco.ativo {
+  opacity: 1;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px currentColor;
+  transform: translateY(-1px);
+}
+
+.btn-nivel-risco:disabled {
+  cursor: not-allowed;
+}
+
+/* Vínculo a Achados Validados */
+.risco-vinculo-achados-container {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem;
+  background-color: #fbfcfd;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+}
+
+.risco-achados-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.risco-achado-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.risco-achado-item:hover {
+  background-color: #f8fafc;
+}
+
+.risco-achado-item.vinculado {
+  background-color: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.risco-achado-titulo {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.risco-achado-id {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.risco-sem-achados-aviso {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0.4rem 0 0 0;
+  font-style: italic;
+}
+
+/* Alerta de Vínculo em Revisão (RN10) */
+.alerta-vinculo-revisao {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #d97706;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  margin-top: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.alerta-vinculo-revisao .alerta-icone {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.alerta-vinculo-revisao .alerta-conteudo {
+  flex: 1;
+}
+
+.alerta-vinculo-revisao strong {
+  color: #92400e;
+  font-size: 0.88rem;
+  display: block;
+}
+
+.alerta-vinculo-revisao p {
+  font-size: 0.84rem;
+  color: #78350f;
+  margin: 0.35rem 0 0.25rem 0;
+  line-height: 1.4;
+}
+
+.alerta-vinculo-revisao .alerta-subtexto {
+  font-size: 0.8rem;
+  color: #92400e;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.btn-desvincular-achado {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+}
+
+/* Justificativa Técnica */
+.risco-justificativa-container {
+  margin-top: 1rem;
+}
+
+.risco-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.risco-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.risco-textarea-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+}
+
+.risco-contador-chars {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.risco-aviso-substancial {
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: right;
+}
+
+/* Contexto Achados Resumo na Barra Superior */
+.contexto-achados-resumo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.contexto-achados-titulo {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.contexto-achados-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.contexto-alerta-pendentes {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #92400e;
+}
+
+/* ==========================================================================
    Responsividade
    ========================================================================== */
 
@@ -2184,6 +2680,32 @@ textarea:disabled,
 
   .achados-kpi-panel {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .riscos-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .risco-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .risco-niveis-opcoes {
+    flex-direction: column;
+  }
+
+  .btn-nivel-risco {
+    width: 100%;
+  }
+
+  .risco-textarea-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .risco-aviso-substancial {
+    text-align: left;
   }
 
   .context-grid,

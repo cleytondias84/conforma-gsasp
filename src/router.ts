@@ -33,6 +33,13 @@ import {
   setAchadosAtivos
 } from './pages/achados';
 import {
+  renderRiscosScreen,
+  initRiscosEvents,
+  getRiscosAtivos,
+  setRiscosAtivos,
+  sincronizarRiscosDoFormulario
+} from './pages/riscos';
+import {
   salvarRascunhoAtual,
   recuperarUltimoRascunho,
   formatarCarimboSalvamento,
@@ -312,31 +319,6 @@ function renderHomeScreen(): string {
 
 
 /**
- * Renderiza a Etapa 5: Avaliação de Riscos.
- */
-function renderRiscosScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">5. Avaliação de Riscos</h2>
-      <p class="stage-description">
-        Mapeamento dos riscos do processo nas dimensões institucional, com fundamentação humana obrigatória para cada nível atribuído.
-      </p>
-    </div>
-
-    <div class="preview-card">
-      <h3 class="preview-title">Dimensões analisadas:</h3>
-      <ul class="preview-list">
-        <li><strong>Jurídica:</strong> Risco de anulação, questionamento por órgãos de controle ou insegurança normativa.</li>
-        <li><strong>Financeira:</strong> Risco de glosa orçamentária, sobrepreço ou indisponibilidade de crédito.</li>
-        <li><strong>Operacional:</strong> Risco de descontinuidade do serviço público ou atrasos de execução.</li>
-        <li><strong>Controle:</strong> Histórico de apontamentos pelo Tribunal de Contas ou auditorias internas.</li>
-      </ul>
-      <p class="preview-status">Status da visualização: Estrutura navegável preparada para o catálogo de riscos na Sprint 3.</p>
-    </div>
-  `;
-}
-
-/**
  * Renderiza a Etapa 6: Resultado e Encaminhamento.
  */
 function renderResultadoScreen(): string {
@@ -369,6 +351,7 @@ export function sincronizarEstadoDaTelaAtiva(): void {
   sincronizarIdentificacaoDoFormulario();
   sincronizarPertinenciaDoFormulario();
   sincronizarConformidadeDoFormulario();
+  sincronizarRiscosDoFormulario();
 }
 
 /**
@@ -466,7 +449,8 @@ export function renderRoute(): void {
         getChecklistAtivo(),
         getCondicionantesAtivas(),
         'rascunho',
-        getAchadosAtivos()
+        getAchadosAtivos(),
+        getRiscosAtivos()
       );
       ultimoSalvamentoTimestamp = res.salvoEm;
       try {
@@ -505,6 +489,9 @@ export function renderRoute(): void {
       if (recuperado.achados) {
         setAchadosAtivos(recuperado.achados);
       }
+      if (recuperado.riscos) {
+        setRiscosAtivos(recuperado.riscos);
+      }
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
       alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
@@ -518,7 +505,7 @@ export function renderRoute(): void {
       // Salva rascunho automaticamente ao avançar se permitido
       if (podeSalvarRascunho()) {
         sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
+        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
       }
       window.location.hash = '#/pertinencia';
     });
@@ -546,7 +533,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
         }
         window.location.hash = '#/conformidade';
       },
@@ -580,7 +567,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos());
+          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
         }
         window.location.hash = '#/achados';
       },
@@ -620,7 +607,8 @@ export function renderRoute(): void {
             getChecklistAtivo(),
             getCondicionantesAtivas(),
             'rascunho',
-            getAchadosAtivos()
+            getAchadosAtivos(),
+            getRiscosAtivos()
           );
         }
         window.location.hash = '#/riscos';
@@ -646,7 +634,8 @@ export function renderRoute(): void {
             getChecklistAtivo(),
             getCondicionantesAtivas(),
             'rascunho',
-            getAchadosAtivos()
+            getAchadosAtivos(),
+            getRiscosAtivos()
           );
         }
         window.location.hash = '#/riscos';
@@ -661,6 +650,58 @@ export function renderRoute(): void {
           sincronizarEstadoDaTelaAtiva();
         }
         window.location.hash = '#/conformidade';
+      });
+    }
+  }
+
+  if (currentStage?.id === 'riscos') {
+    initRiscosEvents(
+      async () => {
+        // Salva rascunho automaticamente ao avançar se permitido
+        if (podeSalvarRascunho()) {
+          sincronizarEstadoDaTelaAtiva();
+          await salvarRascunhoAtual(
+            getProcessoAtivo(),
+            getPertinenciaAtiva(),
+            getChecklistAtivo(),
+            getCondicionantesAtivas(),
+            'rascunho',
+            getAchadosAtivos(),
+            getRiscosAtivos()
+          );
+        }
+        window.location.hash = '#/resultado';
+      },
+      () => {
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
+        window.location.hash = '#/achados';
+      }
+    );
+
+    // Intercepta o botão "Próximo →" inferior para acionar a validação de riscos antes de avançar
+    const nextBtn = document.querySelector('.stage-actions a.btn-primary');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const btnAvancar = document.getElementById('btn-avancar-resultado') as HTMLButtonElement | null;
+        if (btnAvancar) {
+          btnAvancar.click();
+        } else {
+          window.location.hash = '#/resultado';
+        }
+      });
+    }
+
+    const prevBtn = document.querySelector('.stage-actions a.btn-secondary');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
+        window.location.hash = '#/achados';
       });
     }
   }
@@ -706,6 +747,9 @@ export async function initRouter(): Promise<void> {
         setCondicionantesAtivas(recuperado.condicionantes);
         if (recuperado.achados) {
           setAchadosAtivos(recuperado.achados);
+        }
+        if (recuperado.riscos) {
+          setRiscosAtivos(recuperado.riscos);
         }
         ultimoSalvamentoTimestamp = recuperado.salvoEm;
       }

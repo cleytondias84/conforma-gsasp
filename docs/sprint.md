@@ -236,7 +236,34 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] Inclusão do achado manual com estado VALIDADO e classificação FORMAL.
       - [x] Preservação do achado manual após Salvar Rascunho e recarregar a página (F5).
       - [x] Exclusão do achado manual preservada após Salvar Rascunho e recarregar a página (F5), mantendo a sugestão preexistente sobre condicionante jurídica.
-- **Próxima tarefa da Sprint 3:** S3.4 (`src/pages/riscos.ts` e `src/domain/riscos.ts`) — *Ainda não iniciada*.
+  - **Tarefa S3.4 (src/pages/riscos.ts e src/domain/riscos.ts) — Concluída Tecnicamente (Aguardando Homologação dos Testes Manuais):**
+    - *Implementação técnica:* `src/domain/riscos.ts`, `src/domain/riscos.test.ts`, `src/pages/riscos.ts`, `src/pages/riscos.test.ts`, integração em `src/router.ts`, persistência no IndexedDB em `src/services/armazenamento.ts` e `src/services/armazenamento.test.ts`, e estilização em `src/style.css`.
+    - *Critérios de aceite técnicos atendidos:*
+      1. **Quatro dimensões e quatro níveis:** Avaliação multidimensional cobrindo as dimensões *Jurídica*, *Financeira*, *Operacional* e de *Controle*, com níveis *Baixo*, *Moderado*, *Alto* e *Crítico*.
+      2. **Não presunção de risco baixo (RN11/RN12):** Nenhuma dimensão nasce pré-definida como "Baixo" por padrão. Todas iniciam como pendentes de apreciação humana (`nivel: null`). A ausência de achados apontados nas etapas anteriores não equivale a risco baixo nem autoriza aprovação automática.
+      3. **Classificação humana e justificativa obrigatória:** Todo nível de risco atribuído exige justificativa técnica fundamentada nos autos (mínimo formal de 5 caracteres), com alerta didático de que a contagem de caracteres não atesta a suficiência substancial da motivação.
+      4. **Vínculo formal a achados validados:** Lista dinâmica com checkboxes dos achados no estado `VALIDADO` da análise, permitindo ao assessor vincular explicitamente os apontamentos concretos que sustentam a avaliação da dimensão.
+      5. **Governança de vínculos e achados em revisão (RN10):** Se um achado anteriormente vinculado for reaberto para revisão ou rejeitado na Etapa 4, ele deixa de ser considerado uma referência validada. A dimensão de risco afetada exibe um alerta visual de governança destacando que o achado retornou para revisão e que a avaliação precisa ser revista pelo assessor. O nível de risco e a justificativa técnica são estritamente preservados, sem reclassificação automática. É disponibilizado botão para desvinculação voluntária do achado no card.
+      6. **Governança e Metodologia (RN12):** Banner explicativo permanente informando que, até a homologação da metodologia institucional definitiva pela SESP-MT, a avaliação é estritamente orientada pelo juízo do assessor, sem aplicação de pesos inventados ou fórmulas matemáticas arbitrárias.
+      7. **Painel executivo de KPIs:** Contadores dinâmicos em tempo real exibindo a quantidade de dimensões em cada nível (Baixo, Moderado, Alto, Crítico e Pendentes).
+      8. **Carga rápida de cenários didáticos:** Seletor demonstrativo com 3 cenários fictícios pré-configurados (Regular, Com Condicionante, e Grave) e opção de redefinição para facilitar testes rápidos e apresentações.
+      9. **Controle de papéis simulados (S2.5):** Usuários nos perfis *Leitor* e *Aprovador* visualizam a matriz de riscos em modo somente consulta, com controles de seleção, vínculos e justificativas desabilitados, e navegação liberada.
+      10. **Persistência local integral (S2.4):** A avaliação completa de riscos (dimensões, níveis, justificativas e achados relacionados) é persistida no IndexedDB e localStorage via `salvarRascunhoAtual` e restaurada em `recuperarUltimoRascunho` e na inicialização da aplicação (F5).
+    - *Verificações automatizadas aprovadas:*
+      - **80 testes unitários aprovados via `npm test`** (23 testes dedicados da S3.4 cobrindo tipos, imutabilidade, validação de campos, identificação de vínculos em revisão/órfãos, desvinculação, contadores de KPIs, renderização da tela, perfis somente leitura e persistência no IndexedDB).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado sem falhas, precache de 31 ativos e Service Worker íntegros).
+    - *Testes manuais confirmados pelo usuário (28/09/2026):*
+      - [x] TM-S3.4-01: Campos vazios bloqueiam o avanço, sem risco Baixo automático.
+      - [x] TM-S3.4-02: Nível e justificativa persistem após salvar e recarregar a página (F5).
+      - [x] TM-S3.4-03: As quatro dimensões preenchidas permitem avançar para a próxima etapa.
+      - [x] TM-S3.4-04: Perfis Leitor e Aprovador não editam (somente consulta); perfil Editor permite edição e seleção normalmente.
+      - [x] TM-S3.4-05: O vínculo com achado validado persiste após salvar e recarregar a página (F5).
+      - [x] TM-S3.4-06: Ao reabrir o achado na Etapa 4, ele desaparece das opções de vínculo disponível, preservando o nível e a justificativa do risco.
+    - *Testes manuais pendentes de homologação pelo usuário (a realizar em casa):*
+      - [ ] TM-S3.4-07: Aviso quando um achado vinculado retorna para revisão (RN10): verificar se na dimensão afetada surge o banner amarelo de alerta informando que o achado não é mais referência validada e que a avaliação deve ser revista pelo assessor.
+      - [ ] TM-S3.4-08: Preservação do nível e da justificativa nessa situação: conferir que o nível e a justificativa permanecem intactos, sem reclassificação automática.
+      - [ ] TM-S3.4-09: Desvinculação voluntária e persistência: clicar no botão "Desvincular achado em revisão", verificar remoção do aviso e conferir persistência após Salvar Rascunho e recarregar (F5).
+- **Próxima tarefa da Sprint 3:** S3.5 (`src/services/auditoria.ts` e histórico local) — *Ainda não iniciada*.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
 - **Comandos para manter o servidor local:**
   ```powershell

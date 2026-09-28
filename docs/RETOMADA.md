@@ -64,6 +64,31 @@ Data do último registro: 28/09/2026.
       10. Inclusão do achado manual com estado VALIDADO e classificação FORMAL.
       11. Preservação do achado manual após Salvar Rascunho e recarregar a página (F5).
       12. Exclusão do achado manual preservada após Salvar Rascunho e recarregar a página (F5), mantendo a sugestão preexistente sobre condicionante jurídica.
+  - `S3.4` (Avaliação de Riscos — src/pages/riscos.ts e src/domain/riscos.ts): CONCLUÍDA TECNICAMENTE (Aguardando Homologação dos Testes Manuais).
+    - Implementação da matriz de riscos cobrindo as 4 dimensões (*Jurídica*, *Financeira*, *Operacional* e *Controle*) e 4 níveis (*Baixo*, *Moderado*, *Alto* e *Crítico*).
+    - Princípio da não presunção (RN11/RN12): nenhuma dimensão nasce como "Baixo" por padrão; todas iniciam pendentes de apreciação humana (`nivel: null`).
+    - Exigência de justificativa técnica fundamentada para cada nível atribuído (mínimo formal de 5 caracteres).
+    - Vínculo formal com achados validados da análise (`achadosRelacionados`), permitindo fundamentar cada dimensão.
+    - Governança de vínculos e achados em revisão (RN10): se um achado vinculado for reaberto para revisão ou rejeitado na Etapa 4, ele deixa de ser considerado uma referência validada. A dimensão afetada exibe alerta visual de governança avisando que a avaliação precisa ser revista pelo assessor, preservando o nível e a justificativa sem reclassificação automática, com botão para desvinculação voluntária.
+    - Governança RN12 ostensiva: metodologia demonstrativa sem pesos ou fórmulas arbitrárias; ausência de achados não presume risco baixo.
+    - Painel dinâmico de KPIs em tempo real (Baixo, Moderado, Alto, Crítico e Pendentes).
+    - Seletor didático de carga rápida com 3 cenários fictícios pré-configurados (Regular, Com Condicionante e Grave) e opção de redefinição.
+    - Controle de papéis simulados (S2.5): modo somente consulta para *Leitor* e *Aprovador* com bloqueio de edição e navegação liberada.
+    - Persistência local integral (S2.4): salvamento e restauração dos riscos no IndexedDB e localStorage via `salvarRascunhoAtual` e `recuperarUltimoRascunho`.
+    - **80 testes unitários aprovados via `npm test`** (23 testes dedicados da S3.4).
+    - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros**.
+    - **Testes manuais confirmados pelo usuário nesta sessão (28/09/2026):**
+      1. TM-S3.4-01: Campos vazios bloqueiam o avanço, sem risco Baixo automático.
+      2. TM-S3.4-02: Nível e justificativa persistem após salvar e recarregar a página (F5).
+      3. TM-S3.4-03: As quatro dimensões preenchidas permitem avançar para a próxima etapa.
+      4. TM-S3.4-04: Perfis Leitor e Aprovador não editam (somente consulta); perfil Editor permite edição e seleção normalmente.
+      5. TM-S3.4-05: O vínculo com achado validado persiste após salvar e recarregar a página (F5).
+      6. TM-S3.4-06: Ao reabrir o achado na Etapa 4, ele desaparece das opções de vínculo disponível, preservando o nível e a justificativa do risco.
+    - **Testes manuais ainda pendentes de confirmação (a realizar em casa):**
+      1. TM-S3.4-07: Aviso quando um achado vinculado retorna para revisão (RN10): verificar se na dimensão afetada surge o banner amarelo de alerta informando que o achado não é mais referência validada e que a avaliação deve ser revista pelo assessor.
+      2. TM-S3.4-08: Preservação do nível e da justificativa nessa situação: conferir que o nível e a justificativa permanecem intactos, sem reclassificação automática.
+      3. TM-S3.4-09: Desvinculação voluntária e persistência: clicar no botão "Desvincular achado em revisão", verificar remoção do aviso e conferir persistência após Salvar Rascunho e recarregar (F5).
+      *(Nota: A última tela no trabalho exibia o achado "Referência documental — teste de vínculo" marcado na Dimensão Jurídica, nível Baixo, sem o aviso amarelo anterior ao ajuste. O ajuste no código foi concluído e testado tecnicamente, mas permanece sob validação manual até conferência em casa).*
 
 ---
 
@@ -74,17 +99,35 @@ Data do último registro: 28/09/2026.
   - **Tarefa S3.1:** 100% aprovada para desenvolvimento e testes do protótipo (especificação funcional demonstrativa).
   - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
   - **Tarefa S3.3:** 100% concluída e homologada (57 testes unitários e 12 testes manuais aprovados).
-  - **Tarefa S3.4:** **Ainda não iniciada** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
+  - **Tarefa S3.4:** **Concluída tecnicamente com 6 testes manuais homologados** (80 testes unitários aprovados e build 0 erros; aguardando conferência dos 3 testes manuais pendentes acima).
+  - **Tarefa S3.5:** **Ainda não iniciada** (Trilha de auditoria local e histórico — `src/services/auditoria.ts`).
 
-1. **Sprint 3 — Próximo Ponto de Retomada (Iniciar Tarefa S3.4 no Trabalho):**
-   - Iniciar a tarefa **S3.4** (Avaliação de Riscos — `src/pages/riscos.ts` e `src/domain/riscos.ts`).
-   - Implementar a matriz de riscos cobrindo as 4 dimensões (`juridica`, `financeira`, `operacional`, `controle`) e 4 níveis (`baixo`, `moderado`, `alto`, `critico`), com justificação humana e vinculação aos achados validados da S3.3.
+1. **Sprint 3 — Próximo Ponto de Retomada (Validação Manual em Casa):**
+   - Executar os testes manuais pendentes da tarefa **S3.4** no navegador da máquina de casa.
    - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
-2. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
+2. **Roteiro para Reproduzir o Teste da S3.4 em Outra Máquina (Casa):**
+   *(Como os dados de rascunho residem no IndexedDB/localStorage do navegador local e não sobem no Git, execute os passos abaixo no navegador da nova máquina)*:
+   1. Iniciar o servidor local (`npm.cmd run preview`) e abrir `http://localhost:4173/conforma-gsasp/#/achados` (Etapa 4 — Achados).
+   2. Certificar-se de ter um achado validado:
+      - Pode validar a sugestão REG-05 (selecionar gravidade FORMAL ou RELEVANTE e clicar em "Validar"), OU
+      - Clicar em **"+ Adicionar Achado Manual"**, informar Título: `"Referência documental — teste de vínculo"`, Evidência: `"Fls. 45"`, Regra/Motivo: `"Falta certidão"`, Impacto: `"Formal"`, Providência: `"Juntar certidão"`, Responsável: `"Setor Contratos"`, Classificação: `"FORMAL"`, salvar o achado e clicar no botão global **"Salvar Rascunho"**.
+   3. Acessar a Etapa 5 — Riscos (`#/riscos`):
+      - Na **Dimensão Jurídica**, atribuir o nível **Baixo** (ou outro nível à escolha).
+      - Digitar uma justificativa com mais de 5 caracteres (ex.: `"Avaliação jurídica fundamentada no achado apontado nos autos"`).
+      - Marcar o checkbox do achado validado (`"Referência documental — teste de vínculo"`).
+      - Clicar em **"Salvar Rascunho"** e pressionar **F5** para constatar que o vínculo, nível e justificativa persistiram.
+   4. Retornar à Etapa 4 — Achados (`#/achados`):
+      - Localizar o achado vinculado e clicar em **"Reabrir para Revisão"** (o status volta para *SUGESTAO_SISTEMA*).
+      - Clicar no botão global **"Salvar Rascunho"**.
+   5. Voltar à Etapa 5 — Riscos (`#/riscos`):
+      - **Conferir TM-S3.4-07 e TM-S3.4-08:** No card da Dimensão Jurídica, verificar que surge o **banner amarelo de governança (RN10)** alertando que o achado retornou para revisão e não é mais considerado referência validada. Verificar que o nível (**Baixo**) e a **justificativa preenchida permanecem intactos** sem qualquer reclassificação automática.
+      - **Conferir TM-S3.4-09:** Clicar no botão **"Desvincular achado em revisão"** dentro do banner. Verificar que o aviso desaparece, clicar em **"Salvar Rascunho"** e pressionar **F5** para confirmar que a desvinculação voluntária persistiu.
+
+3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell
    # 1. Garantir que está na pasta do projeto:
-   cd C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
+   cd C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
 
    # 2. Compilar e rodar os testes:
    npm.cmd test

@@ -17,6 +17,7 @@ import type {
   ItemConformidade,
   Condicionante,
   Achado,
+  Risco,
   EstadoEdicao
 } from '../domain/tipos';
 
@@ -35,6 +36,7 @@ export interface DadosRascunhoCompleto {
   checklist: ItemConformidade[];
   condicionantes: Condicionante[];
   achados?: Achado[];
+  riscos?: Risco[];
   analiseId: string;
   estadoEdicao: EstadoEdicao;
   salvoEm: string;
@@ -418,7 +420,8 @@ export async function salvarRascunhoAtual(
   checklist: ItemConformidade[],
   condicionantes: Condicionante[],
   estadoEdicao: EstadoEdicao = 'rascunho',
-  achados?: Achado[]
+  achados?: Achado[],
+  riscos?: Risco[]
 ): Promise<{ analiseId: string; salvoEm: string }> {
   const repo = obterRepositorioArmazenamento();
   const agoraIso = new Date().toISOString();
@@ -430,6 +433,7 @@ export async function salvarRascunhoAtual(
     checklist: JSON.parse(JSON.stringify(checklist)),
     condicionantes: JSON.parse(JSON.stringify(condicionantes)),
     achados: achados ? JSON.parse(JSON.stringify(achados)) : undefined,
+    riscos: riscos ? JSON.parse(JSON.stringify(riscos)) : undefined,
     analiseId,
     estadoEdicao,
     salvoEm: agoraIso

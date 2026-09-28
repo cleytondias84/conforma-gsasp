@@ -163,7 +163,7 @@ export interface Achado {
  */
 export interface Risco {
   dimensao: DimensaoRisco;
-  nivel: NivelRisco;
+  nivel: NivelRisco | null; // null enquanto pendente de avaliação humana (RN11/RN12)
   justificativa: string;
   achadosRelacionados: string[]; // Lista de IDs de achados vinculados
 }
