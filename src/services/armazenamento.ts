@@ -18,6 +18,7 @@ import type {
   Condicionante,
   Achado,
   Risco,
+  EventoLocal,
   EstadoEdicao
 } from '../domain/tipos';
 
@@ -37,6 +38,7 @@ export interface DadosRascunhoCompleto {
   condicionantes: Condicionante[];
   achados?: Achado[];
   riscos?: Risco[];
+  eventos?: EventoLocal[];
   analiseId: string;
   estadoEdicao: EstadoEdicao;
   salvoEm: string;
@@ -421,7 +423,8 @@ export async function salvarRascunhoAtual(
   condicionantes: Condicionante[],
   estadoEdicao: EstadoEdicao = 'rascunho',
   achados?: Achado[],
-  riscos?: Risco[]
+  riscos?: Risco[],
+  eventos?: EventoLocal[]
 ): Promise<{ analiseId: string; salvoEm: string }> {
   const repo = obterRepositorioArmazenamento();
   const agoraIso = new Date().toISOString();
@@ -434,6 +437,7 @@ export async function salvarRascunhoAtual(
     condicionantes: JSON.parse(JSON.stringify(condicionantes)),
     achados: achados ? JSON.parse(JSON.stringify(achados)) : undefined,
     riscos: riscos ? JSON.parse(JSON.stringify(riscos)) : undefined,
+    eventos: eventos ? JSON.parse(JSON.stringify(eventos)) : undefined,
     analiseId,
     estadoEdicao,
     salvoEm: agoraIso

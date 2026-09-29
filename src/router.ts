@@ -55,6 +55,13 @@ import {
   podeSalvarRascunho,
   type PapelUsuario
 } from './auth/papeis';
+import {
+  getEventosAtivos,
+  setEventosAtivos,
+  registrarEventoLocal,
+  ACOES_AUDITORIA,
+  abrirModalAuditoria
+} from './services/auditoria.ts';
 
 export interface StageInfo {
   id: string;
@@ -237,6 +244,9 @@ function renderBarraPersistencia(): string {
           </div>
         </div>
         <div class="storage-actions">
+          <button type="button" id="btn-ver-auditoria-global" class="btn btn-secondary btn-small" title="Exibe a trilha de auditoria e histórico de eventos local desta análise">
+            📜 Auditoria Local (${getEventosAtivos().length})
+          </button>
           <button type="button" id="btn-salvar-rascunho-global" class="btn btn-secondary btn-small" title="${podeSalvar ? (isMemoria ? 'Salva temporariamente em memória nesta sessão' : 'Salva o rascunho de todas as etapas no armazenamento deste navegador') : 'Desabilitado no perfil atual (somente consulta)'}" ${!podeSalvar ? 'disabled' : ''}>
             ${isMemoria ? '⚠️ Salvar na Sessão' : '💾 Salvar Rascunho'}
           </button>
@@ -423,12 +433,29 @@ export function renderRoute(): void {
   const selectPapel = document.getElementById('select-papel-usuario') as HTMLSelectElement | null;
   selectPapel?.addEventListener('change', () => {
     const novoPapel = selectPapel.value as PapelUsuario;
+    const papelAnterior = getPapelAtivo();
     // Se o papel ativo anterior permitia edição, sincroniza o estado antes de mudar para preservar digitações
     if (podeEditar()) {
       sincronizarEstadoDaTelaAtiva();
     }
     setPapelAtivo(novoPapel);
+    registrarEventoLocal({
+      acao: ACOES_AUDITORIA.TROCA_PAPEL,
+      entidade: 'Usuario',
+      registroId: novoPapel,
+      antesDepois: {
+        antes: papelAnterior,
+        depois: novoPapel
+      },
+      descricao: `Perfil simulado alterado de ${papelAnterior} para ${novoPapel}`
+    });
     renderRoute();
+  });
+
+  // Listener para abertura do modal da Trilha de Auditoria Local (S3.5)
+  const btnAuditoria = document.getElementById('btn-ver-auditoria-global');
+  btnAuditoria?.addEventListener('click', () => {
+    abrirModalAuditoria();
   });
 
   // Listeners da Barra de Persistência Local (IndexedDB)
@@ -443,6 +470,19 @@ export function renderRoute(): void {
     try {
       // Sincroniza imediatamente o estado a partir do formulário aberto no DOM
       sincronizarEstadoDaTelaAtiva();
+
+      // Registra evento de salvamento de rascunho na trilha de auditoria local (S3.5)
+      registrarEventoLocal({
+        acao: ACOES_AUDITORIA.SALVAMENTO_RASCUNHO,
+        entidade: 'Analise',
+        registroId: getProcessoAtivo().numero || 'anl-local',
+        antesDepois: {
+          antes: ultimoSalvamentoTimestamp ? { salvoEm: ultimoSalvamentoTimestamp } : null,
+          depois: { salvoEm: new Date().toISOString() }
+        },
+        descricao: `Rascunho da análise salvo no armazenamento local (${diagnosticoArmazenamento?.tipo || 'IndexedDB'})`
+      });
+
       const res = await salvarRascunhoAtual(
         getProcessoAtivo(),
         getPertinenciaAtiva(),
@@ -450,7 +490,8 @@ export function renderRoute(): void {
         getCondicionantesAtivas(),
         'rascunho',
         getAchadosAtivos(),
-        getRiscosAtivos()
+        getRiscosAtivos(),
+        getEventosAtivos()
       );
       ultimoSalvamentoTimestamp = res.salvoEm;
       try {
@@ -460,6 +501,8 @@ export function renderRoute(): void {
       }
       const el = document.getElementById('status-ultimo-salvamento');
       if (el) el.textContent = `Último salvamento: ${formatarCarimboSalvamento(res.salvoEm)}`;
+      const btnAudit = document.getElementById('btn-ver-auditoria-global');
+      if (btnAudit) btnAudit.textContent = `📜 Auditoria Local (${getEventosAtivos().length})`;
       const tipoMsg = diagnosticoArmazenamento?.tipo === 'memoria' ? 'em memória volátil desta sessão' : 'no armazenamento local deste navegador';
       alert(`✅ Rascunho salvo com sucesso ${tipoMsg}!\n\nSalvo em: ${formatarCarimboSalvamento(res.salvoEm)}\nProcesso: ${getProcessoAtivo().numero || '(Em preenchimento)'}\n\nAtenção: O salvamento do rascunho preserva as edições locais e não se confunde com aprovação jurídica da análise.`);
     } catch (e) {
@@ -492,9 +535,12 @@ export function renderRoute(): void {
       if (recuperado.riscos) {
         setRiscosAtivos(recuperado.riscos);
       }
+      if (recuperado.eventos) {
+        setEventosAtivos(recuperado.eventos);
+      }
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
-      alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas foram restauradas no navegador.`);
+      alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas e histórico de auditoria foram restaurados no navegador.`);
     } catch (e) {
       alert(`Erro ao recuperar rascunho do armazenamento: ${(e as Error).message}`);
     }
@@ -505,7 +551,16 @@ export function renderRoute(): void {
       // Salva rascunho automaticamente ao avançar se permitido
       if (podeSalvarRascunho()) {
         sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
+        await salvarRascunhoAtual(
+          getProcessoAtivo(),
+          getPertinenciaAtiva(),
+          getChecklistAtivo(),
+          getCondicionantesAtivas(),
+          'rascunho',
+          getAchadosAtivos(),
+          getRiscosAtivos(),
+          getEventosAtivos()
+        );
       }
       window.location.hash = '#/pertinencia';
     });
@@ -533,7 +588,16 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
+          await salvarRascunhoAtual(
+            getProcessoAtivo(),
+            getPertinenciaAtiva(),
+            getChecklistAtivo(),
+            getCondicionantesAtivas(),
+            'rascunho',
+            getAchadosAtivos(),
+            getRiscosAtivos(),
+            getEventosAtivos()
+          );
         }
         window.location.hash = '#/conformidade';
       },
@@ -567,7 +631,16 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(getProcessoAtivo(), getPertinenciaAtiva(), getChecklistAtivo(), getCondicionantesAtivas(), 'rascunho', getAchadosAtivos(), getRiscosAtivos());
+          await salvarRascunhoAtual(
+            getProcessoAtivo(),
+            getPertinenciaAtiva(),
+            getChecklistAtivo(),
+            getCondicionantesAtivas(),
+            'rascunho',
+            getAchadosAtivos(),
+            getRiscosAtivos(),
+            getEventosAtivos()
+          );
         }
         window.location.hash = '#/achados';
       },
@@ -608,7 +681,8 @@ export function renderRoute(): void {
             getCondicionantesAtivas(),
             'rascunho',
             getAchadosAtivos(),
-            getRiscosAtivos()
+            getRiscosAtivos(),
+            getEventosAtivos()
           );
         }
         window.location.hash = '#/riscos';
@@ -635,7 +709,8 @@ export function renderRoute(): void {
             getCondicionantesAtivas(),
             'rascunho',
             getAchadosAtivos(),
-            getRiscosAtivos()
+            getRiscosAtivos(),
+            getEventosAtivos()
           );
         }
         window.location.hash = '#/riscos';
@@ -667,7 +742,8 @@ export function renderRoute(): void {
             getCondicionantesAtivas(),
             'rascunho',
             getAchadosAtivos(),
-            getRiscosAtivos()
+            getRiscosAtivos(),
+            getEventosAtivos()
           );
         }
         window.location.hash = '#/resultado';
@@ -750,6 +826,9 @@ export async function initRouter(): Promise<void> {
         }
         if (recuperado.riscos) {
           setRiscosAtivos(recuperado.riscos);
+        }
+        if (recuperado.eventos) {
+          setEventosAtivos(recuperado.eventos);
         }
         ultimoSalvamentoTimestamp = recuperado.salvoEm;
       }

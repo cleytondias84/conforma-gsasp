@@ -39,6 +39,7 @@ import { getProcessoAtivo } from './identificacao.ts';
 import { getPertinenciaAtiva } from './pertinencia.ts';
 import { getChecklistAtivo, getCondicionantesAtivas } from './conformidade.ts';
 import { podeEditar } from '../auth/papeis.ts';
+import { registrarEventoLocal, ACOES_AUDITORIA } from '../services/auditoria.ts';
 
 // Estendemos o Achado para fins de controle de governança da interface
 export interface AchadoComMetadados extends Achado {
@@ -175,6 +176,11 @@ export function validarAchado(id: string, classificacaoEscolhida?: Classificacao
   const item = achadosAtivos.find((a) => a.id === id);
   if (!item) return false;
 
+  const estadoAnterior = {
+    estadoValidacao: item.estadoValidacao,
+    classificacao: item.classificacao
+  };
+
   const gravidadeFinal =
     classificacaoEscolhida || item.classificacaoValidada || item.classificacaoSugerida;
 
@@ -190,6 +196,20 @@ export function validarAchado(id: string, classificacaoEscolhida?: Classificacao
   item.necessitaNovaRevisao = false;
   item.justificativaRejeicao = undefined;
 
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.VALIDACAO_ACHADO,
+    entidade: 'Achado',
+    registroId: item.id,
+    antesDepois: {
+      antes: estadoAnterior,
+      depois: {
+        estadoValidacao: 'VALIDADO',
+        classificacao: gravidadeFinal
+      }
+    },
+    descricao: `Achado "${item.titulo}" validado como ${gravidadeFinal}`
+  });
+
   return true;
 }
 
@@ -200,10 +220,23 @@ export function alterarClassificacaoAchado(
   const item = achadosAtivos.find((a) => a.id === id);
   if (!item) return false;
 
+  const gravidadeAnterior = item.classificacao;
+
   item.classificacaoValidada = novaClassificacao;
   item.classificacao = novaClassificacao;
   item.estadoValidacao = 'VALIDADO';
   item.necessitaNovaRevisao = false;
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.ALTERACAO_CLASSIFICACAO_ACHADO,
+    entidade: 'Achado',
+    registroId: item.id,
+    antesDepois: {
+      antes: { classificacao: gravidadeAnterior },
+      depois: { classificacao: novaClassificacao }
+    },
+    descricao: `Gravidade do achado "${item.titulo}" alterada de ${gravidadeAnterior || 'Pendente'} para ${novaClassificacao}`
+  });
 
   return true;
 }
@@ -218,9 +251,28 @@ export function rejeitarAchado(id: string, justificativa: string): boolean {
     return false;
   }
 
+  const estadoAnterior = {
+    estadoValidacao: item.estadoValidacao,
+    justificativaRejeicao: item.justificativaRejeicao
+  };
+
   item.estadoValidacao = 'REJEITADO';
   item.justificativaRejeicao = just;
   item.necessitaNovaRevisao = false;
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.REJEICAO_ACHADO,
+    entidade: 'Achado',
+    registroId: item.id,
+    antesDepois: {
+      antes: estadoAnterior,
+      depois: {
+        estadoValidacao: 'REJEITADO',
+        justificativaRejeicao: just
+      }
+    },
+    descricao: `Achado "${item.titulo}" rejeitado com justificativa: "${just}"`
+  });
 
   return true;
 }
@@ -229,11 +281,30 @@ export function reabrirAchadoParaRevisao(id: string): boolean {
   const item = achadosAtivos.find((a) => a.id === id);
   if (!item) return false;
 
+  const estadoAnterior = {
+    estadoValidacao: item.estadoValidacao,
+    classificacao: item.classificacao
+  };
+
   item.estadoValidacao = 'SUGESTAO_SISTEMA';
   item.classificacaoValidada = null;
   item.classificacao = item.classificacaoSugerida;
   item.justificativaRejeicao = undefined;
   item.necessitaNovaRevisao = false;
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.REABERTURA_ACHADO,
+    entidade: 'Achado',
+    registroId: item.id,
+    antesDepois: {
+      antes: estadoAnterior,
+      depois: {
+        estadoValidacao: 'SUGESTAO_SISTEMA',
+        classificacao: item.classificacaoSugerida
+      }
+    },
+    descricao: `Achado "${item.titulo}" reaberto para nova revisão do assessor`
+  });
 
   return true;
 }
@@ -276,6 +347,22 @@ export function adicionarAchadoManual(dados: {
   };
 
   achadosAtivos.push(novo);
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.INCLUSAO_ACHADO_MANUAL,
+    entidade: 'Achado',
+    registroId: novo.id,
+    antesDepois: {
+      antes: null,
+      depois: {
+        titulo: novo.titulo,
+        classificacao: novo.classificacao,
+        providencia: novo.providencia
+      }
+    },
+    descricao: `Achado manual incluído: "${novo.titulo}" com gravidade ${novo.classificacao}`
+  });
+
   return novo;
 }
 
@@ -283,7 +370,23 @@ export function removerAchadoManual(id: string): boolean {
   const index = achadosAtivos.findIndex((a) => a.id === id && (a.origemManual || a.regraId === 'MANUAL'));
   if (index === -1) return false;
 
+  const achadoRemovido = achadosAtivos[index];
   achadosAtivos.splice(index, 1);
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.EXCLUSAO_ACHADO_MANUAL,
+    entidade: 'Achado',
+    registroId: id,
+    antesDepois: {
+      antes: {
+        titulo: achadoRemovido.titulo,
+        classificacao: achadoRemovido.classificacao
+      },
+      depois: null
+    },
+    descricao: `Achado manual excluído: "${achadoRemovido.titulo}"`
+  });
+
   return true;
 }
 

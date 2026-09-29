@@ -236,7 +236,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] Inclusão do achado manual com estado VALIDADO e classificação FORMAL.
       - [x] Preservação do achado manual após Salvar Rascunho e recarregar a página (F5).
       - [x] Exclusão do achado manual preservada após Salvar Rascunho e recarregar a página (F5), mantendo a sugestão preexistente sobre condicionante jurídica.
-  - **Tarefa S3.4 (src/pages/riscos.ts e src/domain/riscos.ts) — Concluída Tecnicamente (Aguardando Homologação dos Testes Manuais):**
+  - **Tarefa S3.4 (src/pages/riscos.ts e src/domain/riscos.ts) — 100% Concluída e Homologada:**
     - *Implementação técnica:* `src/domain/riscos.ts`, `src/domain/riscos.test.ts`, `src/pages/riscos.ts`, `src/pages/riscos.test.ts`, integração em `src/router.ts`, persistência no IndexedDB em `src/services/armazenamento.ts` e `src/services/armazenamento.test.ts`, e estilização em `src/style.css`.
     - *Critérios de aceite técnicos atendidos:*
       1. **Quatro dimensões e quatro níveis:** Avaliação multidimensional cobrindo as dimensões *Jurídica*, *Financeira*, *Operacional* e de *Controle*, com níveis *Baixo*, *Moderado*, *Alto* e *Crítico*.
@@ -252,19 +252,37 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - *Verificações automatizadas aprovadas:*
       - **80 testes unitários aprovados via `npm test`** (23 testes dedicados da S3.4 cobrindo tipos, imutabilidade, validação de campos, identificação de vínculos em revisão/órfãos, desvinculação, contadores de KPIs, renderização da tela, perfis somente leitura e persistência no IndexedDB).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado sem falhas, precache de 31 ativos e Service Worker íntegros).
-    - *Testes manuais confirmados pelo usuário (28/09/2026):*
+    - *Testes manuais consolidados e homologados pelo usuário (28/09/2026):*
       - [x] TM-S3.4-01: Campos vazios bloqueiam o avanço, sem risco Baixo automático.
       - [x] TM-S3.4-02: Nível e justificativa persistem após salvar e recarregar a página (F5).
       - [x] TM-S3.4-03: As quatro dimensões preenchidas permitem avançar para a próxima etapa.
       - [x] TM-S3.4-04: Perfis Leitor e Aprovador não editam (somente consulta); perfil Editor permite edição e seleção normalmente.
       - [x] TM-S3.4-05: O vínculo com achado validado persiste após salvar e recarregar a página (F5).
       - [x] TM-S3.4-06: Ao reabrir o achado na Etapa 4, ele desaparece das opções de vínculo disponível, preservando o nível e a justificativa do risco.
-    - *Testes manuais pendentes de homologação pelo usuário (a realizar em casa):*
-      - [ ] TM-S3.4-07: Aviso quando um achado vinculado retorna para revisão (RN10): verificar se na dimensão afetada surge o banner amarelo de alerta informando que o achado não é mais referência validada e que a avaliação deve ser revista pelo assessor.
-      - [ ] TM-S3.4-08: Preservação do nível e da justificativa nessa situação: conferir que o nível e a justificativa permanecem intactos, sem reclassificação automática.
-      - [ ] TM-S3.4-09: Desvinculação voluntária e persistência: clicar no botão "Desvincular achado em revisão", verificar remoção do aviso e conferir persistência após Salvar Rascunho e recarregar (F5).
-- **Próxima tarefa da Sprint 3:** S3.5 (`src/services/auditoria.ts` e histórico local) — *Ainda não iniciada*.
-- **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada`
+      - [x] TM-S3.4-07: Ao reabrir um achado vinculado, apareceu o aviso de retorno para revisão (RN10) na dimensão afetada.
+      - [x] TM-S3.4-08: O nível Baixo e a justificativa foram rigorosamente preservados, sem reclassificação automática.
+      - [x] TM-S3.4-09: Após desvincular, salvar o rascunho e recarregar com F5, o aviso desapareceu e o nível e a justificativa permaneceram preservados.
+  - **Tarefa S3.5 (Trilha de Auditoria Local e Histórico de Eventos — src/services/auditoria.ts) — Implementação Concluída (Testes Manuais Pendentes):**
+    - *Implementação técnica:* `src/services/auditoria.ts`, `src/services/auditoria.test.ts`, `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/domain/tipos.ts`, `src/pages/achados.ts`, `src/pages/riscos.ts`, `src/router.ts` e `src/style.css`.
+    - *Critérios de aceite técnicos atendidos:*
+      1. **Histórico local de eventos associado à análise (EventoLocal):** Registro estruturado com `id`, `dataHora`, `usuarioFicticio`, `papel`, `acao`, `entidade`, `registroId`, `antesDepois` e `descricao` legível.
+      2. **Transparência e governança institucional:** Aviso ostensivo permanente (`AVISO_AUDITORIA_LOCAL`) informando que a trilha é local e demonstrativa (IndexedDB deste navegador), sem garantia de inviolabilidade criptográfica, fé pública ou validade como auditoria corporativa institucional (SIGADOC/SEI).
+      3. **Imutabilidade e ausência de exclusão individual na UI:** A interface não oferece botões ou mecanismos para editar, alterar ou apagar eventos individuais da trilha de auditoria.
+      4. **Não geração de eventos duplicados em carregamentos:** O carregamento da página, renderização de rotas e reabertura após F5 (`initRouter`, `renderRoute`) não geram eventos espúrios. Apenas ações explícitas do usuário (salvamento, validação, alteração de gravidade, rejeição, reabertura, inclusão/exclusão manual, avaliação de risco, vinculação e troca de perfil) emitem registros.
+      5. **Rastreamento de mudanças relevantes (antes/depois):** Eventos de validação, alteração de gravidade, rejeição, riscos e perfis gravam o estado anterior e posterior de forma inspecionável com resumo amigável.
+      6. **Persistência local no IndexedDB com fallback:** A lista de eventos é integrada a `DadosRascunhoCompleto` e persiste integralmente após recarregar a página (F5) ou retomar rascunho anterior.
+      7. **Interface acessível em todas as etapas:** Botão "📜 Auditoria Local (N)" na barra de persistência superior, abrindo modal acessível com contadores, banner de governança e ordenação cronológica decrescente (mais recente no topo).
+    - *Verificações automatizadas aprovadas:*
+      - **93 testes unitários aprovados via `npm test`** (13 testes dedicados da S3.5 cobrindo tipos, imutabilidade, formatação, renderização sem controles de exclusão e persistência no IndexedDB).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 790ms, precache de 31 ativos e Service Worker íntegros).
+    - *Testes manuais previstos (Aguardando homologação do usuário):*
+      - [ ] TM-S3.5-01: Acesso à trilha de auditoria com estado inicial/vazio exibindo aviso de governança e ausência de controles de edição/exclusão.
+      - [ ] TM-S3.5-02: Registro de eventos de validação e alteração de classificação na Etapa 4 com detalhes de antes/depois.
+      - [ ] TM-S3.5-03: Registro de rejeição fundamentada de achado com a justificativa obrigatória preservada.
+      - [ ] TM-S3.5-04: Persistência integral da trilha após "Salvar Rascunho" e recarregar a página (F5), sem duplicar eventos pelo carregamento.
+      - [ ] TM-S3.5-05: Registro de eventos de avaliação de risco e alternância de perfil simulado no cabeçalho.
+- **Próxima ação da Sprint 3:** Executar o teste manual TM-S3.5-01 (conferência do aviso de governança e imutabilidade da trilha). Não iniciar a tarefa S3.6.
+- **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell
   npm.cmd run build

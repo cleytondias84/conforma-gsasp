@@ -40,6 +40,7 @@ import { getProcessoAtivo } from './identificacao.ts';
 import { getAchadosAtivos } from './achados.ts';
 import { formatarMoeda, formatarDataBR } from '../domain/validacao.ts';
 import { podeEditar } from '../auth/papeis.ts';
+import { registrarEventoLocal, ACOES_AUDITORIA } from '../services/auditoria.ts';
 
 // Estado em memória dos riscos e pendências de validação
 let riscosAtivos: Risco[] = criarRiscosIniciais();
@@ -523,7 +524,22 @@ export function initRiscosEvents(
 
         if (dimensao && nivel) {
           sincronizarRiscosDoFormulario();
+          const riscoAnterior = riscosAtivos.find((r) => r.dimensao === dimensao);
+          const nivelAnterior = riscoAnterior?.nivel ?? null;
+
           riscosAtivos = definirNivelRisco(riscosAtivos, dimensao, nivel);
+
+          registrarEventoLocal({
+            acao: ACOES_AUDITORIA.ATRIBUICAO_NIVEL_RISCO,
+            entidade: 'Risco',
+            registroId: dimensao,
+            antesDepois: {
+              antes: { nivel: nivelAnterior },
+              depois: { nivel }
+            },
+            descricao: `Nível de risco da dimensão ${METADADOS_DIMENSOES[dimensao].nome} definido como ${METADADOS_NIVEIS[nivel].rotulo}`
+          });
+
           // Limpa pendências se houverem
           pendenciasValidacao = [];
           reRender();
@@ -542,7 +558,20 @@ export function initRiscosEvents(
 
         if (dimensao && achadoId) {
           sincronizarRiscosDoFormulario();
+          const estavaVinculado = !target.checked;
           riscosAtivos = alternarVinculoAchado(riscosAtivos, dimensao, achadoId);
+
+          registrarEventoLocal({
+            acao: estavaVinculado ? ACOES_AUDITORIA.DESVINCULACAO_ACHADO_RISCO : ACOES_AUDITORIA.VINCULACAO_ACHADO_RISCO,
+            entidade: 'Risco',
+            registroId: dimensao,
+            antesDepois: {
+              antes: { vinculado: estavaVinculado },
+              depois: { vinculado: target.checked }
+            },
+            descricao: `Achado "${achadoId}" ${target.checked ? 'vinculado à' : 'desvinculado da'} dimensão ${METADADOS_DIMENSOES[dimensao].nome}`
+          });
+
           reRender();
         }
       });
@@ -558,6 +587,18 @@ export function initRiscosEvents(
         if (dimensao && achadoId) {
           sincronizarRiscosDoFormulario();
           riscosAtivos = desvincularAchado(riscosAtivos, dimensao, achadoId);
+
+          registrarEventoLocal({
+            acao: ACOES_AUDITORIA.DESVINCULACAO_ACHADO_RISCO,
+            entidade: 'Risco',
+            registroId: dimensao,
+            antesDepois: {
+              antes: { vinculado: true, motivo: 'revisao_ou_orfao' },
+              depois: { vinculado: false }
+            },
+            descricao: `Achado "${achadoId}" desvinculado voluntariamente da dimensão ${METADADOS_DIMENSOES[dimensao].nome}`
+          });
+
           reRender();
         }
       });
@@ -587,6 +628,14 @@ export function initRiscosEvents(
     if (valor === 'limpar') {
       riscosAtivos = criarRiscosIniciais();
       pendenciasValidacao = [];
+
+      registrarEventoLocal({
+        acao: ACOES_AUDITORIA.CARGA_CENARIO_RISCOS,
+        entidade: 'Risco',
+        registroId: 'limpar',
+        descricao: 'Matriz de avaliação de riscos redefinida para estado inicial (pendente)'
+      });
+
       reRender();
       return;
     }
@@ -603,6 +652,13 @@ export function initRiscosEvents(
           ? [primeiroAchadoId]
           : []
       }));
+
+      registrarEventoLocal({
+        acao: ACOES_AUDITORIA.CARGA_CENARIO_RISCOS,
+        entidade: 'Risco',
+        registroId: valor,
+        descricao: `Cenário pré-definido de riscos "${cenario.titulo}" aplicado à matriz`
+      });
 
       pendenciasValidacao = [];
       reRender();

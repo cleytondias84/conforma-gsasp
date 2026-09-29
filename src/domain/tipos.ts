@@ -66,10 +66,15 @@ export type DimensaoRisco = 'juridica' | 'financeira' | 'operacional' | 'control
  */
 export type NivelRisco = 'baixo' | 'moderado' | 'alto' | 'critico';
 
-/**
- * Papéis demonstrativos da simulação ("Ver como").
- */
-export type PapelUsuario = 'Administrador' | 'Editor/Assessor' | 'Leitor' | 'Aprovador';
+export type PapelUsuario =
+  | 'administrador'
+  | 'assessor'
+  | 'leitor'
+  | 'aprovador'
+  | 'Administrador'
+  | 'Editor/Assessor'
+  | 'Leitor'
+  | 'Aprovador';
 
 // ==========================================
 // 2. ENTIDADES PRINCIPAIS
@@ -209,6 +214,7 @@ export interface Analise {
   condicionantes: Condicionante[];
   achados: Achado[];
   riscos: Risco[];
+  eventos?: EventoLocal[];                    // Trilha de auditoria local (S3.5)
   conclusaoIndicativa: TipoConclusao | null; // Sugestão algorítmica do sistema
   conclusaoValidada: TipoConclusao | null;   // Homologação pelo assessor
   validacaoHumana: ValidacaoHumana | null;
@@ -234,4 +240,5 @@ export interface EventoLocal {
     antes: unknown;
     depois: unknown;
   };
+  descricao?: string;                         // Descrição amigável legível da ação
 }

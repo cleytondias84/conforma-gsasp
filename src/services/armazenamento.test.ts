@@ -15,7 +15,7 @@ import {
   obterDiagnosticoArmazenamento,
   AVISO_PERSISTENCIA_LOCAL
 } from './armazenamento.ts';
-import type { Processo, Pertinencia, ItemConformidade, Condicionante, Achado, Risco } from '../domain/tipos.ts';
+import type { Processo, Pertinencia, ItemConformidade, Condicionante, Achado, Risco, EventoLocal } from '../domain/tipos.ts';
 
 test('armazenamento: salva e recupera rascunho completo preservando dados', async () => {
   const repo = obterRepositorioArmazenamento();
@@ -402,4 +402,90 @@ test('armazenamento (S3.4): salva e recupera riscos avaliados com justificativa 
   assert.ok(riscoFinanceiro);
   assert.equal(riscoFinanceiro.nivel, 'baixo');
 });
+
+test('armazenamento (S3.5): salva e recupera eventos da trilha de auditoria local', async () => {
+  const repo = obterRepositorioArmazenamento();
+  await repo.limparTudo();
+
+  const processo: Processo = {
+    id: 'proc-audit-test',
+    numero: 'SESP-AUDIT-2026/001',
+    instrumento: 'Termo de Cooperação',
+    contratado: 'Órgão Parceiro',
+    cnpj: '11.222.333/0001-44',
+    objeto: 'Validação de persistência de eventos de auditoria',
+    tipoOrigem: 'Inexigibilidade',
+    valor: 120000,
+    vigenciaInicio: '2026-06-01',
+    vigenciaFim: '2027-06-01'
+  };
+
+  const pertinencia: Pertinencia = {
+    respostas: {
+      competenciaNecessidade: true,
+      vinculoPlanejamento: true,
+      beneficioInteressePublico: true,
+      custoProporcionalidade: true,
+      economicidade: true
+    },
+    evidencias: 'Autos fls. 1-10',
+    justificativa: 'Pertinência demonstrada',
+    conclusao: 'PERTINENTE',
+    providencia: 'Prosseguir'
+  };
+
+  const eventos: EventoLocal[] = [
+    {
+      id: 'evt-aud-1',
+      dataHora: '2026-09-28T10:00:00.000Z',
+      usuarioFicticio: 'Editor / Assessor (GSASP)',
+      papel: 'assessor',
+      acao: 'VALIDACAO_ACHADO',
+      entidade: 'Achado',
+      registroId: 'reg-01',
+      descricao: 'Achado validado como FORMAL',
+      antesDepois: {
+        antes: { estadoValidacao: 'SUGESTAO_SISTEMA' },
+        depois: { estadoValidacao: 'VALIDADO', classificacao: 'FORMAL' }
+      }
+    },
+    {
+      id: 'evt-aud-2',
+      dataHora: '2026-09-28T10:05:00.000Z',
+      usuarioFicticio: 'Editor / Assessor (GSASP)',
+      papel: 'assessor',
+      acao: 'ATRIBUICAO_NIVEL_RISCO',
+      entidade: 'Risco',
+      registroId: 'juridica',
+      descricao: 'Nível de risco Jurídica definido como Moderado'
+    }
+  ];
+
+  await salvarRascunhoAtual(
+    processo,
+    pertinencia,
+    [],
+    [],
+    'rascunho',
+    undefined,
+    undefined,
+    eventos
+  );
+
+  const recuperado = await recuperarUltimoRascunho();
+  assert.ok(recuperado, 'Deve recuperar rascunho com eventos');
+  assert.ok(recuperado.eventos, 'Campo eventos deve estar presente');
+  assert.equal(recuperado.eventos.length, 2);
+
+  assert.equal(recuperado.eventos[0].id, 'evt-aud-1');
+  assert.equal(recuperado.eventos[0].acao, 'VALIDACAO_ACHADO');
+  assert.deepEqual(recuperado.eventos[0].antesDepois, {
+    antes: { estadoValidacao: 'SUGESTAO_SISTEMA' },
+    depois: { estadoValidacao: 'VALIDADO', classificacao: 'FORMAL' }
+  });
+
+  assert.equal(recuperado.eventos[1].id, 'evt-aud-2');
+  assert.equal(recuperado.eventos[1].entidade, 'Risco');
+});
+
 
