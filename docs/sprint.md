@@ -262,7 +262,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] TM-S3.4-07: Ao reabrir um achado vinculado, apareceu o aviso de retorno para revisão (RN10) na dimensão afetada.
       - [x] TM-S3.4-08: O nível Baixo e a justificativa foram rigorosamente preservados, sem reclassificação automática.
       - [x] TM-S3.4-09: Após desvincular, salvar o rascunho e recarregar com F5, o aviso desapareceu e o nível e a justificativa permaneceram preservados.
-  - **Tarefa S3.5 (Trilha de Auditoria Local e Histórico de Eventos — src/services/auditoria.ts) — Implementação Concluída (Testes Manuais Pendentes):**
+  - **Tarefa S3.5 (Trilha de Auditoria Local e Histórico de Eventos — src/services/auditoria.ts) — Concluída e Homologada:**
     - *Implementação técnica:* `src/services/auditoria.ts`, `src/services/auditoria.test.ts`, `src/services/armazenamento.ts`, `src/services/armazenamento.test.ts`, `src/domain/tipos.ts`, `src/pages/achados.ts`, `src/pages/riscos.ts`, `src/router.ts` e `src/style.css`.
     - *Critérios de aceite técnicos atendidos:*
       1. **Histórico local de eventos associado à análise (EventoLocal):** Registro estruturado com `id`, `dataHora`, `usuarioFicticio`, `papel`, `acao`, `entidade`, `registroId`, `antesDepois` e `descricao` legível.
@@ -275,13 +275,13 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - *Verificações automatizadas aprovadas:*
       - **93 testes unitários aprovados via `npm test`** (13 testes dedicados da S3.5 cobrindo tipos, imutabilidade, formatação, renderização sem controles de exclusão e persistência no IndexedDB).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 790ms, precache de 31 ativos e Service Worker íntegros).
-    - *Testes manuais previstos (Aguardando homologação do usuário):*
-      - [ ] TM-S3.5-01: Acesso à trilha de auditoria com estado inicial/vazio exibindo aviso de governança e ausência de controles de edição/exclusão.
-      - [ ] TM-S3.5-02: Registro de eventos de validação e alteração de classificação na Etapa 4 com detalhes de antes/depois.
-      - [ ] TM-S3.5-03: Registro de rejeição fundamentada de achado com a justificativa obrigatória preservada.
-      - [ ] TM-S3.5-04: Persistência integral da trilha após "Salvar Rascunho" e recarregar a página (F5), sem duplicar eventos pelo carregamento.
-      - [ ] TM-S3.5-05: Registro de eventos de avaliação de risco e alternância de perfil simulado no cabeçalho.
-- **Próxima ação da Sprint 3:** Executar o teste manual TM-S3.5-01 (conferência do aviso de governança e imutabilidade da trilha). Não iniciar a tarefa S3.6.
+    - *Testes manuais da S3.5 (Homologados pelo usuário em 28/09/2026):*
+      - [x] TM-S3.5-01: Acesso à trilha de auditoria exibindo título, contador, aviso de governança e ausência de controles de edição/exclusão; fechamento via Esc preservando a etapa e consulta funcional como Leitor.
+      - [x] TM-S3.5-02: Validação do achado registrada; alteração Formal → Relevante exibida corretamente em Antes/Depois na trilha; ambos os eventos preservados após salvar e F5.
+      - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
+      - [x] TM-S3.5-04: Persistência integral da trilha após "Salvar Rascunho" e recarregar com F5, preservando os eventos sem duplicá-los pelo carregamento ou navegação entre Achados e Riscos.
+      - [x] TM-S3.5-05: Registro de alteração de risco jurídico (Baixo para Moderado com Antes/Depois) e registro de alternância de perfil simulado no cabeçalho (Assessor → Leitor → Assessor).
+- **Próxima ação da Sprint 3:** Leitura do escopo e dos critérios de aceite da S3.6 (Estrutura do painel em `src/pages/painel.ts`), sem implementá-la.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell

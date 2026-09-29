@@ -87,15 +87,20 @@ Data do último registro: 28/09/2026.
       - [x] TM-S3.4-07: Ao reabrir um achado vinculado, apareceu o aviso de retorno para revisão (RN10) na dimensão afetada.
       - [x] TM-S3.4-08: O nível Baixo e a justificativa foram rigorosamente preservados, sem reclassificação automática.
       - [x] TM-S3.4-09: Após desvincular, salvar o rascunho e recarregar com F5, o aviso desapareceu e o nível e a justificativa permaneceram preservados.
-  - `S3.5` (Trilha de Auditoria Local e Histórico de Eventos — src/services/auditoria.ts): IMPLEMENTAÇÃO CONCLUÍDA (Aguardando Homologação Manual).
+  - `S3.5` (Trilha de Auditoria Local e Histórico de Eventos — src/services/auditoria.ts): CONCLUÍDA E HOMOLOGADA (93 testes unitários e 5 testes manuais aprovados).
     - Implementação estruturada do histórico local associado à análise (`EventoLocal`: criação, edição, validações, alterações de papéis, riscos e diffs de antes/depois).
     - Aviso ostensivo de governança (`AVISO_AUDITORIA_LOCAL`): trilha mantida exclusivamente no armazenamento local deste navegador (IndexedDB) para fins didáticos, sem garantia de inviolabilidade criptográfica, fé pública ou equivalência a auditoria corporativa institucional (SIGADOC/SEI).
     - Imutabilidade da interface: a tela de auditoria não oferece botões ou mecanismos para editar, alterar ou apagar eventos individuais.
-    - Não duplicação em carregamentos: renderizações e inicializações de tela (F5) não geram eventos espúrios; apenas ações concretas do usuário são registradas.
+    - Não duplicação em carregamentos: renderizações e inicializações de tela (F5) não geram eventos espúrios; navegação entre etapas não emite eventos; apenas ações concretas do usuário são registradas.
     - Persistência e restauração integradas a `DadosRascunhoCompleto` no IndexedDB.
     - **93 testes unitários aprovados via `npm test`** (13 testes dedicados da S3.5).
     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 790ms, precache de 31 ativos e Service Worker íntegros).
-    - Testes manuais previstos: TM-S3.5-01 a TM-S3.5-05.
+    - **Testes manuais da S3.5 consolidados e homologados pelo usuário (28/09/2026):**
+      - [x] TM-S3.5-01: Auditoria abre com título, contador e aviso de governança, sem controles de edição/exclusão; Esc fecha preservando a etapa; Leitor consulta sem editar/excluir.
+      - [x] TM-S3.5-02: Validação do achado registrada; alteração Formal → Relevante exibida corretamente em Antes/Depois; ambos os eventos preservados após salvar e F5.
+      - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
+      - [x] TM-S3.5-04: Salvar rascunho gera evento com data, hora, processo e perfil; F5 e navegação entre etapas não geram duplicidades; após o último salvamento e F5, o histórico mantém os eventos íntegros.
+      - [x] TM-S3.5-05: Alteração de risco jurídico de Baixo para Moderado registra corretamente Antes/Depois e persiste após salvar e F5; trocas Assessor → Leitor → Assessor registradas.
 
 ---
 
@@ -107,13 +112,12 @@ Data do último registro: 28/09/2026.
   - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
   - **Tarefa S3.3:** 100% concluída e homologada (57 testes unitários e 12 testes manuais aprovados).
   - **Tarefa S3.4:** 100% concluída e homologada (80 testes unitários e 9 testes manuais aprovados).
-  - **Tarefa S3.5:** **Implementação técnica concluída** (93 testes unitários aprovados, build 100% íntegro, aguardando testes manuais).
+  - **Tarefa S3.5:** **100% concluída e homologada** (93 testes unitários e 5 testes manuais aprovados, build 100% íntegro).
   - **Tarefa S3.6:** **Ainda não iniciada** (`src/pages/painel.ts`).
 
-1. **Sprint 3 — Próximo Ponto de Retomada (Homologação Manual da Tarefa S3.5):**
-   - **Próxima ação imediata:** Executar o teste manual TM-S3.5-01 (abertura da trilha de auditoria local, conferência do aviso de governança e constatação da ausência de botões para apagar ou alterar eventos).
-   - Executar subsequentemente os demais testes manuais previstos (TM-S3.5-02 a TM-S3.5-05).
-   - **Não iniciar a Tarefa S3.6** até a homologação completa dos testes manuais da S3.5.
+1. **Sprint 3 — Próximo Ponto de Retomada (Preparação da Tarefa S3.6):**
+   - **Próxima ação imediata:** Leitura do escopo e dos critérios de aceite da Tarefa S3.6 (Estrutura do painel em `src/pages/painel.ts`), sem implementá-la.
+   - Manter as regras do projeto: contadores derivados dos dados vigentes; áreas de indicadores preparadas sem apresentar metas fictícias como medições reais; não implementar upload ou IA em tempo de execução.
    - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
 3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
