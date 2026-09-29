@@ -101,6 +101,24 @@ Data do último registro: 28/09/2026.
       - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
       - [x] TM-S3.5-04: Salvar rascunho gera evento com data, hora, processo e perfil; F5 e navegação entre etapas não geram duplicidades; após o último salvamento e F5, o histórico mantém os eventos íntegros.
       - [x] TM-S3.5-05: Alteração de risco jurídico de Baixo para Moderado registra corretamente Antes/Depois e persiste após salvar e F5; trocas Assessor → Leitor → Assessor registradas.
+  - `S3.6` (Estrutura do Painel Executivo — src/pages/painel.ts): EM HOMOLOGAÇÃO MANUAL (3 testes aprovados, 3 pendentes).
+    - Painel executivo consolidado com metadados do processo ativo em destaque (número, instrumento, contratado, objeto, valor, vigência e CNPJ).
+    - Contadores dinâmicos reais derivados do estado em memória/IndexedDB: identificação, pertinência, checklist (conformes, pendentes, a confirmar), condicionantes (atendidas, em cumprimento, pendentes), achados validados por gravidade, sugestões pendentes, rejeições fundamentadas, riscos por dimensão e eventos na trilha de auditoria local.
+    - Diferenciação estrita entre sugestões do sistema, achados validados e rejeitados: sugestões pendentes e rejeições NÃO são contadas como impedimentos confirmados.
+    - Não transformação automática de pendências documentais ou condicionantes em impedimento jurídico (RN11 e RN13).
+    - Preservação dos níveis de risco estabelecidos pelo assessor; dimensões não preenchidas exibidas como pendentes sem defaults artificiais (RN12).
+    - Indicadores estratégicos de eficiência (Tempo Médio de Análise e Taxa de Retrabalho) com baseline estimado (30 min e 30%), meta de até ~67% de redução e medição estrita como "Sem dados medidos", com salvaguarda institucional de governança ética das métricas.
+    - Imutabilidade e consulta puramente de leitura: a visualização do painel não altera o estado da análise nem emite eventos de auditoria.
+    - Navegação com atalhos para as 6 etapas, botão "📊 Painel" na barra de persistência superior e suporte a `#/` e `#/painel`.
+    - **99 testes unitários aprovados via `npm test`** (6 testes dedicados da S3.6).
+    - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 1.18s, precache de 31 ativos e Service Worker íntegros).
+    - **Testes manuais da S3.6 (Homologação parcial pelo usuário em 29/09/2026):**
+      - [x] TM-S3.6-01: Acesso ao Painel Executivo na rota inicial `#/` e `#/painel`, conferência do cabeçalho com metadados do processo, botão de atalho na barra superior e preservação do contador de auditoria após F5 sem eventos espúrios.
+      - [ ] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes com alerta de que pendência não configura impedimento automático. *(Pendente)*
+      - [x] TM-S3.6-03: Exibição dos contadores de achados coincidindo com a etapa (1 validado Relevante, 1 rejeitado e 0 impeditivos validados), sem contagem indevida de sugestão ou rejeição como impedimento.
+      - [x] TM-S3.6-04: Exibição dos riscos por dimensão coincidindo com a etapa (Jurídica Moderado e dimensões não avaliadas permanecendo pendentes, sem risco baixo artificial).
+      - [ ] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional. *(Pendente — Próximo Teste)*
+      - [ ] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé. *(Pendente)*
 
 ---
 
@@ -112,12 +130,13 @@ Data do último registro: 28/09/2026.
   - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
   - **Tarefa S3.3:** 100% concluída e homologada (57 testes unitários e 12 testes manuais aprovados).
   - **Tarefa S3.4:** 100% concluída e homologada (80 testes unitários e 9 testes manuais aprovados).
-  - **Tarefa S3.5:** **100% concluída e homologada** (93 testes unitários e 5 testes manuais aprovados, build 100% íntegro).
-  - **Tarefa S3.6:** **Ainda não iniciada** (`src/pages/painel.ts`).
+  - **Tarefa S3.5:** 100% concluída e homologada (93 testes unitários e 5 testes manuais aprovados).
+  - **Tarefa S3.6:** **Em homologação manual** (implementação técnica concluída, 99 testes unitários aprovados, build 100% íntegro, 3 testes manuais aprovados e 3 testes pendentes).
 
-1. **Sprint 3 — Próximo Ponto de Retomada (Preparação da Tarefa S3.6):**
-   - **Próxima ação imediata:** Leitura do escopo e dos critérios de aceite da Tarefa S3.6 (Estrutura do painel em `src/pages/painel.ts`), sem implementá-la.
-   - Manter as regras do projeto: contadores derivados dos dados vigentes; áreas de indicadores preparadas sem apresentar metas fictícias como medições reais; não implementar upload ou IA em tempo de execução.
+1. **Sprint 3 — Próximo Ponto de Retomada (Homologação Manual da Tarefa S3.6):**
+   - **Próxima ação imediata:** Executar o teste manual TM-S3.6-05 (conferência dos indicadores de tempo e taxa de retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional).
+   - Executar subsequentemente os demais testes manuais pendentes (TM-S3.6-02 e TM-S3.6-06).
+   - **Não iniciar a Sprint 4** até a homologação completa de todos os testes manuais da S3.6.
    - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
 
 3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**

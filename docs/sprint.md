@@ -281,7 +281,28 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
       - [x] TM-S3.5-04: Persistência integral da trilha após "Salvar Rascunho" e recarregar com F5, preservando os eventos sem duplicá-los pelo carregamento ou navegação entre Achados e Riscos.
       - [x] TM-S3.5-05: Registro de alteração de risco jurídico (Baixo para Moderado com Antes/Depois) e registro de alternância de perfil simulado no cabeçalho (Assessor → Leitor → Assessor).
-- **Próxima ação da Sprint 3:** Leitura do escopo e dos critérios de aceite da S3.6 (Estrutura do painel em `src/pages/painel.ts`), sem implementá-la.
+- **Tarefa S3.6 (Estrutura do painel em src/pages/painel.ts) — Implementação Técnica Concluída (Homologação Manual Pendente):**
+    - *Implementação técnica:* `src/pages/painel.ts`, `src/pages/painel.test.ts`, `src/router.ts` e `src/style.css`.
+    - *Critérios de aceite técnicos atendidos:*
+      1. **Painel executivo da análise ativa com metadados essenciais:** Destaque para número do processo, instrumento, contratado, objeto, valor estimado, vigência e CNPJ (RN01).
+      2. **Contadores derivados estritamente dos dados vigentes:** Situação da identificação, conclusão da pertinência, itens do checklist (conformes, pendentes, a confirmar), condicionantes (atendidas, em cumprimento, pendentes), achados validados por gravidade, sugestões pendentes, rejeições fundamentadas, riscos por dimensão e total de eventos na trilha de auditoria local.
+      3. **Diferenciação rigorosa de situações de achados:** Sugestões do motor pendentes de validação e apontamentos rejeitados NÃO são contabilizados como impedimentos confirmados até decisão formal do assessor.
+      4. **Não transformação automática de pendências em óbice jurídico:** Alertas claros de governança informando que pendências instrutórias e condicionantes demandam saneamento e não equivalem a impedimento automático (RN11 e RN13).
+      5. **Preservação de riscos sob juízo humano:** As 4 dimensões (Jurídica, Financeira, Operacional, Controle) preservam rigorosamente os níveis fixados pelo assessor; dimensões não avaliadas permanecem como "Pendente", sem atribuição de risco baixo artificial (RN12).
+      6. **Indicadores de eficiência e produtividade com distinção ética (metas vs. medições):** Estrutura dos indicadores (Tempo Médio de Análise e Taxa de Retrabalho) apresentando baseline inicial estimado (30 min e 30%), meta de até ~67% de redução e medição estrita como "Sem dados medidos", com salvaguarda institucional de que metas não constituem ganho comprovado antes de validação empírica no piloto (docs/contexto.md — Seção 2).
+      7. **Imutabilidade e não emissão de eventos espúrios:** A consulta ao Painel Executivo é puramente de leitura, sem alteração de rascunhos nem emissão de eventos na trilha de auditoria.
+      8. **Navegação e usabilidade institucional:** Atalhos diretos para as 6 etapas, botão "📊 Painel" na barra de persistência superior e suporte a `#/' e `#/painel'.
+    - *Verificações automatizadas aprovadas:*
+      - **99 testes unitários aprovados via `npm test`** (6 testes dedicados da S3.6 cobrindo contadores, diferenciação de achados, riscos pendentes e salvaguardas de indicadores).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 1.18s, precache de 31 ativos e Service Worker íntegros).
+    - *Testes manuais da S3.6 (Homologação parcial pelo usuário em 29/09/2026):*
+      - [x] TM-S3.6-01: Acesso ao Painel Executivo na rota inicial `#/` e `#/painel`, conferência do cabeçalho com metadados do processo, botão de atalho na barra superior e preservação do contador de auditoria após F5 sem eventos espúrios.
+      - [ ] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes com alerta de que pendência não configura impedimento automático. *(Pendente)*
+      - [x] TM-S3.6-03: Exibição dos contadores de achados coincidindo com a etapa (1 validado Relevante, 1 rejeitado e 0 impeditivos validados), sem contagem indevida de sugestão ou rejeição como impedimento.
+      - [x] TM-S3.6-04: Exibição dos riscos por dimensão coincidindo com a etapa (Jurídica Moderado e dimensões não avaliadas permanecendo pendentes, sem risco baixo artificial).
+      - [ ] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional. *(Pendente — Próximo Teste)*
+      - [ ] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé. *(Pendente)*
+- **Próxima ação da Sprint 3:** Executar o teste manual TM-S3.6-05 (conferência dos indicadores de tempo/retrabalho e salvaguarda institucional). Manter S3.6 em homologação e não avançar para a Sprint 4.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell

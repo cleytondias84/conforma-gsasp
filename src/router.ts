@@ -40,6 +40,10 @@ import {
   sincronizarRiscosDoFormulario
 } from './pages/riscos';
 import {
+  renderPainelScreen,
+  initPainelEvents
+} from './pages/painel.ts';
+import {
   salvarRascunhoAtual,
   recuperarUltimoRascunho,
   formatarCarimboSalvamento,
@@ -134,7 +138,7 @@ function renderHeader(): string {
     <header class="header">
       <div class="header-inner">
         <div>
-          <a href="#/" class="brand-link" title="Voltar à tela inicial">
+          <a href="#/painel" class="brand-link" title="Acessar o Painel Executivo e Quadro Síntese">
             <h1 class="brand-title">CONFORMA GSASP</h1>
           </a>
           <p class="brand-subtitle">Sistema de Conformidade e Apoio à Decisão &bull; GSASP/SESP-MT</p>
@@ -244,6 +248,9 @@ function renderBarraPersistencia(): string {
           </div>
         </div>
         <div class="storage-actions">
+          <a href="#/painel" id="btn-painel-atalho-global" class="btn btn-secondary btn-small" title="Exibe o Painel Executivo e Quadro Síntese da análise">
+            📊 Painel
+          </a>
           <button type="button" id="btn-ver-auditoria-global" class="btn btn-secondary btn-small" title="Exibe a trilha de auditoria e histórico de eventos local desta análise">
             📜 Auditoria Local (${getEventosAtivos().length})
           </button>
@@ -276,11 +283,11 @@ function renderNavigationButtons(currentStepNumber: number): string {
   const isFirst = currentStepNumber === 1;
   const isLast = currentStepNumber === STAGES.length;
 
-  const prevHash = isFirst ? '#/' : STAGES[currentStepNumber - 2].hash;
-  const prevLabel = isFirst ? '← Voltar ao Início' : '← Anterior';
+  const prevHash = isFirst ? '#/painel' : STAGES[currentStepNumber - 2].hash;
+  const prevLabel = isFirst ? '← Painel Executivo' : '← Anterior';
 
-  const nextHash = isLast ? '#/' : STAGES[currentStepNumber].hash;
-  const nextLabel = isLast ? 'Concluir Demonstração →' : 'Próximo →';
+  const nextHash = isLast ? '#/painel' : STAGES[currentStepNumber].hash;
+  const nextLabel = isLast ? 'Concluir para o Painel →' : 'Próximo →';
 
   return `
     <div class="stage-actions">
@@ -291,38 +298,7 @@ function renderNavigationButtons(currentStepNumber: number): string {
   `;
 }
 
-/**
- * Renderiza a Tela Inicial.
- */
-function renderHomeScreen(): string {
-  return `
-    <div class="card hero-card">
-      <div class="hero-header">
-        <h2 class="hero-title">Revisão e Apoio à Decisão</h2>
-        <p class="hero-subtitle">
-          Padronização e conferência prévia de processos submetidos à assinatura do Secretário Adjunto.
-        </p>
-      </div>
 
-      <div class="info-box">
-        <strong>Como funciona o fluxo de conferência:</strong>
-        <p>A análise é estruturada em 6 etapas sequenciais, garantindo que nenhum item essencial seja omitido antes do encaminhamento à autoridade.</p>
-        <ul class="home-stages-preview">
-          <li><strong>1. Identificação:</strong> Destaque imediato de objeto, tipo/origem, valor e vigência.</li>
-          <li><strong>2. Pertinência:</strong> Avaliação obrigatória de competência, necessidade e benefício público.</li>
-          <li><strong>3. Conformidade:</strong> Conferência de checklist documental e atendimento a condicionantes jurídicas.</li>
-          <li><strong>4. Achados:</strong> Apontamento e classificação de inconsistências com validação humana.</li>
-          <li><strong>5. Riscos:</strong> Dimensões jurídica, financeira, operacional e controle.</li>
-          <li><strong>6. Resultado:</strong> Resposta executiva às 5 perguntas essenciais para suporte à decisão.</li>
-        </ul>
-      </div>
-
-      <div class="home-cta-container">
-        <a href="#/identificacao" class="btn btn-primary btn-large">Iniciar análise →</a>
-      </div>
-    </div>
-  `;
-}
 
 
 
@@ -380,11 +356,12 @@ export function renderRoute(): void {
 
   let mainHtml = '';
 
-  if (!isStage || normalizedHash === '#/') {
-    // Tela Inicial
+  if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
+    // Painel Executivo da Análise Ativa (S3.6)
     mainHtml = `
       <main class="main-content">
-        ${renderHomeScreen()}
+        ${renderBarraPersistencia()}
+        ${renderPainelScreen()}
       </main>
     `;
   } else if (currentStage) {
@@ -780,6 +757,11 @@ export function renderRoute(): void {
         window.location.hash = '#/achados';
       });
     }
+  }
+
+  // Inicializa eventos do Painel Executivo quando ativo
+  if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
+    initPainelEvents();
   }
 
   // Assegura rolagem suave ao topo ao mudar de rota
