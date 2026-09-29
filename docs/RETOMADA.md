@@ -1,8 +1,8 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 28/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1 e 2 homologadas; S3.1, S3.2, S3.3 e S3.4 concluídas e homologadas)  
+Data do último registro: 29/09/2026.  
+**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1, 2 e 3 100% CONCLUÍDAS E HOMOLOGADAS; Sprint 4 a iniciar)  
 **Caminho local da pasta do projeto:**  
 `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 
@@ -20,7 +20,7 @@ Data do último registro: 28/09/2026.
   - `S2.4` (Persistência Local com IndexedDB): 100% homologada.
   - `S2.5` (Papéis de Usuário e Permissões Simuladas): 100% HOMOLOGADA.
   - `S2.6` (Revisão do Cache do PWA e Retomada Offline): 100% HOMOLOGADA.
-- **Sprint 3 — Motor de regras, achados e riscos (Em andamento):**
+- **Sprint 3 — Motor de regras, achados e riscos:** 100% CONCLUÍDA E HOMOLOGADA (S3.1 a S3.6).
   - `S3.1` (Catálogo de Regras Funcionais em docs/regras-funcionais.md): 100% HOMOLOGADA PARA PROTOTIPAGEM.
     - Catálogo normativo e funcional estruturado com 6 regras determinísticas (`REG-01` a `REG-06`).
     - **Aprovação Funcional (25/09/2026):** Aprovado pelo usuário como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (não representa validação jurídica das regras nem aprovação de processos reais).
@@ -101,7 +101,7 @@ Data do último registro: 28/09/2026.
       - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
       - [x] TM-S3.5-04: Salvar rascunho gera evento com data, hora, processo e perfil; F5 e navegação entre etapas não geram duplicidades; após o último salvamento e F5, o histórico mantém os eventos íntegros.
       - [x] TM-S3.5-05: Alteração de risco jurídico de Baixo para Moderado registra corretamente Antes/Depois e persiste após salvar e F5; trocas Assessor → Leitor → Assessor registradas.
-  - `S3.6` (Estrutura do Painel Executivo — src/pages/painel.ts): EM HOMOLOGAÇÃO MANUAL (3 testes aprovados, 3 pendentes).
+  - `S3.6` (Estrutura do Painel Executivo — src/pages/painel.ts): 100% CONCLUÍDA E HOMOLOGADA (99 testes unitários e 6 testes manuais aprovados).
     - Painel executivo consolidado com metadados do processo ativo em destaque (número, instrumento, contratado, objeto, valor, vigência e CNPJ).
     - Contadores dinâmicos reais derivados do estado em memória/IndexedDB: identificação, pertinência, checklist (conformes, pendentes, a confirmar), condicionantes (atendidas, em cumprimento, pendentes), achados validados por gravidade, sugestões pendentes, rejeições fundamentadas, riscos por dimensão e eventos na trilha de auditoria local.
     - Diferenciação estrita entre sugestões do sistema, achados validados e rejeitados: sugestões pendentes e rejeições NÃO são contadas como impedimentos confirmados.
@@ -112,32 +112,58 @@ Data do último registro: 28/09/2026.
     - Navegação com atalhos para as 6 etapas, botão "📊 Painel" na barra de persistência superior e suporte a `#/` e `#/painel`.
     - **99 testes unitários aprovados via `npm test`** (6 testes dedicados da S3.6).
     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 1.18s, precache de 31 ativos e Service Worker íntegros).
-    - **Testes manuais da S3.6 (Homologação parcial pelo usuário em 29/09/2026):**
+    - **Testes manuais da S3.6 (100% Homologados pelo usuário em 29/09/2026):**
       - [x] TM-S3.6-01: Acesso ao Painel Executivo na rota inicial `#/` e `#/painel`, conferência do cabeçalho com metadados do processo, botão de atalho na barra superior e preservação do contador de auditoria após F5 sem eventos espúrios.
-      - [ ] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes com alerta de que pendência não configura impedimento automático. *(Pendente)*
+      - [x] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes no painel e validação de conformidade com mensagem semântica correta ("concluída com pendências" no Cenário 5 e "concluída sem pendências" no Cenário 1, sem presunção de impedimento automático) (Homologado pelo usuário em 29/09/2026).
       - [x] TM-S3.6-03: Exibição dos contadores de achados coincidindo com a etapa (1 validado Relevante, 1 rejeitado e 0 impeditivos validados), sem contagem indevida de sugestão ou rejeição como impedimento.
       - [x] TM-S3.6-04: Exibição dos riscos por dimensão coincidindo com a etapa (Jurídica Moderado e dimensões não avaliadas permanecendo pendentes, sem risco baixo artificial).
-      - [ ] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional. *(Pendente — Próximo Teste)*
-      - [ ] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé. *(Pendente)*
+      - [x] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado (30 min e 30%), meta de até ~67% (10 min e 10%), medição "Sem dados medidos", fórmulas visíveis e salvaguarda institucional, sem exibição artificial de 0% (Homologado pelo usuário em 29/09/2026).
+      - [x] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé; rotas #/identificacao, #/pertinencia, #/conformidade, #/achados, #/riscos e #/resultado conferidas, dados preservados, recarga F5 mantendo estado e auditoria local mantida em 0 sem eventos espúrios (Homologado pelo usuário em 29/09/2026).
 
 ---
 
-## 2. Próximo Passo Exato
+## 2. Próximo Passo Exato (Ponto Seguro de Retomada)
 
 - **Situação de momento:**
-  - **Sprint 2:** 100% concluída e homologada.
-  - **Tarefa S3.1:** 100% aprovada para desenvolvimento e testes do protótipo (especificação funcional demonstrativa).
-  - **Tarefa S3.2:** 100% concluída tecnicamente e testada.
-  - **Tarefa S3.3:** 100% concluída e homologada (57 testes unitários e 12 testes manuais aprovados).
-  - **Tarefa S3.4:** 100% concluída e homologada (80 testes unitários e 9 testes manuais aprovados).
-  - **Tarefa S3.5:** 100% concluída e homologada (93 testes unitários e 5 testes manuais aprovados).
-  - **Tarefa S3.6:** **Em homologação manual** (implementação técnica concluída, 99 testes unitários aprovados, build 100% íntegro, 3 testes manuais aprovados e 3 testes pendentes).
+  - **Sprint 1:** 100% concluída e publicada.
+  - **Sprint 2:** 100% concluída e homologada (S2.1 a S2.6).
+  - **Sprint 3:** **100% CONCLUÍDA E HOMOLOGADA** (S3.1 a S3.6: 99 testes unitários aprovados, build 100% íntegro e 6 testes manuais da S3.6 homologados).
+  - **Sprint 4:** Em andamento:
+    - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): **100% HOMOLOGADA** pelo usuário em 29/09/2026.
+    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **EM VALIDAÇÃO MANUAL** (138 testes unitários aprovados; build 100% íntegro).
+    - `S4.2`: **Ainda NÃO homologada integralmente** (3 de 5 testes manuais aprovados).
+    - `S4.3` (Documento executivo e estilos de impressão): **NÃO INICIADA**.
 
-1. **Sprint 3 — Próximo Ponto de Retomada (Homologação Manual da Tarefa S3.6):**
-   - **Próxima ação imediata:** Executar o teste manual TM-S3.6-05 (conferência dos indicadores de tempo e taxa de retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional).
-   - Executar subsequentemente os demais testes manuais pendentes (TM-S3.6-02 e TM-S3.6-06).
-   - **Não iniciar a Sprint 4** até a homologação completa de todos os testes manuais da S3.6.
-   - Manter as alterações isoladas localmente na branch de trabalho `pausa-s2-4`; não mesclar na branch `main` nem publicar nesta fase.
+1. **Sprint 4 — Tarefa S4.2 em Validação Manual (RN08, RN09, RN10):**
+   - **Camada de Domínio Puro (`src/domain/conclusao.ts`):**
+     - Cascata determinística estrita: $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$.
+     - Precedência P1 absoluta: dados essenciais faltantes (`DEC-01`) ou avaliações mínimas pendentes (`DEC-02`) acionam P1 antes de óbices P2 a P5.
+     - 4 estados de checklist: `confirmar` em P1; `pendente` em P3 (`DEC-07A`, `MOT-SANEAMENTO-CHECKLIST-PENDENTE`); `nao_aplicavel` com justificativa formalmente resolvido admitindo P4/P5 (`DEC-10`); `nao_aplicavel` sem justificativa obrigatória em P1 (`DEC-01`).
+     - Consolidação de riscos: Crítico > Alto > Moderado > Baixo; dimensão não avaliada aciona P1 (`MOT-SANEAMENTO-AVALIACOES-PENDENTES`), vedada presunção de risco Baixo.
+     - Agregação de múltiplos códigos `MOT-*` quando coexistirem ressalvas em P4 (`APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`).
+     - Saída com salvaguarda `naoConstituiAutorizacaoAutomatica: true`.
+   - **Camada de Interface e Governança (`src/pages/resultado.ts`):**
+     - Banner ostensivo de apoio à decisão (sem autorização automática para assinatura).
+     - Cartão da sugestão do sistema com badge, precedência, regra DEC e códigos MOT.
+     - Espaço de homologação técnica do assessor: adoção direta ou seleção divergente com justificativa obrigatória ($\ge 10$ caracteres).
+     - Invalidação dinâmica automática (RN10) por alterações supervenientes nos autos.
+     - Respostas às 5 Perguntas Executivas Centrais (RN09).
+     - Trilha de auditoria integrada (`VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO`, `REABERTURA_CONCLUSAO`).
+     - Modo somente consulta para perfis *Leitor* e *Aprovador*.
+     - Persistência e restauração do parecer no IndexedDB/localStorage.
+   - **Testes Automatizados e Build:**
+     - **138 testes unitários aprovados via `npm test`** (32 de domínio + 7 de interface + 99 preexistentes).
+     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 571ms, precache de 31 ativos e Service Worker íntegros).
+   - **Testes Manuais da S4.2 (Status da Validação):**
+     - [x] TM-S4.2-01: Adoção da sugestão do sistema em consonância com o motor no Cenário 1 (Processo SESP-PRO-2026/00001, P5, DEC-10, MOT-APTIDAO-PLENA-REGULARIDADE, Risco Baixo), homologação com selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados de responsável/data/hora e registro na auditoria (VALIDACAO_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
+     - [x] TM-S4.2-02: Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta (< 10 caracteres) e homologação de divergência técnica fundamentada (Processo SESP-PRO-2026/00001, RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA) com selo "PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA", badge "Prevalece Decisão Humana (RN02/RN07)", justificativa registrada e evento na auditoria (DIVERGENCIA_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
+     - [ ] TM-S4.2-03: Invalidação dinâmica automática da conclusão (RN10) após alteração superveniente na matriz de riscos e alerta ostensivo na tela (PENDENTE).
+     - [ ] TM-S4.2-04: Conferência das respostas às 5 Perguntas Executivas Centrais (RN09) e das 4 salvaguardas regulamentares da SESP-MT (PENDENTE).
+     - [x] TM-S4.2-05: Modo somente consulta nos perfis Leitor e Aprovador (banner exibido, bloqueio de controles de homologação/adoção/reabertura, dados preservados e restauração ao retornar para Assessor) (Homologado pelo usuário em 29/09/2026).
+
+2. **Próxima Ação Imediata na Retomada:**
+   - **Próximo teste exato a executar:** **TM-S4.2-03** (Invalidação Dinâmica Automática por Alterações Supervenientes — RN10), seguido por **TM-S4.2-04** (Cinco Perguntas Executivas e Salvaguardas).
+   - **Regra de bloqueio estrita:** Nenhuma nova implementação de código deve começar antes da conclusão integral da validação manual e homologação formal da Tarefa S4.2. A Tarefa S4.3 **NÃO** deve ser iniciada antes disso.
 
 3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell

@@ -1086,7 +1086,16 @@ export function initConformidadeEvents(
     atualizarVisualConformidadeNoDom();
 
     if (res.valido) {
-      alert(`✅ Conformidade Documental validada!\n• ${res.estatisticas.itensOk} itens conformes\n• ${res.estatisticas.itensPendentes} pendentes\n• ${res.estatisticas.itensConfirmar} a confirmar\n• ${res.estatisticas.condicionantesPendentes} condicionantes pendentes`);
+      const temPendencias =
+        res.estatisticas.itensPendentes > 0 ||
+        res.estatisticas.itensConfirmar > 0 ||
+        res.estatisticas.condicionantesPendentes > 0;
+
+      const tituloMensagem = temPendencias
+        ? '⚠️ Conferência de conformidade concluída com pendências.'
+        : '✅ Conferência de conformidade concluída sem pendências.';
+
+      alert(`${tituloMensagem}\n• ${res.estatisticas.itensOk} itens conformes\n• ${res.estatisticas.itensPendentes} pendentes\n• ${res.estatisticas.itensConfirmar} a confirmar\n• ${res.estatisticas.condicionantesPendentes} condicionantes pendentes`);
     }
   });
 

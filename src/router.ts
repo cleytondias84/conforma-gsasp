@@ -40,6 +40,15 @@ import {
   sincronizarRiscosDoFormulario
 } from './pages/riscos';
 import {
+  renderResultadoScreen,
+  initResultadoEvents,
+  getConclusaoValidada,
+  setConclusaoValidada,
+  getValidacaoHumana,
+  getResultadoExecutivoAtivo,
+  sincronizarResultadoDoFormulario
+} from './pages/resultado.ts';
+import {
   renderPainelScreen,
   initPainelEvents
 } from './pages/painel.ts';
@@ -305,32 +314,6 @@ function renderNavigationButtons(currentStepNumber: number): string {
 
 
 /**
- * Renderiza a Etapa 6: Resultado e Encaminhamento.
- */
-function renderResultadoScreen(): string {
-  return `
-    <div class="stage-header">
-      <h2 class="stage-title">6. Resultado Executivo e Encaminhamento</h2>
-      <p class="stage-description">
-        Documento executivo padronizado para subsidiar a autoridade decisora, consolidando a análise de conformidade em respostas objetivas (RN09).
-      </p>
-    </div>
-
-    <div class="preview-card">
-      <h3 class="preview-title">As Cinco Perguntas Executivas:</h3>
-      <ol class="executive-questions-list">
-        <li><strong>Pode assinar?</strong> (Conclusão indicativa submetida à homologação do assessor).</li>
-        <li><strong>O que corrigir?</strong> (Relação clara das providências necessárias).</li>
-        <li><strong>Quem corrige?</strong> (Identificação dos setores ou servidores responsáveis).</li>
-        <li><strong>Retorna ao Gabinete?</strong> (Necessidade de reapreciação após saneamento).</li>
-        <li><strong>Exige nova análise jurídica?</strong> (Reanálise pela PGE ou assessoria).</li>
-      </ol>
-      <p class="preview-status">Status da visualização: Modelo estrutural preparado para geração de documento imprimível na Sprint 4.</p>
-    </div>
-  `;
-}
-
-/**
  * Garante que qualquer digitação pendente no DOM seja sincronizada para o estado da tela ativa antes de salvar.
  */
 export function sincronizarEstadoDaTelaAtiva(): void {
@@ -338,6 +321,7 @@ export function sincronizarEstadoDaTelaAtiva(): void {
   sincronizarPertinenciaDoFormulario();
   sincronizarConformidadeDoFormulario();
   sincronizarRiscosDoFormulario();
+  sincronizarResultadoDoFormulario();
 }
 
 /**
@@ -468,7 +452,10 @@ export function renderRoute(): void {
         'rascunho',
         getAchadosAtivos(),
         getRiscosAtivos(),
-        getEventosAtivos()
+        getEventosAtivos(),
+        getResultadoExecutivoAtivo().conclusao,
+        getConclusaoValidada(),
+        getValidacaoHumana()
       );
       ultimoSalvamentoTimestamp = res.salvoEm;
       try {
@@ -514,6 +501,9 @@ export function renderRoute(): void {
       }
       if (recuperado.eventos) {
         setEventosAtivos(recuperado.eventos);
+      }
+      if (recuperado.conclusaoValidada || recuperado.validacaoHumana) {
+        setConclusaoValidada(recuperado.conclusaoValidada || null, recuperado.validacaoHumana || null);
       }
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
@@ -759,6 +749,21 @@ export function renderRoute(): void {
     }
   }
 
+  if (currentStage?.id === 'resultado') {
+    initResultadoEvents();
+
+    const prevBtn = document.querySelector('.stage-actions a.btn-secondary');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (podeEditar()) {
+          sincronizarEstadoDaTelaAtiva();
+        }
+        window.location.hash = '#/riscos';
+      });
+    }
+  }
+
   // Inicializa eventos do Painel Executivo quando ativo
   if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
     initPainelEvents();
@@ -811,6 +816,9 @@ export async function initRouter(): Promise<void> {
         }
         if (recuperado.eventos) {
           setEventosAtivos(recuperado.eventos);
+        }
+        if (recuperado.conclusaoValidada || recuperado.validacaoHumana) {
+          setConclusaoValidada(recuperado.conclusaoValidada || null, recuperado.validacaoHumana || null);
         }
         ultimoSalvamentoTimestamp = recuperado.salvoEm;
       }

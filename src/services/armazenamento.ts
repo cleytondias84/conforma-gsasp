@@ -19,7 +19,9 @@ import type {
   Achado,
   Risco,
   EventoLocal,
-  EstadoEdicao
+  EstadoEdicao,
+  TipoConclusao,
+  ValidacaoHumana
 } from '../domain/tipos';
 
 export const NOME_BANCO_INDEXED_DB = 'conforma_gsasp_db';
@@ -39,6 +41,9 @@ export interface DadosRascunhoCompleto {
   achados?: Achado[];
   riscos?: Risco[];
   eventos?: EventoLocal[];
+  conclusaoIndicativa?: TipoConclusao | null;
+  conclusaoValidada?: TipoConclusao | null;
+  validacaoHumana?: ValidacaoHumana | null;
   analiseId: string;
   estadoEdicao: EstadoEdicao;
   salvoEm: string;
@@ -424,7 +429,10 @@ export async function salvarRascunhoAtual(
   estadoEdicao: EstadoEdicao = 'rascunho',
   achados?: Achado[],
   riscos?: Risco[],
-  eventos?: EventoLocal[]
+  eventos?: EventoLocal[],
+  conclusaoIndicativa?: TipoConclusao | null,
+  conclusaoValidada?: TipoConclusao | null,
+  validacaoHumana?: ValidacaoHumana | null
 ): Promise<{ analiseId: string; salvoEm: string }> {
   const repo = obterRepositorioArmazenamento();
   const agoraIso = new Date().toISOString();
@@ -438,6 +446,9 @@ export async function salvarRascunhoAtual(
     achados: achados ? JSON.parse(JSON.stringify(achados)) : undefined,
     riscos: riscos ? JSON.parse(JSON.stringify(riscos)) : undefined,
     eventos: eventos ? JSON.parse(JSON.stringify(eventos)) : undefined,
+    conclusaoIndicativa: conclusaoIndicativa !== undefined ? conclusaoIndicativa : undefined,
+    conclusaoValidada: conclusaoValidada !== undefined ? conclusaoValidada : undefined,
+    validacaoHumana: validacaoHumana ? JSON.parse(JSON.stringify(validacaoHumana)) : undefined,
     analiseId,
     estadoEdicao,
     salvoEm: agoraIso

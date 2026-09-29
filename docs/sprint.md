@@ -281,7 +281,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] TM-S3.5-03: Rejeição sem justificativa bloqueada; rejeição com justificativa registrada integralmente no histórico e preservada após salvar e F5.
       - [x] TM-S3.5-04: Persistência integral da trilha após "Salvar Rascunho" e recarregar com F5, preservando os eventos sem duplicá-los pelo carregamento ou navegação entre Achados e Riscos.
       - [x] TM-S3.5-05: Registro de alteração de risco jurídico (Baixo para Moderado com Antes/Depois) e registro de alternância de perfil simulado no cabeçalho (Assessor → Leitor → Assessor).
-- **Tarefa S3.6 (Estrutura do painel em src/pages/painel.ts) — Implementação Técnica Concluída (Homologação Manual Pendente):**
+- **Tarefa S3.6 (Estrutura do painel em src/pages/painel.ts) — 100% CONCLUÍDA E HOMOLOGADA:**
     - *Implementação técnica:* `src/pages/painel.ts`, `src/pages/painel.test.ts`, `src/router.ts` e `src/style.css`.
     - *Critérios de aceite técnicos atendidos:*
       1. **Painel executivo da análise ativa com metadados essenciais:** Destaque para número do processo, instrumento, contratado, objeto, valor estimado, vigência e CNPJ (RN01).
@@ -295,14 +295,55 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - *Verificações automatizadas aprovadas:*
       - **99 testes unitários aprovados via `npm test`** (6 testes dedicados da S3.6 cobrindo contadores, diferenciação de achados, riscos pendentes e salvaguardas de indicadores).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 1.18s, precache de 31 ativos e Service Worker íntegros).
-    - *Testes manuais da S3.6 (Homologação parcial pelo usuário em 29/09/2026):*
+    - *Testes manuais da S3.6 (100% Homologados pelo usuário em 29/09/2026):*
       - [x] TM-S3.6-01: Acesso ao Painel Executivo na rota inicial `#/` e `#/painel`, conferência do cabeçalho com metadados do processo, botão de atalho na barra superior e preservação do contador de auditoria após F5 sem eventos espúrios.
-      - [ ] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes com alerta de que pendência não configura impedimento automático. *(Pendente)*
+      - [x] TM-S3.6-02: Exibição dos contadores reais de checklist e condicionantes no painel e validação de conformidade com mensagem semântica correta ("concluída com pendências" no Cenário 5 e "concluída sem pendências" no Cenário 1, sem presunção de impedimento automático) (Aprovado pelo usuário em 29/09/2026).
       - [x] TM-S3.6-03: Exibição dos contadores de achados coincidindo com a etapa (1 validado Relevante, 1 rejeitado e 0 impeditivos validados), sem contagem indevida de sugestão ou rejeição como impedimento.
       - [x] TM-S3.6-04: Exibição dos riscos por dimensão coincidindo com a etapa (Jurídica Moderado e dimensões não avaliadas permanecendo pendentes, sem risco baixo artificial).
-      - [ ] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado, meta de ~67% e medição "Sem dados medidos" com salvaguarda institucional. *(Pendente — Próximo Teste)*
-      - [ ] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé. *(Pendente)*
-- **Próxima ação da Sprint 3:** Executar o teste manual TM-S3.6-05 (conferência dos indicadores de tempo/retrabalho e salvaguarda institucional). Manter S3.6 em homologação e não avançar para a Sprint 4.
+      - [x] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado (30 min e 30%), meta de até ~67% (10 min e 10%), medição "Sem dados medidos", fórmulas visíveis e salvaguarda institucional, sem exibição artificial de 0% (Aprovado pelo usuário em 29/09/2026).
+      - [x] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé; rotas #/identificacao, #/pertinencia, #/conformidade, #/achados, #/riscos e #/resultado conferidas, dados preservados, recarga F5 mantendo estado e auditoria local mantida em 0 sem eventos espúrios (Homologado pelo usuário em 29/09/2026).
+- **Sprint 3 — 100% Concluída e Homologada:** Todas as 6 tarefas da Sprint 3 (S3.1 a S3.6) foram concluídas, testadas (99 testes unitários aprovados) e validadas manualmente pelo usuário.
+- **Sprint 4 — Em andamento:**
+  - **Tarefa S4.1 (Definir tabela de decisão em docs/regras-funcionais.md) — 100% Concluída e Homologada:**
+    - Elaborada e homologada a Seção 7 em `docs/regras-funcionais.md` especificando a lógica determinística integral da RN08.
+    - Mantidas rigorosamente as 4 conclusões regulamentares (`APTO_PARA_ASSINATURA`, `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`, `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` e `NAO_RECOMENDAVEL_PARA_ASSINATURA`), vedada quinta conclusão.
+    - Insuficiência de dados instrutórios tratada como código de motivo (`MOT-SANEAMENTO-INSUFICIENCIA-DADOS` e `MOT-SANEAMENTO-AVALIACOES-PENDENTES`) sob `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - Cascata de precedência lógica estrita (P1 a P5) com precedência absoluta de P1 sobre P2 a P5 (dados e avaliações mínimas concluídas antes de avaliar óbices P2). Camada P2 nomeada como "Óbice Impeditivo no Estado Atual / Recusa".
+    - Tratamento rigoroso dos 4 estados do checklist: `confirmar` em P1 (diligência em aberto); `pendente` em P3 como deficiência conhecida (`DEC-07A`, `MOT-SANEAMENTO-CHECKLIST-PENDENTE`); `nao_aplicavel` justificado como formalmente resolvido admitindo P4 e P5; `nao_aplicavel` sem justificativa obrigatória em P1 (`DEC-01`).
+    - Desmembramento de DEC-07 em DEC-07A (checklist pendente) e DEC-07B (achado relevante / condicionante).
+    - Ajuste em P5 (DEC-10): plena regularidade admite itens dispensados com justificativa válida, mantendo zero pendentes, zero a confirmar, zero achados, condicionantes atendidas e 4x Baixo.
+    - DEC-04 ajustada: sem a expressão contraditória "sanear vício insanável", com providência precisa sobre o óbice impeditivo no estado atual e eventual saneamento futuro se cabível.
+    - DEC-05 ajustada: redação neutra e tecnicamente aderente à matriz de riscos, sem presunção automática de dano severo.
+    - Precedência P4 desdobrada e motivos de ressalva separados formalmente (`MOT-RESSALVA-ACHADO-FORMAL`, `MOT-RESSALVA-MELHORIA`, `MOT-RESSALVA-RISCO-MODERADO`, `MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA`), com regra de agregação de múltiplos códigos MOT quando coexistirem.
+    - Eliminação do gap de risco moderado isolado (DEC-09C) e tratamento explícito de `PERTINENTE_COM_JUSTIFICATIVA` (DEC-09D).
+    - Tabela completa de regras `DEC-01` a `DEC-10`, 17 cenários representativos de teste documentados e declaração formal de Totalidade e Determinismo (Seção 7.7).
+    - Totalidade e determinismo rigorosamente conferidos: zero combinações sem regra aplicável e zero combinações gerando conclusões ambíguas.
+    - Salvaguardas: vedação de autorização automática para assinatura, soberania humana e invalidação dinâmica por alterações supervenientes (RN10).
+    - *Homologada formalmente pelo usuário em 29/09/2026.*
+  - **Tarefa S4.2 (src/domain/conclusao.ts e src/pages/resultado.ts) — Em Validação Manual (Implementação e Testes Automatizados 100% Concluídos; Ainda NÃO Homologada Integralmente):**
+    - *Implementação técnica:* `src/domain/conclusao.ts`, `src/domain/conclusao.test.ts`, `src/pages/resultado.ts`, `src/pages/resultado.test.ts`, integração em `src/router.ts`, suporte em `src/services/auditoria.ts`, `src/services/armazenamento.ts` e estilização em `src/style.css`.
+    - *Critérios de aceite técnicos atendidos:*
+      1. **Motor de Domínio Puro e Determinístico (`src/domain/conclusao.ts`):** Aplicação estrita da precedência $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$, produzindo unicamente uma das 4 conclusões regulamentares da RN08, sem dependência de DOM, APIs de interface ou efeitos colaterais.
+      2. **Precedência Absoluta de P1 (RN08 / Seção 7.2):** Dados instrutórios essenciais incompletos (`DEC-01`) ou avaliações mínimas pendentes (`DEC-02`) ativam P1 antes de qualquer avaliação de óbices P2 a P5.
+      3. **Consolidação Conservadora de Riscos (RN12):** Consolida as 4 dimensões (Crítico > Alto > Moderado > Baixo); qualquer dimensão não avaliada aciona P1 (`MOT-SANEAMENTO-AVALIACOES-PENDENTES`), vedada presunção automática de risco Baixo.
+      4. **Tratamento Integral dos 4 Estados do Checklist:** Itens `confirmar` acionam P1 (`DEC-02`); itens `pendente` conhecidos acionam P3 (`DEC-07A`, `MOT-SANEAMENTO-CHECKLIST-PENDENTE`); itens `nao_aplicavel` com justificativa válida são formalmente resolvidos admitindo P4 e P5 (`DEC-10`); itens `nao_aplicavel` sem justificativa obrigatória acionam P1 (`DEC-01`).
+      5. **Agregação de Múltiplos Códigos de Motivo (P4):** Coexistência de ressalvas (achado formal, melhoria, risco moderado e/ou pertinência com justificativa) resulta univocamente em `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`, agregando todos os códigos `MOT-*` aplicáveis na fundamentação auditável.
+      6. **Espaço de Deliberação e Divergência Humana Soberana (RN02/RN07):** Assessor pode adotar a sugestão do motor ou divergir motivadamente. Seleção divergente exige justificativa técnica obrigatória ($\ge 10$ caracteres) para homologação.
+      7. **Trilha de Auditoria Integrada (S3.5):** Registro de eventos padronizados `VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO` (com fundamentação nos autos) e `REABERTURA_CONCLUSAO`.
+      8. **Invalidação Dinâmica Automática (RN10):** Alteração superveniente em dados de etapas anteriores (processo, pertinência, checklist, condicionantes, achados ou riscos) invalida automaticamente a conclusão homologada e exibe alerta ostensivo de reavaliação necessária.
+      9. **Respostas Estruturadas às 5 Perguntas Executivas (RN09):** Responde com precisão: 1. Pode assinar? 2. O que corrigir? 3. Quem corrige? 4. Retorna ao Gabinete? 5. Exige nova análise jurídica?
+      10. **Salvaguarda Institucional e Vedação de Assinatura Automática (RN08/RN11):** Banner ostensivo destacando a natureza estritamente indicativa, sem chancela eletrônica, autorização automática ou substituição da deliberação da autoridade competente.
+      11. **Controle de Papéis e Persistência Local:** Perfis *Leitor* e *Aprovador* em modo somente consulta (`readonly-banner`); persistência da conclusão homologada, justificativa e observações no IndexedDB/localStorage via `salvarRascunhoAtual` e restauração em `recuperarUltimoRascunho`.
+    - *Verificações automatizadas aprovadas:*
+      - **138 testes unitários aprovados via `npm test`** (32 testes de domínio cobrindo todos os 17 cenários da RN08 + 7 testes da tela de resultado + 99 preexistentes).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 571ms, precache de 31 ativos e Service Worker íntegros).
+    - *Testes manuais da S4.2 (Em andamento — 3 de 5 aprovados):*
+      - [x] TM-S4.2-01: Adoção da sugestão do sistema em consonância com o motor no Cenário 1 (Processo SESP-PRO-2026/00001, P5, DEC-10, MOT-APTIDAO-PLENA-REGULARIDADE, Risco Baixo), homologação exibindo selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados de responsável/data/hora e registro na auditoria (VALIDACAO_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
+      - [x] TM-S4.2-02: Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta (< 10 caracteres) e homologação de divergência técnica fundamentada (Processo SESP-PRO-2026/00001, RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA) exibindo selo "PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA", badge "Prevalece Decisão Humana (RN02/RN07)", justificativa registrada e evento na auditoria (DIVERGENCIA_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
+      - [ ] TM-S4.2-03: Invalidação dinâmica automática da conclusão (RN10) após alteração superveniente na matriz de riscos e alerta ostensivo na tela (PENDENTE).
+      - [ ] TM-S4.2-04: Conferência das respostas às 5 Perguntas Executivas Centrais (RN09) e das 4 salvaguardas regulamentares da SESP-MT (PENDENTE).
+      - [x] TM-S4.2-05: Modo somente consulta nos perfis Leitor e Aprovador (banner exibido, bloqueio de controles de homologação/adoção/reabertura, dados preservados e restauração ao retornar para Assessor) (Aprovado pelo usuário em 29/09/2026).
+    - *Status de Homologação:* S4.2 ainda NÃO homologada integralmente. Tarefa S4.3 NÃO iniciada. Nenhuma nova implementação deve iniciar antes da conclusão da validação da S4.2.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell
@@ -333,7 +374,7 @@ Objetivo: converter análise revisada em documento para apoio à decisão.
 
 | ID | Tarefa e arquivos principais | Tecnologia | Pronto quando |
 |---|---|---|---|
-| S4.1 | Definir tabela de decisão em docs/regras-funcionais.md | Markdown | Aprovar critérios para quatro conclusões e tratamento de insuficiência de dados; sem autorização automática para assinatura |
+| S4.1 | Definir tabela de decisão em docs/regras-funcionais.md | Markdown | Tabela elaborada (Seção 7); aguardando aprovação humana formal; sem autorização automática |
 | S4.2 | src/domain/conclusao.ts e src/pages/resultado.ts | TS | Sugestão separada da validação; botão de validação exige revisão; alterações materiais invalidam validação anterior; autoridade não é substituída |
 | S4.3 | Documento e estilos de impressão em src/pages/resultado.ts e src/style.css | TS/HTML/CSS | Identificação, pertinência, quadro, achados, riscos, pontos sem óbice, providências/responsáveis e conclusão; responde às cinco perguntas; HTML imprimível e PDF pelo navegador |
 | S4.4 | Definir e implementar indicadores em src/services/indicadores.ts e painel | TS | Eventos/período aprovados; divisão por zero tratada; baseline estimado identificado; dados demonstrativos separados; redução descrita como aproximadamente 66,7% |

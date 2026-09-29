@@ -37,7 +37,10 @@ export const ACOES_AUDITORIA = {
   VINCULACAO_ACHADO_RISCO: 'VINCULACAO_ACHADO_RISCO',
   DESVINCULACAO_ACHADO_RISCO: 'DESVINCULACAO_ACHADO_RISCO',
   CARGA_CENARIO_RISCOS: 'CARGA_CENARIO_RISCOS',
-  TROCA_PAPEL: 'TROCA_PAPEL'
+  TROCA_PAPEL: 'TROCA_PAPEL',
+  VALIDACAO_CONCLUSAO: 'VALIDACAO_CONCLUSAO',
+  DIVERGENCIA_CONCLUSAO: 'DIVERGENCIA_CONCLUSAO',
+  REABERTURA_CONCLUSAO: 'REABERTURA_CONCLUSAO'
 } as const;
 
 export type TipoAcaoAuditoria = typeof ACOES_AUDITORIA[keyof typeof ACOES_AUDITORIA] | string;
@@ -172,6 +175,12 @@ export function obterMetadadosAcao(acao: string): { titulo: string; icone: strin
       return { titulo: 'Alternância de Perfil Didático', icone: '👤', classeBadge: 'badge-audit-role' };
     case ACOES_AUDITORIA.CRIACAO_ANALISE:
       return { titulo: 'Criação da Análise', icone: '📄', classeBadge: 'badge-audit-create' };
+    case ACOES_AUDITORIA.VALIDACAO_CONCLUSAO:
+      return { titulo: 'Validação da Conclusão Executiva', icone: '⚖️', classeBadge: 'badge-audit-validate' };
+    case ACOES_AUDITORIA.DIVERGENCIA_CONCLUSAO:
+      return { titulo: 'Divergência Registrada pelo Assessor', icone: '⚠️', classeBadge: 'badge-audit-modify' };
+    case ACOES_AUDITORIA.REABERTURA_CONCLUSAO:
+      return { titulo: 'Reabertura da Conclusão para Revisão', icone: '↩️', classeBadge: 'badge-audit-reopen' };
     default:
       return { titulo: acao, icone: '📌', classeBadge: 'badge-audit-default' };
   }

@@ -257,3 +257,290 @@ Para assegurar fidelidade aos requisitos desta etapa e evitar suposições indev
    - Reafirma-se que "Classificação pendente" é um estado de avaliação do apontamento, não uma quinta categoria de gravidade.
 3. **Aprovação Funcional do Catálogo:**
    - O catálogo documental da S3.1 foi formalmente aprovado pelo usuário em 25/09/2026 como especificação funcional demonstrativa para desenvolvimento e testes do protótipo (S3.2), sem constituir validação jurídica das regras nem aprovação de processos reais.
+
+---
+
+## 7. Tabela de Decisão para Conclusão Executiva e Sugestão de Encaminhamento (RN08) — Tarefa S4.1
+
+### 7.1. Diretrizes de Governança da Conclusão Executiva
+
+A Etapa 6 (*Resultado & Encaminhamento*) consolida a instrução processual das etapas anteriores (Identificação, Pertinência, Conformidade, Achados e Riscos) em uma recomendação executiva para apoio à decisão da autoridade subscritora, regida pelos seguintes postulados:
+
+1. **Quatro Conclusões Regulamentares Exatas (RN08):**
+   Adota-se estritamente a tipologia quadripartida definida na Seção 6 do [docs/contexto.md](file:///c:/Users/79310680253/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/contexto.md):
+   - `APTO_PARA_ASSINATURA`
+   - `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`
+   - `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`
+   - `NAO_RECOMENDAVEL_PARA_ASSINATURA`
+
+2. **Tratamento da Insuficiência de Dados Instrutórios (RN11):**
+   - É **expressamente vedada a criação de uma quinta conclusão** (como "Insuficiência de Dados").
+   - A falta de dados essenciais, a existência de itens do checklist com status `confirmar` sem resposta, condicionantes sem situação definida, etapas não preenchidas ou dimensões de risco em aberto são tratadas como **motivo/código de fundamentação (`MOT-SANEAMENTO-INSUFICIENCIA-DADOS`)** vinculado determinística e obrigatoriamente à conclusão:
+     **`RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`**.
+
+3. **Consolidação Conservadora da Matriz de Riscos (Maior Nível Observado):**
+   - Quando as dimensões *Jurídica*, *Financeira*, *Operacional* e de *Controle* apresentarem níveis de risco heterogêneos, o risco consolidado da análise adotará o **critério conservador do maior nível de risco existente entre as dimensões avaliadas**:
+     $$\text{Risco Consolidado} = \max(\text{Jurídica}, \text{Financeira}, \text{Operacional}, \text{Controle})$$
+     - Se ao menos uma dimensão for `Crítico` $\rightarrow$ Risco Consolidado = **Crítico**.
+     - Senão, se ao menos uma for `Alto` $\rightarrow$ Risco Consolidado = **Alto**.
+     - Senão, se ao menos uma for `Moderado` $\rightarrow$ Risco Consolidado = **Moderado**.
+     - Senão, se todas forem `Baixo` $\rightarrow$ Risco Consolidado = **Baixo**.
+     - Se qualquer dimensão não tiver sido avaliada (`nivel == null`), considera-se haver pendência instrutória, disparando a regra de insuficiência de dados.
+
+4. **Vedação Absoluta a Autorização Automática para Assinatura (RN08, RN12):**
+   - Nenhuma combinação algorítmica ou ausência de achados confere ateste automático de conformidade legal ou "autorização automática para assinatura".
+   - A saída gerada pelo sistema é **estritamente indicativa**, prestando-se ao auxílio da instrução, permanecendo o juízo conclusivo privativo do assessor técnico e a decisão final indelegável da autoridade competente (Secretário de Estado / Ordenador de Despesas).
+
+5. **Soberania Humana e Invalidação por Alteração Material dos Autos (RN02, RN07, RN10):**
+   - O assessor pode divergir motivadamente da conclusão sugerida pelo motor lógico.
+   - Qualquer divergência humana exige **justificativa técnica obrigatória registrada nos autos** (mínimo de 10 caracteres) e prevalece sobre a sugestão da máquina.
+   - **Salvaguarda RN10 (Invalidação Dinâmica):** Se houver modificação posterior em etapas anteriores (ex.: alteração de dados do processo, reabertura de achado validado, alteração de gravidade de achado ou modificação da matriz de riscos), qualquer validação humana anterior da conclusão é **automaticamente invalidada**, exigindo nova manifestação explícita do assessor.
+
+---
+
+### 7.2. Ordem Estrita de Precedência Lógica (Avaliação Determinística em Cascata)
+
+Para afastar qualquer ambiguidade ou sobreposição de regras, o motor de recomendação avalia os dados processuais em uma **ordem estrita de precedência (P1 a P5)**, do cenário mais restritivo/prejudicial ao mais favorável. A primeira condição satisfeita define a conclusão sugerida e cessa a cascata:
+
+> [!IMPORTANT]
+> **Precedência Absoluta de P1 sobre as Demais Camadas:**
+> Se houver dados essenciais faltantes, itens do checklist pendentes de conferência (`confirmar`), itens com dispensa (`nao_aplicavel`) desprovidos de justificativa obrigatória, sugestões do motor ainda não avaliadas pelo assessor (`SUGESTAO_SISTEMA`) ou dimensões de risco em aberto (`null`), aplica-se **obrigatoriamente P1** (`RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`). O motor **jamais avalia P2 (recusa), P3, P4 ou P5 antes de superada a incompletude mínima necessária da instrução e das avaliações humanas**. A expressão "independentemente de achados ou riscos" nas regras P2 refere-se estritamente aos dados já validados, jamais dispensando o afastamento prévio de P1.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│ P1: Insuficiência de Dados ou Avaliações Pendentes (RN11, RN12)        │
+│     (Campos essenciais nulos, "confirmar" em aberto, "nao_aplicavel"   │
+│      sem justificativa, achados sem juízo ou riscos pendentes)         │
+│     -> RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA                    │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Instrução e avaliações mínimas concluídas
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ P2: Óbice Impeditivo no Estado Atual / Recusa (RN02, RN04, RN12)       │
+│     (Não pertinente, achado impeditivo validado ou risco crítico)      │
+│     -> NAO_RECOMENDAVEL_PARA_ASSINATURA                                │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Sem óbice impeditivo, crítico ou recusa
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ P3: Necessidade de Saneamento Material / Risco Alto (RN02, RN03, RN12) │
+│     (Pertinência não demonstrada, item de checklist pendente, achado   │
+│      relevante, condicionante pendente de ato prévio ou risco alto)    │
+│     -> RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA                    │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Sem pendências materiais/relevantes/alto risco
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ P4: Regularidade com Ressalva Não Impeditiva (RN04, RN08, RN12)        │
+│     (Achados formais, melhorias, risco moderado e/ou pertinência       │
+│      atestada com justificativa — admite múltiplos motivos MOT)        │
+│     -> APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA                │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Sem ressalvas e 4x risco Baixo
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ P5: Plena Regularidade Demonstrada (RN08)                              │
+│     (Zero achados, itens do checklist resolvidos [conforme ou          │
+│      nao_aplicavel justificado], condicionantes cumpridas, 4x Baixo)   │
+│     -> APTO_PARA_ASSINATURA                                            │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 7.3. Catálogo de Códigos de Motivo / Fundamentação da Conclusão
+
+| Código de Motivo | Denominação Padronizada | Conclusão Vinculada | Descrição da Hipótese |
+|---|---|---|---|
+| `MOT-SANEAMENTO-INSUFICIENCIA-DADOS` | Insuficiência de Dados Instrutórios Essenciais | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Campos cadastrais essenciais ausentes, itens do checklist com status "confirmar" sem diligência, itens "nao_aplicavel" sem justificativa obrigatória, ou condicionantes sem situação definida (P1). |
+| `MOT-SANEAMENTO-AVALIACOES-PENDENTES` | Etapas Anteriores Não Concluídas | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Sugestões de achados do motor no estado `SUGESTAO_SISTEMA` sem juízo humano, ou dimensões de risco em estado `Pendente` de avaliação (`null`) (P1). |
+| `MOT-RECUSA-PERTINENCIA-NEGATIVA` | Pertinência Institucional Não Pertinente | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | Assessor concluiu soberanamente que o objeto não é pertinente às finalidades da Pasta (P2). |
+| `MOT-RECUSA-ACHADO-IMPEDITIVO` | Presença de Achado Validado Impeditivo | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | Existência de ao menos um achado validado com gravidade `IMPEDITIVO` nos autos, inviabilizando a assinatura no estado atual do processo (P2). |
+| `MOT-RECUSA-RISCO-CRITICO` | Matriz de Risco em Nível Crítico | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | Ao menos uma dimensão da matriz de riscos avaliada no nível `Crítico` pelo assessor (P2). |
+| `MOT-SANEAMENTO-PERTINENCIA-NAO-DEMONSTRADA` | Pertinência Institucional Não Demonstrada | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Ausência de comprovação de benefício público ou motivação insuficiente que exige complementação instrutória (P3). |
+| `MOT-SANEAMENTO-CHECKLIST-PENDENTE` | Pendência Conhecida em Item de Checklist | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Item obrigatório do checklist de conformidade documental com status "pendente", configurando deficiência instrutória conhecida que exige regularização antes da assinatura (P3). |
+| `MOT-SANEAMENTO-ACHADO-RELEVANTE` | Presença de Achado Validado Relevante | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Existência de achado validado como `RELEVANTE` que demanda saneamento prévio antes da formalização do ato (P3). |
+| `MOT-SANEAMENTO-CONDICIONANTE-PENDENTE` | Condicionante Jurídica Pendente de Cumprimento | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Condicionante de parecer jurídico pendente de providência saneadora indispensável antes da subscrição (P3). |
+| `MOT-SANEAMENTO-RISCO-ALTO` | Matriz de Risco em Nível Alto | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | Nível consolidado de risco avaliado como `Alto`, demandando plano de contingência ou saneamento prévio (P3). |
+| `MOT-RESSALVA-ACHADO-FORMAL` | Presença de Achados Validados Formais | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | Inconsistências de forma ou cadastrais sem gravidade material que recomendam advertência ou retificação sem travar a assinatura (P4). |
+| `MOT-RESSALVA-MELHORIA` | Recomendações de Aprimoramento e Boas Práticas | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | Sugestões de governança ou melhoria procedimental futura que não inviabilizam a celebração atual (P4). |
+| `MOT-RESSALVA-RISCO-MODERADO` | Matriz de Risco em Nível Moderado | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | Riscos controláveis (isolados ou concorrentes com achados formais) que exigem monitoramento setorial durante a execução contratual (P4). |
+| `MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA` | Pertinência Atestada Mediante Justificativa | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | Pertinência válida atestada mediante justificativa técnica extraordinária acolhida pelo assessor, cuja fundamentação deve constar destacada no relatório executivo (P4). |
+| `MOT-APTIDAO-PLENA-REGULARIDADE` | Plena Conformidade da Instrução Processual | `APTO_PARA_ASSINATURA` | Pertinência estritamente favorável (sem ressalvas), todos os itens do checklist resolvidos (conforme ou nao_aplicavel justificado), condicionantes cumpridas, zero achados impeditivos/formais e todas as 4 dimensões de risco Baixo (P5). |
+
+> [!NOTE]
+> **Regra de Coexistência de Motivos de Ressalva na Precedência P4:**
+> Na hipótese de coexistirem múltiplos fatores de ressalva em um mesmo processo (ex.: presença concomitante de um achado formal, risco operacional moderado e pertinência atestada com justificativa), todos convergem determinística e exclusivamente para a mesma conclusão (`APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`). O motor associará e retornará a lista completa dos respectivos códigos `MOT-*` (`codigosMotivo: string[]`), garantindo rastreabilidade e fundamentação integral na saída executiva.
+
+---
+
+### 7.4. Tabela Completa de Decisão Lógica (RN08)
+
+| Regra ID | Precedência | Condições de Entrada (Pertinência + Achados + Riscos + Checklist) | Conclusão Sugerida pelo Sistema | Código de Motivo | Providência Sugerida na Saída Executiva | Exige Saneamento? | Salvaguarda Aplicável |
+|---|---|---|---|---|---|---|---|
+| **DEC-01** | **P1** (Dados Faltantes / Conferências em Aberto) | Dados essenciais ausentes OU checklist com item `confirmar` pendente OU item `nao_aplicavel` sem justificativa obrigatória OU condicionante sem situação/providência | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-INSUFICIENCIA-DADOS` | Diligenciar ao setor demandante para completar a instrução, justificar itens dispensados e anexar documentos pendentes de conferência. | **Sim** (Instrução) | **RN11**: Dados incompletos não autorizam aptidão automática. Precede P2 a P5. |
+| **DEC-02** | **P1** (Avaliações Incompletas) | Achados com status `SUGESTAO_SISTEMA` sem validação/rejeição OU dimensão de risco com nível `Pendente` (`null`) | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-AVALIACOES-PENDENTES` | Concluir a avaliação técnica humana dos achados e da matriz de riscos nas Etapas 4 e 5. | **Sim** (Avaliação) | **RN05/RN12**: Juízo humano obrigatório antes do fechamento. Precede P2 a P5. |
+| **DEC-03** | **P2** (Pertinência Negativa) | Instrução e avaliações mínimas concluídas (sem pendências P1); pertinência validada como `NAO_PERTINENTE` (independentemente de achados validados ou riscos) | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | `MOT-RECUSA-PERTINENCIA-NEGATIVA` | Arquivar o processo ou indeferir a solicitação por ausência de aderência aos objetivos institucionais da Pasta. | **Não** (Recusa) | **RN02**: Pertinência é requisito primário e prejudicial aos demais. Avaliada após superação de P1. |
+| **DEC-04** | **P2** (Achado Impeditivo) | Instrução e avaliações mínimas concluídas (sem pendências P1); ao menos 1 achado validado como `IMPEDITIVO` nos autos | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | `MOT-RECUSA-ACHADO-IMPEDITIVO` | Não recomendar a assinatura enquanto subsistir o achado impeditivo. Se a causa admitir correção, promover o saneamento e submeter o processo a nova análise; se insanável, registrar o óbice e abster-se da subscrição. | **Não** (para celebração atual); saneamento condiciona eventual ciclo futuro | **RN04**: Achado impeditivo obsta formalmente a subscrição no estado atual dos autos. Avaliada após P1. |
+| **DEC-05** | **P2** (Risco Crítico) | Instrução e avaliações mínimas concluídas (sem pendências P1); nível consolidado de risco avaliado como `Crítico` (ao menos 1 dimensão crítica, sem achados impeditivos) | `NAO_RECOMENDAVEL_PARA_ASSINATURA` | `MOT-RECUSA-RISCO-CRITICO` | Submeter o quadro de riscos à autoridade competente, destacando a existência de nível consolidado CRÍTICO e os fundamentos registrados pelo assessor, com sugestão indicativa de não assinatura. | **Não** (Óbice por Risco Crítico) | **RN12**: Risco crítico sob juízo fundamentado do assessor; decisão cabe à autoridade. Avaliada após P1. |
+| **DEC-06** | **P3** (Pertinência Não Demonstrada) | Sem pendências P1 nem óbices P2; pertinência validada como `NAO_DEMONSTRADA` | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-PERTINENCIA-NAO-DEMONSTRADA` | Retornar ao setor solicitante para complementar o Estudo Técnico Preliminar e justificar a necessidade pública. | **Sim** (Motivação) | **RN02**: Falta de demonstração de pertinência exige saneamento fático prévio. |
+| **DEC-07A** | **P3** (Item de Checklist Pendente) | Sem pendências P1 nem óbices P2; ao menos 1 item do checklist com status `pendente` (deficiência documental conhecida) | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-CHECKLIST-PENDENTE` | Notificar formalmente o setor demandante/gestor para providenciar a juntada do documento pendente nos autos antes da subscrição. | **Sim** (Saneamento Documental) | **RN04/RN11**: Pendência documental conhecida exige saneamento prévio à subscrição. |
+| **DEC-07B** | **P3** (Achado Relevante / Condicionante Jurídica) | Sem pendências P1 nem óbices P2; ao menos 1 achado validado como `RELEVANTE` OU condicionante jurídica `pendente`/`em_cumprimento` exigindo ato prévio | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-ACHADO-RELEVANTE` (ou `MOT-SANEAMENTO-CONDICIONANTE-PENDENTE`) | Notificar o fiscal/gestor para cumprir condicionante ou sanear a impropriedade relevante antes da assinatura. | **Sim** (Saneamento Material) | **RN03/RN04**: Relevantes e condicionantes exigem correção prévia à subscrição. |
+| **DEC-08** | **P3** (Risco Alto) | Sem pendências P1 nem óbices P2; sem pendências documentais ou achados relevantes; nível consolidado de risco `Alto` | `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA` | `MOT-SANEAMENTO-RISCO-ALTO` | Elaborar e juntar matriz de contingência ou mitigar os fatores que elevaram o risco antes da subscrição. | **Sim** (Mitigação) | **RN12**: Risco alto exige reanálise ou salvaguardas adicionais. |
+| **DEC-09A** | **P4** (Ressalva por Achado Formal) | Sem pendências P1, P2 ou P3; itens do checklist resolvidos (`conforme` ou `nao_aplicavel` justificado); ao menos 1 achado validado como `FORMAL` | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | `MOT-RESSALVA-ACHADO-FORMAL` | Dar ciência à autoridade e registrar no termo de autorização as recomendações formais a serem observadas na execução. | **Não** (Ressalva) | **RN04/RN08**: Falhas formais não impedem a celebração; admite coexistência em P4. |
+| **DEC-09B** | **P4** (Ressalva por Recomendação de Melhoria) | Sem pendências P1, P2 ou P3; itens do checklist resolvidos; ao menos 1 achado validado como `MELHORIA` (sem achados formais) | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | `MOT-RESSALVA-MELHORIA` | Registrar no relatório executivo as sugestões de governança e aprimoramento procedimental para contratações futuras. | **Não** (Ressalva) | **RN04/RN08**: Sugestões de melhoria não impedem a celebração; admite coexistência em P4. |
+| **DEC-09C** | **P4** (Ressalva por Risco Moderado) | Sem pendências P1, P2 ou P3; itens do checklist resolvidos; risco consolidado avaliado como `Moderado` (isolado ou concorrente) | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | `MOT-RESSALVA-RISCO-MODERADO` | Registrar recomendações de monitoramento setorial e mitigação dos riscos operacionais/financeiros durante a execução contratual. | **Não** (Ressalva) | **RN08/RN12**: Risco moderado permite assinatura com plano de controle; admite coexistência em P4. |
+| **DEC-09D** | **P4** (Ressalva por Pertinência com Justificativa) | Sem pendências P1, P2 ou P3; itens do checklist resolvidos; pertinência validada como `PERTINENTE_COM_JUSTIFICATIVA` | `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA` | `MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA` | Fazer constar expressamente na conclusão executiva a motivação fática e técnica acolhida que fundamentou a pertinência do ajuste. | **Não** (Ressalva) | **RN02/RN08**: Pertinência válida com exigência de transparência da motivação; admite coexistência em P4. |
+| **DEC-10** | **P5** (Plena Regularidade) | Sem pendências P1, P2 ou P3; pertinência estritamente `PERTINENTE`; todos os itens do checklist resolvidos (`conforme` OU `nao_aplicavel` com justificativa válida, com zero itens `pendente` ou `confirmar`); todas as condicionantes cumpridas; zero achados validados; todas as 4 dimensões de risco `Baixo` | `APTO_PARA_ASSINATURA` | `MOT-APTIDAO-PLENA-REGULARIDADE` | Encaminhar os autos à autoridade competente para deliberação e subscrição do instrumento. | **Não** (Regular) | **RN07/RN08**: Conclusão indicativa; itens dispensados com justificativa válida admitem P5; assinatura é decisão humana indelegável. |
+
+---
+
+### 7.5. Exemplos de Cenários Representativos
+
+Para atestar o determinismo e a totalidade da tabela de decisão, os seguintes 17 cenários representativos cobrem todas as regras e camadas de precedência:
+
+1. **Cenário 1 — Aquisição Regular Plena (Itens Conformes):**
+   - *Entrada:* Pertinência `PERTINENTE`, checklist 100% `conforme`, condicionantes atendidas, 0 achados validados, matriz de risco com as 4 dimensões em `Baixo`.
+   - *Aplicação:* Atende a **DEC-10 (Precedência P5)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA`.
+   - *Motivo:* `MOT-APTIDAO-PLENA-REGULARIDADE`.
+
+2. **Cenário 2 — Aquisição Regular com Item Dispensado Justificado (`nao_aplicavel` Válido):**
+   - *Entrada:* Pertinência `PERTINENTE`, 5 itens `conforme` e 1 item `nao_aplicavel` devidamente fundamentado ("Inaplicável por se tratar de inexigibilidade com fornecedor exclusivo"), 0 itens `pendente` ou `confirmar`, condicionantes atendidas, 0 achados, riscos 4x `Baixo`.
+   - *Aplicação:* Atende a **DEC-10 (Precedência P5)** — itens justificados são considerados formalmente resolvidos.
+   - *Conclusão:* `APTO_PARA_ASSINATURA`.
+   - *Motivo:* `MOT-APTIDAO-PLENA-REGULARIDADE`.
+
+3. **Cenário 3 — Aditivo de Prazo com Item Formal Secundário:**
+   - *Entrada:* Pertinência `PERTINENTE`, checklist resolvido, 1 achado validado como `FORMAL` (erro material de digitação na minuta), riscos 4x `Baixo`.
+   - *Aplicação:* Atende a **DEC-09A (Precedência P4)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`.
+   - *Motivo:* `MOT-RESSALVA-ACHADO-FORMAL`.
+
+4. **Cenário 4 — Recomendação de Melhoria Procedimental Isolada:**
+   - *Entrada:* Pertinência `PERTINENTE`, checklist resolvido, 1 achado validado como `MELHORIA`, 0 formais, riscos 4x `Baixo`.
+   - *Aplicação:* Atende a **DEC-09B (Precedência P4)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`.
+   - *Motivo:* `MOT-RESSALVA-MELHORIA`.
+
+5. **Cenário 5 — Contratação de Serviços com Risco Operacional Moderado Isolado (Zero Achados):**
+   - *Entrada:* Pertinência `PERTINENTE`, checklist resolvido, 0 achados validados, dimensões: Jurídica `Baixo`, Financeira `Baixo`, Controle `Baixo`, Operacional `Moderado` (risco consolidado = `Moderado`).
+   - *Aplicação:* Atende a **DEC-09C (Precedência P4)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`.
+   - *Motivo:* `MOT-RESSALVA-RISCO-MODERADO`.
+
+6. **Cenário 6 — Pertinência Atestada Mediante Justificativa Isolada:**
+   - *Entrada:* Pertinência validada como `PERTINENTE_COM_JUSTIFICATIVA`, checklist 100% resolvido, condicionantes cumpridas, 0 achados, riscos 4x `Baixo`.
+   - *Aplicação:* Atende a **DEC-09D (Precedência P4)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`.
+   - *Motivo:* `MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA`.
+
+7. **Cenário 7 — Coexistência de Múltiplas Ressalvas P4:**
+   - *Entrada:* Pertinência `PERTINENTE_COM_JUSTIFICATIVA`, checklist resolvido, 1 achado validado como `FORMAL`, nível consolidado de risco `Moderado`.
+   - *Aplicação:* Atende concorrentemente a **DEC-09A, DEC-09C e DEC-09D (Precedência P4)**.
+   - *Conclusão:* `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`.
+   - *Motivos Associados:* `['MOT-RESSALVA-ACHADO-FORMAL', 'MOT-RESSALVA-RISCO-MODERADO', 'MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA']`.
+
+8. **Cenário 8 — Checklist de Conformidade com Item Pendente Conhecido:**
+   - *Entrada:* Pertinência `PERTINENTE`, ao menos 1 item do checklist com status `pendente` (ex.: falta Certidão de Regularidade do FGTS), zero achados impeditivos, sem risco crítico.
+   - *Aplicação:* Atende a **DEC-07A (Precedência P3)**.
+   - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+   - *Motivo:* `MOT-SANEAMENTO-CHECKLIST-PENDENTE`.
+
+9. **Cenário 9 — Pendência de Caução Contratual Prévia (Condicionante Jurídica Pendente / Achado Relevante):**
+   - *Entrada:* Pertinência `PERTINENTE`, condicionante jurídica `pendente` de comprovação da caução de 5%, achado validado `RELEVANTE`.
+   - *Aplicação:* Atende a **DEC-07B (Precedência P3)**.
+   - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+   - *Motivo:* `MOT-SANEAMENTO-ACHADO-RELEVANTE` (ou `MOT-SANEAMENTO-CONDICIONANTE-PENDENTE`).
+
+10. **Cenário 10 — Estudo Técnico Preliminar Insuficiente (Pertinência Não Demonstrada):**
+    - *Entrada:* Assessor validou pertinência como `NAO_DEMONSTRADA`, zero achados impeditivos, sem risco crítico.
+    - *Aplicação:* Atende a **DEC-06 (Precedência P3)**.
+    - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - *Motivo:* `MOT-SANEAMENTO-PERTINENCIA-NAO-DEMONSTRADA`.
+
+11. **Cenário 11 — Risco Consolidado Alto sem Achados Relevantes:**
+    - *Entrada:* Pertinência `PERTINENTE`, 0 achados validados, dimensão Financeira avaliada como `Alto` (risco consolidado = `Alto`).
+    - *Aplicação:* Atende a **DEC-08 (Precedência P3)**.
+    - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - *Motivo:* `MOT-SANEAMENTO-RISCO-ALTO`.
+
+12. **Cenário 12 — Checklist com Item "confirmar" ou "nao_aplicavel" sem Justificativa:**
+    - *Entrada:* Checklist com item "Licença Ambiental" no status `confirmar` pendente de diligência, ou marcado como `nao_aplicavel` com justificativa em branco.
+    - *Aplicação:* Atende a **DEC-01 (Precedência P1)**.
+    - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - *Motivo:* `MOT-SANEAMENTO-INSUFICIENCIA-DADOS`.
+
+13. **Cenário 13 — Precedência P1 com Dados Faltantes em Processo com Achado Impeditivo:**
+    - *Entrada:* Dados essenciais ausentes acompanhados de achado com gravidade `IMPEDITIVO`.
+    - *Aplicação:* Atende a **DEC-01 (Precedência P1)** — P1 tem precedência absoluta sobre P2.
+    - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - *Motivo:* `MOT-SANEAMENTO-INSUFICIENCIA-DADOS`.
+
+14. **Cenário 14 — Avaliações Humanas Incompletas (Achado ou Risco Pendente):**
+    - *Entrada:* Achados sugeridos pelo motor no status `SUGESTAO_SISTEMA` sem juízo do assessor, ou dimensão de risco com nível não selecionado (`null`).
+    - *Aplicação:* Atende a **DEC-02 (Precedência P1)**.
+    - *Conclusão:* `RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA`.
+    - *Motivo:* `MOT-SANEAMENTO-AVALIACOES-PENDENTES`.
+
+15. **Cenário 15 — Objeto Estranho às Competências da SESP-MT com P1 Superada:**
+    - *Entrada:* Instrução e avaliações completas; assessor validou pertinência como `NAO_PERTINENTE`.
+    - *Aplicação:* Atende a **DEC-03 (Precedência P2)**.
+    - *Conclusão:* `NAO_RECOMENDAVEL_PARA_ASSINATURA`.
+    - *Motivo:* `MOT-RECUSA-PERTINENCIA-NEGATIVA`.
+
+16. **Cenário 16 — Licitação com Achado Impeditivo com P1 Superada:**
+    - *Entrada:* Instrução completa (sem P1 pendente); assessor validou 1 achado como `IMPEDITIVO`.
+    - *Aplicação:* Atende a **DEC-04 (Precedência P2)**.
+    - *Conclusão:* `NAO_RECOMENDAVEL_PARA_ASSINATURA`.
+    - *Motivo:* `MOT-RECUSA-ACHADO-IMPEDITIVO`.
+
+17. **Cenário 17 — Risco Crítico Isolado em Matriz Heterogênea:**
+    - *Entrada:* Instrução e achados sem óbices, porém dimensão Financeira avaliada como `Crítico` (risco consolidado = `Crítico`).
+    - *Aplicação:* Atende a **DEC-05 (Precedência P2)**.
+    - *Conclusão:* `NAO_RECOMENDAVEL_PARA_ASSINATURA`.
+    - *Motivo:* `MOT-RECUSA-RISCO-CRITICO`.
+
+---
+
+### 7.6. Ambiguidades Mapeadas e Decisões de Governança
+
+Para conhecimento e decisão prévia da equipe humana antes da codificação TypeScript (S4.2):
+
+1. **Momento da Eficácia das Condicionantes Jurídicas:**
+   - *Situação:* Nem toda condicionante exige cumprimento *anterior* à assinatura; algumas são de cumprimento *contínuo/posterior* (ex.: acompanhamento contratual, extração mensal de certidões).
+   - *Tratamento adotado:* Como o modelo atual do formulário dispõe apenas de `situacao: 'em_cumprimento'` sem detalhamento de termo suspensivo, toda condicionante em cumprimento que gere achado classificado como `RELEVANTE` pelo assessor exigirá saneamento antes da assinatura (`DEC-07B`). Se o assessor entender que o cumprimento é diferido na execução, caberá a ele classificar o achado como `FORMAL` ou divergir motivadamente da conclusão sugerida.
+2. **Pertinência com Justificativa (`PERTINENTE_COM_JUSTIFICATIVA`):**
+   - *Decisão homologada:* Trata-se como pertinência válida, porém gerando ressalva específica (`MOT-RESSALVA-PERTINENCIA-COM-JUSTIFICATIVA` em `DEC-09D`), com determinação expressa de fazer constar no relatório executivo e no termo de autorização a motivação técnica e fática extraordinária que sustentou o juízo de pertinência.
+3. **Precedência P1 sobre P2 e Natureza da Classificação Impeditiva (DEC-04 e DEC-05):**
+   - *Decisão homologada:* Pendências instrutórias ou avaliações em aberto barram a análise antes de qualquer juízo de mérito (P1 precede P2). O achado `IMPEDITIVO` obsta a assinatura no estado atual do processo; se a causa admitir correção, caberá saneamento e nova submissão; se for insanável, registra-se a impossibilidade de subscrição. No risco `Crítico`, a providência orienta-se neutra e tecnicamente aos fundamentos do assessor, sem inferir automaticamente probabilidade de dano severo.
+4. **Tratamento Rigoroso dos Quatro Estados do Checklist de Conformidade:**
+   - *Decisão homologada:*
+     - `confirmar`: Permanece em **P1** (`MOT-SANEAMENTO-INSUFICIENCIA-DADOS` / `DEC-01`), pois traduz diligência humana ou conferência ainda não concluída.
+     - `pendente`: Ingressa em **P3** (`MOT-SANEAMENTO-CHECKLIST-PENDENTE` / `DEC-07A`), traduzindo deficiência instrutória conhecida que exige juntada prévia do documento pelo demandante.
+     - `nao_aplicavel` com justificativa válida: Considera-se formalmente resolvido para fins da cascata decisória; não impede **P4** nem **P5** (`DEC-10`).
+     - `nao_aplicavel` sem justificativa obrigatória: Trata-se em **P1** (`MOT-SANEAMENTO-INSUFICIENCIA-DADOS` / `DEC-01`) como instrução incompleta por ausência de motivação da dispensa.
+5. **Divergência Humana na Conclusão Executiva:**
+   - Se o assessor alterar a conclusão (ex.: de `RETORNAR_PARA_SANEAMENTO` para `APTO_COM_RESSALVA`), a interface exigirá campo de justificativa obrigatório e exibirá um selo visual: `Divergência Registrada pelo Assessor — Prevalece o Juízo Humano (RN02/RN07)`.
+6. **Invalidação Dinâmica por Modificação Material Posterior (RN10):**
+   - Qualquer validação anterior da conclusão executiva perde a validade se forem alterados dados cadastrais, checklist, condicionantes, gravidade de achados ou níveis da matriz de riscos, forçando nova conferência e fechamento pelo assessor.
+
+---
+
+### 7.7. Declaração Formal de Totalidade e Determinismo da Tabela de Decisão
+
+Atesta-se formalmente para fins de homologação da especificação funcional (S4.1):
+
+1. **Totalidade Lógica (Ausência de Lacunas):**
+   - O domínio de entrada composto pelo produto cartesiano dos estados possíveis de Pertinência ($\{PERTINENTE, PERTINENTE\_COM\_JUSTIFICATIVA, NAO\_DEMONSTRADA, NAO\_PERTINENTE\}$), Checklist ($\{conforme, confirmar, pendente, nao\_aplicavel \text{ com justificativa}, nao\_aplicavel \text{ sem justificativa}\}$), Condicionantes ($\{cumprida, pendente, em\_cumprimento, dispensada\}$), Achados Validados ($\{IMPEDITIVO, RELEVANTE, FORMAL, MELHORIA, nenhum\}$) e Matriz de Riscos ($\{Crítico, Alto, Moderado, Baixo, pendente\}$) possui mapeamento exaustivo e unívoco. Não existe qualquer tupla válida de dados processuais que resulte em estado não tratado ou indefinido.
+
+2. **Determinismo Estrito (Inexistência de Ambiguidade):**
+   - A ordenação em cascata $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$ opera como um circuito lógico de prioridade de corte antecipado (*short-circuit evaluation*). A satisfação da primeira camada interrompe a avaliação, garantindo que exatamente **uma** das quatro conclusões regulamentares seja produzida para qualquer entrada.
+   - Na camada P4, na hipótese de confluência de múltiplos fatores de ressalva (achados formais, melhorias, risco moderado e/ou pertinência justificada), a conclusão permanece determinística e unívoca (`APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`), sendo gerada a agregação de todos os respectivos códigos `MOT-*` no vetor de motivos associados (`codigosMotivo: string[]`).
+
+3. **Conformidade com os Princípios Institucionais da SESP-MT:**
+   - Preservação integral da soberania do juízo técnico do assessor (RN02 e RN07).
+   - Inexistência de autorização automática para celebração (RN08 e RN12).
+   - Salvaguarda mandatória de integridade e não regressão por alteração material posterior (RN10).
+   - Fundamentação padronizada vinculada exclusivamente ao catálogo quadruplo de conclusões (RN08 e RN11).
+
