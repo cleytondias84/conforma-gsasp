@@ -475,16 +475,18 @@ function obterIconeConclusao(conclusao: TipoConclusao): string {
 /**
  * Respostas às cinco perguntas executivas (RN09) baseadas na análise.
  */
-function gerarRespostasCincoPerguntas(
-  conclusaoEfetiva: TipoConclusao,
-  resultado: ResultadoConclusaoExecutiva
-): {
+export interface RespostasCincoPerguntas {
   pergunta1: { pergunta: string; resposta: string; destaque: string };
   pergunta2: { pergunta: string; resposta: string; itens: string[] };
   pergunta3: { pergunta: string; resposta: string; responsaveis: string[] };
   pergunta4: { pergunta: string; resposta: string };
   pergunta5: { pergunta: string; resposta: string };
-} {
+}
+
+export function gerarRespostasCincoPerguntas(
+  conclusaoEfetiva: TipoConclusao,
+  resultado: ResultadoConclusaoExecutiva
+): RespostasCincoPerguntas {
   const achados = getAchadosAtivos().filter((a) => a.estadoValidacao === 'VALIDADO');
   const chk = getChecklistAtivo();
   const conds = getCondicionantesAtivas();
@@ -602,10 +604,19 @@ export function renderResultadoScreen(): string {
 
   return `
     <div class="stage-header">
-      <h2 class="stage-title">6. Resultado Executivo e Encaminhamento</h2>
-      <p class="stage-description">
-        Consolidação executiva da instrução para apoio à decisão da autoridade subscritora, regida pela RN08 e pelas salvaguardas institucionais da SESP-MT.
-      </p>
+      <div class="stage-header-actions-row" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <div>
+          <h2 class="stage-title">6. Resultado Executivo e Encaminhamento</h2>
+          <p class="stage-description">
+            Consolidação executiva da instrução para apoio à decisão da autoridade subscritora, regida pela RN08 e pelas salvaguardas institucionais da SESP-MT.
+          </p>
+        </div>
+        <div class="stage-header-btn-relatorio">
+          <a href="#/relatorio" class="btn btn-secondary" id="btn-visualizar-relatorio" title="Visualizar Relatório Executivo institucional">
+            🖨️ Visualizar Relatório Executivo
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Cartão Contextual do Processo Ativo -->
@@ -1007,6 +1018,13 @@ export function renderResultadoScreen(): string {
         </ul>
       </div>
     </section>
+
+    <!-- AÇÃO COMPLEMENTAR PARA VISUALIZAÇÃO DO RELATÓRIO EXECUTIVO -->
+    <div class="resultado-acoes-relatorio" style="display: flex; justify-content: center; margin: 1.5rem 0;">
+      <a href="#/relatorio" class="btn btn-secondary" id="btn-visualizar-relatorio-rodape" title="Visualizar Relatório Executivo institucional">
+        🖨️ Visualizar Relatório Executivo
+      </a>
+    </div>
   `;
 }
 

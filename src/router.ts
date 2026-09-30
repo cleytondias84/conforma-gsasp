@@ -55,6 +55,10 @@ import {
   initPainelEvents
 } from './pages/painel.ts';
 import {
+  renderRelatorioScreen,
+  initRelatorioEvents
+} from './pages/relatorio.ts';
+import {
   salvarRascunhoAtual,
   recuperarUltimoRascunho,
   formatarCarimboSalvamento,
@@ -381,7 +385,14 @@ export function renderRoute(): void {
 
   let mainHtml = '';
 
-  if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
+  if (normalizedHash === '#/relatorio') {
+    // Relatório Executivo Read-Only (S4.3-Demo) — Rota estritamente de visualização
+    mainHtml = `
+      <main class="main-content main-relatorio">
+        ${renderRelatorioScreen()}
+      </main>
+    `;
+  } else if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
     // Painel Executivo da Análise Ativa (S3.6)
     mainHtml = `
       <main class="main-content">
@@ -437,7 +448,7 @@ export function renderRoute(): void {
     const novoPapel = selectPapel.value as PapelUsuario;
     const papelAnterior = getPapelAtivo();
     // Se o papel ativo anterior permitia edição, sincroniza o estado antes de mudar para preservar digitações
-    if (podeEditar()) {
+    if (podeEditar() && isStage) {
       sincronizarEstadoDaTelaAtiva();
     }
     setPapelAtivo(novoPapel);
@@ -752,8 +763,13 @@ export function renderRoute(): void {
     }
   }
 
+  // Inicializa eventos do Relatório Executivo quando ativo
+  if (normalizedHash === '#/relatorio') {
+    initRelatorioEvents();
+  }
+
   // Inicializa eventos do Painel Executivo quando ativo
-  if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
+  if (normalizedHash === '#/' || normalizedHash === '#/painel' || (!isStage && normalizedHash !== '#/relatorio')) {
     initPainelEvents();
   }
 
