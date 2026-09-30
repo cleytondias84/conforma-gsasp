@@ -320,7 +320,7 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
     - Totalidade e determinismo rigorosamente conferidos: zero combinações sem regra aplicável e zero combinações gerando conclusões ambíguas.
     - Salvaguardas: vedação de autorização automática para assinatura, soberania humana e invalidação dinâmica por alterações supervenientes (RN10).
     - *Homologada formalmente pelo usuário em 29/09/2026.*
-  - **Tarefa S4.2 (src/domain/conclusao.ts e src/pages/resultado.ts) — Em Validação Manual (Implementação e Testes Automatizados 100% Concluídos; Ainda NÃO Homologada Integralmente):**
+  - **Tarefa S4.2 (src/domain/conclusao.ts e src/pages/resultado.ts) — 100% Concluída e Homologada:**
     - *Implementação técnica:* `src/domain/conclusao.ts`, `src/domain/conclusao.test.ts`, `src/pages/resultado.ts`, `src/pages/resultado.test.ts`, integração em `src/router.ts`, suporte em `src/services/auditoria.ts`, `src/services/armazenamento.ts` e estilização em `src/style.css`.
     - *Critérios de aceite técnicos atendidos:*
       1. **Motor de Domínio Puro e Determinístico (`src/domain/conclusao.ts`):** Aplicação estrita da precedência $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$, produzindo unicamente uma das 4 conclusões regulamentares da RN08, sem dependência de DOM, APIs de interface ou efeitos colaterais.
@@ -330,24 +330,24 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       5. **Agregação de Múltiplos Códigos de Motivo (P4):** Coexistência de ressalvas (achado formal, melhoria, risco moderado e/ou pertinência com justificativa) resulta univocamente em `APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`, agregando todos os códigos `MOT-*` aplicáveis na fundamentação auditável.
       6. **Espaço de Deliberação e Divergência Humana Soberana (RN02/RN07):** Assessor pode adotar a sugestão do motor ou divergir motivadamente. Seleção divergente exige justificativa técnica obrigatória ($\ge 10$ caracteres) para homologação.
       7. **Trilha de Auditoria Integrada (S3.5):** Registro de eventos padronizados `VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO` (com fundamentação nos autos) e `REABERTURA_CONCLUSAO`.
-      8. **Invalidação Dinâmica Automática (RN10):** Alteração superveniente em dados de etapas anteriores (processo, pertinência, checklist, condicionantes, achados ou riscos) invalida automaticamente a conclusão homologada e exibe alerta ostensivo de reavaliação necessária.
+      8. **Invalidação Dinâmica Automática (RN10):** Alteração superveniente em dados de etapas anteriores (processo, pertinência, checklist, condicionantes, achados ou riscos) invalida automaticamente a conclusão homologada e exibe alerta ostensivo de reavaliação necessária, com registro único de auditoria sem duplicações.
       9. **Respostas Estruturadas às 5 Perguntas Executivas (RN09):** Responde com precisão: 1. Pode assinar? 2. O que corrigir? 3. Quem corrige? 4. Retorna ao Gabinete? 5. Exige nova análise jurídica?
       10. **Salvaguarda Institucional e Vedação de Assinatura Automática (RN08/RN11):** Banner ostensivo destacando a natureza estritamente indicativa, sem chancela eletrônica, autorização automática ou substituição da deliberação da autoridade competente.
       11. **Controle de Papéis e Persistência Local:** Perfis *Leitor* e *Aprovador* em modo somente consulta (`readonly-banner`); persistência da conclusão homologada, justificativa e observações no IndexedDB/localStorage via `salvarRascunhoAtual` e restauração em `recuperarUltimoRascunho`.
     - *Verificações automatizadas aprovadas:*
-      - **143 testes unitários aprovados via `npm test`** (32 testes de domínio cobrindo todos os 17 cenários da RN08 + 12 testes da tela de resultado com regressão RN10 + 99 preexistentes, 0 falhas).
+      - **149 testes unitários aprovados via `npm test`** (32 testes de domínio cobrindo todos os 17 cenários da RN08 + 13 testes da tela de resultado com regressão RN10 completa A-H + 104 preexistentes, 0 falhas).
       - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado com sucesso, precache de 31 ativos e Service Worker íntegros).
-    - *Status dos Testes Manuais da S4.2:*
+    - *Status dos Testes Manuais da S4.2 (100% Aprovados pelo usuário em 30/09/2026):*
       - [x] TM-S4.2-01: APROVADO (Adoção da sugestão do sistema em consonância com o motor no Cenário 1, homologação exibindo selo "PARECER HOMOLOGADO EM CONSONÂNCIA", metadados e registro na auditoria).
       - [x] TM-S4.2-02: APROVADO (Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta e homologação de divergência técnica fundamentada).
-      - [ ] TM-S4.2-03: NÃO APROVADO, correção RN10 implementada e aguardando RETESTE MANUAL (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, persistência estrita e estabilidade de tela).
-      - [ ] TM-S4.2-04: PENDENTE (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT).
+      - [x] TM-S4.2-03: APROVADO (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, persistência estrita e registro único na trilha de auditoria local sem duplicação após F5 — Homologado pelo usuário em 30/09/2026).
+      - [x] TM-S4.2-04: APROVADO (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT, coerência de fluxo e ausência de eventos espúrios de auditoria — Homologado pelo usuário em 30/09/2026).
       - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
     - *Status Geral da Sprint 4:*
-      - S4.1: HOMOLOGADA;
-      - S4.2: em validação manual, ainda NÃO homologada integralmente;
-      - S4.3: NÃO INICIADA;
-      - Próximo passo: repetir integralmente o TM-S4.2-03 no bundle atualizado.
+      - S4.1: 100% HOMOLOGADA;
+      - S4.2: 100% CONCLUÍDA E HOMOLOGADA (todos os 5 testes manuais aprovados);
+      - S4.3: NÃO INICIADA (congelada para demonstração);
+      - Próximo passo: Apresentação e demonstração do protótipo com funcionalidades homologadas.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell

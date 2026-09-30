@@ -116,6 +116,8 @@ export interface Pertinencia {
   justificativa: string;
   conclusao: ConclusaoPertinencia | null;
   providencia: string;
+  validada?: boolean;
+  validacaoHumana?: ValidacaoHumana | null;
 }
 
 /**

@@ -130,10 +130,10 @@ Data do último registro: 30/09/2026.
   - **Sprint 3:** **100% CONCLUÍDA E HOMOLOGADA** (S3.1 a S3.6: 99 testes unitários aprovados, build 100% íntegro e 6 testes manuais da S3.6 homologados).
   - **Sprint 4:** Em andamento:
     - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): **HOMOLOGADA** formalmente pelo usuário em 29/09/2026.
-    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **EM VALIDAÇÃO MANUAL, AINDA NÃO HOMOLOGADA INTEGRALMENTE** (143 testes unitários aprovados; build 100% íntegro).
-    - `S4.3` (Documento executivo e estilos de impressão): **NÃO INICIADA**.
+    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **100% CONCLUÍDA E HOMOLOGADA** (149 testes unitários aprovados; build 100% íntegro; todos os 5 testes manuais aprovados pelo usuário em 30/09/2026).
+    - `S4.3` (Documento executivo e estilos de impressão): **NÃO INICIADA** (congelada para demonstração).
 
-1. **Sprint 4 — Tarefa S4.2 em Validação Manual (RN08, RN09, RN10):**
+1. **Sprint 4 — Tarefa S4.2 Concluída e Homologada (RN08, RN09, RN10):**
    - **Camada de Domínio Puro (`src/domain/conclusao.ts`):**
      - Cascata determinística estrita: $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$.
      - Precedência P1 absoluta: dados essenciais faltantes (`DEC-01`) ou avaliações mínimas pendentes (`DEC-02`) acionam P1 antes de óbices P2 a P5.
@@ -151,18 +151,18 @@ Data do último registro: 30/09/2026.
      - Modo somente consulta para perfis *Leitor* e *Aprovador*.
      - Persistência e restauração integral do parecer e metadados no IndexedDB/localStorage.
    - **Testes Automatizados e Build:**
-     - **143 testes unitários aprovados via `npm test`** (32 de domínio + 12 de interface com regressão RN10 + 99 preexistentes, 0 falhas).
+     - **149 testes unitários aprovados via `npm test`** (32 de domínio + 13 de interface com regressão RN10 completa A-H + 104 preexistentes, 0 falhas).
      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado com sucesso, precache de 31 ativos e Service Worker íntegros).
-   - **Status dos Testes Manuais da S4.2:**
+   - **Status dos Testes Manuais da S4.2 (100% Homologados pelo usuário em 30/09/2026):**
      - [x] TM-S4.2-01: APROVADO (Adoção da sugestão do sistema em consonância com o motor no Cenário 1, homologação com selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados e registro na auditoria).
      - [x] TM-S4.2-02: APROVADO (Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta e homologação de divergência técnica fundamentada).
-     - [ ] TM-S4.2-03: NÃO APROVADO, correção RN10 implementada e aguardando RETESTE MANUAL (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, estabilidade da pertinência e ausência de ressuscitação do parecer anterior no Bloco 2).
-     - [ ] TM-S4.2-04: PENDENTE (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT).
+     - [x] TM-S4.2-03: APROVADO (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, estabilidade da pertinência e registro único na auditoria sem duplicação após F5 — Homologado pelo usuário em 30/09/2026).
+     - [x] TM-S4.2-04: APROVADO (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT, coerência de fluxo e ausência de eventos espúrios de auditoria — Homologado pelo usuário em 30/09/2026).
      - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
 
 2. **Próxima Ação Imediata na Retomada:**
-   - **Próximo passo:** repetir integralmente o **TM-S4.2-03** no bundle atualizado.
-   - **Regra de bloqueio estrita:** Nenhuma nova implementação de código deve começar antes da conclusão integral da validação manual e homologação formal da Tarefa S4.2. A Tarefa S4.3 permanece **NÃO INICIADA**.
+   - **Próximo passo:** Apresentação e demonstração executiva do protótipo com base nas funcionalidades 100% homologadas (S1, S2, S3 e S4.2).
+   - **Regra de bloqueio estrita:** Nenhuma nova funcionalidade ou código deve ser iniciado até a conclusão da apresentação de demonstração. A Tarefa S4.3 permanece **NÃO INICIADA** e o código está congelado.
 
 3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell

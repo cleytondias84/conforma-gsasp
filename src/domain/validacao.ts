@@ -263,21 +263,21 @@ export function validarPertinencia(pertinencia: Partial<Pertinencia>): Resultado
   }
 
   // 3. Evidências dos autos (Obrigatório)
-  if (!pertinencia.evidencias || !pertinencia.evidencias.trim()) {
+  if (typeof pertinencia.evidencias !== 'string' || !pertinencia.evidencias.trim()) {
     erros.evidencias = 'Indique as peças ou evidências dos autos que sustentam o juízo de pertinência (ex.: ETP, TR, Nota Técnica).';
   } else if (pertinencia.evidencias.trim().length < 5) {
     erros.evidencias = 'Descreva a evidência com clareza suficiente (mínimo de 5 caracteres).';
   }
 
   // 4. Justificativa do assessor (Obrigatório)
-  if (!pertinencia.justificativa || !pertinencia.justificativa.trim()) {
+  if (typeof pertinencia.justificativa !== 'string' || !pertinencia.justificativa.trim()) {
     erros.justificativa = 'A justificativa técnica fundamentada do assessor é obrigatória.';
   } else if (pertinencia.justificativa.trim().length < 10) {
     erros.justificativa = 'A justificativa deve ser detalhada e fundamentada (mínimo de 10 caracteres).';
   }
 
   // 5. Providência recomendada (Obrigatório)
-  if (!pertinencia.providencia || !pertinencia.providencia.trim()) {
+  if (typeof pertinencia.providencia !== 'string' || !pertinencia.providencia.trim()) {
     erros.providencia = 'Informe a providência ou encaminhamento recomendado pelo assessor.';
   }
 

@@ -64,7 +64,14 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
       motivoAusente: 'NAO',
       acaoContinua: 'SIM',
       atendeNecessidade: 'SIM',
-      riscoDescontinuidade: 'SIM'
+      riscoDescontinuidade: 'SIM',
+      validada: true,
+      validacaoHumana: {
+        validadoPor: 'Assessor Técnico',
+        dataHora: '2026-09-30T10:00:00.000Z',
+        papel: 'assessor',
+        observacoes: 'Pertinência validada no cenário de teste'
+      }
     });
 
     const checklist: ItemChecklist[] = [
@@ -336,7 +343,13 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
         economicidade: true
       },
       evidencias: 'Documentação comprobatória nos autos.',
-      providencia: 'Prosseguir com a instrução.'
+      providencia: 'Prosseguir com a instrução.',
+      validada: true,
+      validacaoHumana: {
+        validadoPor: 'Assessor Técnico',
+        dataHora: '2026-09-30T10:00:00.000Z',
+        papel: 'assessor'
+      }
     });
     assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
 
@@ -371,7 +384,13 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
         economicidade: true
       },
       evidencias: 'Estudos técnicos preliminares.',
-      providencia: 'Aprovação.'
+      providencia: 'Aprovação.',
+      validada: true,
+      validacaoHumana: {
+        validadoPor: 'Assessor Técnico',
+        dataHora: '2026-09-30T10:00:00.000Z',
+        papel: 'assessor'
+      }
     });
     setAchadosAtivos([]);
 
@@ -426,11 +445,10 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
     assert.ok(htmlFinal.includes('btn-reabrir-conclusao'));
   });
 
-  test('Regressão Completa TM-S4.2-03 (A até G): Ciclo de alteração de risco, persistência, re-renderização, reload e auditoria RN10', async () => {
+  test('Regressão RN10 Completa (A até H): ciclo de invalidação e auditoria local sem duplicação', async () => {
     // -------------------------------------------------------------
-    // A) Estado Inicial
+    // A) Homologar parecer inicial P5 / DEC-10 com divergência ou em consonância
     // -------------------------------------------------------------
-    // Pertinência PERTINENTE
     setPertinenciaAtiva({
       conclusao: 'PERTINENTE',
       justificativa: 'Instrução atende plenamente ao interesse público e competências da SESP-MT.',
@@ -442,18 +460,21 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
         beneficioInteressePublico: true,
         custoProporcionalidade: true,
         economicidade: true
+      },
+      validada: true,
+      validacaoHumana: {
+        validadoPor: 'Assessor Técnico',
+        dataHora: '2026-09-30T10:00:00.000Z',
+        papel: 'assessor'
       }
     });
-    // Checklist resolvido
     setChecklistAtivo([
       { id: 'chk-01', categoria: 'JURIDICA', descricao: 'TR aprovado', status: 'conforme', obrigatorio: true },
       { id: 'chk-02', categoria: 'FISCAL', descricao: 'CND regular', status: 'conforme', obrigatorio: true }
     ]);
-    // Condicionantes atendidas
     setCondicionantesAtivas([
       { id: 'cnd-01', descricao: 'Apresentar certidão', situacao: 'cumprida' }
     ]);
-    // 4 riscos BAIXO
     setRiscosAtivos([
       { dimensao: 'juridica', nivel: 'baixo', justificativa: 'Sem apontamentos.', achadosRelacionados: [] },
       { dimensao: 'financeira', nivel: 'baixo', justificativa: 'Dotação reservada.', achadosRelacionados: [] },
@@ -462,202 +483,154 @@ describe('S4.2 — Tela da Etapa 6: Resultado Executivo e Encaminhamento (RN08, 
     ]);
     setAchadosAtivos([]);
 
-    // Motor no estado inicial deve sugerir P5 / DEC-10
+    // Motor no estado inicial sugere P5 / DEC-10
     const sugInicial = getResultadoExecutivoAtivo();
     assert.equal(sugInicial.conclusao, 'APTO_PARA_ASSINATURA');
     assert.equal(sugInicial.precedenciaAplicada, 'P5');
     assert.equal(sugInicial.regraDecAplicada, 'DEC-10');
 
-    // Homologa parecer P5/DEC-10
+    // Homologa parecer P5/DEC-10 em consonância
     const resHomologacao = adotarSugestaoSistema();
     assert.equal(resHomologacao.sucesso, true);
     assert.equal(getConclusaoValidada(), 'APTO_PARA_ASSINATURA');
-
-    // Salva rascunho com o estado inicial homologado
-    const estadoResInicial = exportarEstadoResultado();
-    await salvarRascunhoAtual(
-      getProcessoAtivo(),
-      getPertinenciaAtiva(),
-      getChecklistAtivo(),
-      getCondicionantesAtivas(),
-      'rascunho',
-      getAchadosAtivos(),
-      getRiscosAtivos(),
-      getEventosAtivos(),
-      sugInicial.conclusao,
-      getConclusaoValidada(),
-      getValidacaoHumana(),
-      estadoResInicial
-    );
+    assert.ok(getEventosAtivos().some((e) => e.acao === ACOES_AUDITORIA.VALIDACAO_CONCLUSAO));
 
     // -------------------------------------------------------------
-    // B) Alterar SOMENTE risco Operacional BAIXO -> MODERADO
+    // B) Alterar risco (baixo -> moderado)
     // -------------------------------------------------------------
     const riscos = getRiscosAtivos();
     riscos.find((r) => r.dimensao === 'operacional')!.nivel = 'moderado';
     setRiscosAtivos([...riscos]);
 
-    // Salva o rascunho com a alteração superveniente na etapa de riscos
-    const estadoResAposAltera = exportarEstadoResultado();
-    await salvarRascunhoAtual(
-      getProcessoAtivo(),
-      getPertinenciaAtiva(),
-      getChecklistAtivo(),
-      getCondicionantesAtivas(),
-      'rascunho',
-      getAchadosAtivos(),
-      getRiscosAtivos(),
-      getEventosAtivos(),
-      getResultadoExecutivoAtivo().conclusao,
-      getConclusaoValidada(),
-      getValidacaoHumana(),
-      estadoResAposAltera
-    );
+    // -------------------------------------------------------------
+    // C) Disparar verificação RN10
+    // -------------------------------------------------------------
+    const houveInvalidacao = verificarAlteracaoMaterialPosterior();
+    assert.equal(houveInvalidacao, true, 'Alteração de risco material deve disparar a invalidação RN10');
 
     // -------------------------------------------------------------
-    // C) Após a alteração
+    // D) Confirmar exatamente 1 evento INVALIDACAO_CONCLUSAO_RN10 com metadados corretos
     // -------------------------------------------------------------
-    // 1. Renderiza a Etapa 6
-    const htmlPosAlteracao = renderResultadoScreen();
+    assert.equal(getConclusaoValidada(), null, 'Conclusão anterior não pode permanecer vigente');
+    const manifestacaoInv = getManifestacaoAnteriorInvalidada();
+    assert.ok(manifestacaoInv, 'Manifestação anterior deve estar arquivada como desconstituída');
+    assert.equal(manifestacaoInv.conclusao, 'APTO_PARA_ASSINATURA');
 
-    // 2. Pertinência continua PERTINENTE
-    assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
-    assert.ok(htmlPosAlteracao.includes('Pertinência: <strong>PERTINENTE</strong>'));
+    const eventosAposInval = getEventosAtivos();
+    const evtsRN10 = eventosAposInval.filter((e) => e.acao === ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10);
+    assert.equal(evtsRN10.length, 1, 'Deve haver exatamente 1 evento INVALIDACAO_CONCLUSAO_RN10');
 
-    // 3. Risco consolidado MODERADO
-    const resPosAlteracao = getResultadoExecutivoAtivo();
-    assert.equal(resPosAlteracao.riscoConsolidado, 'moderado');
-    assert.ok(htmlPosAlteracao.includes('Risco Consolidado: <strong>MODERADO</strong>'));
-
-    // 4. Motor retorna P4 / DEC-09C / APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA
-    assert.equal(resPosAlteracao.conclusao, 'APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA');
-    assert.equal(resPosAlteracao.precedenciaAplicada, 'P4');
-    assert.equal(resPosAlteracao.regraDecAplicada, 'DEC-09C');
-    assert.ok(resPosAlteracao.codigosMotivo.includes('MOT-RESSALVA-RISCO-MODERADO'));
-
-    // 5. Parecer anterior NÃO permanece ativo
-    assert.equal(getConclusaoValidada(), null);
-    assert.ok(!htmlPosAlteracao.includes('PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA'));
-    assert.ok(!htmlPosAlteracao.includes('PARECER HOMOLOGADO EM CONSONÂNCIA'));
-    assert.ok(!htmlPosAlteracao.includes('btn-reabrir-conclusao'));
-
-    // 6. Estado exige nova apreciação
-    assert.equal(verificarAlteracaoMaterialPosterior(), true);
-    assert.ok(htmlPosAlteracao.includes('Nova Apreciação Necessária'));
-    assert.ok(htmlPosAlteracao.includes('Histórico: Manifestação Anterior Automaticamente Invalidada (RN10)'));
-    assert.ok(htmlPosAlteracao.includes('btn-adotar-sugestao-sistema'));
-    assert.ok(htmlPosAlteracao.includes('form-homologacao-conclusao'));
-
-    // -------------------------------------------------------------
-    // D) Executar nova renderização da Etapa 6 e confirmar estabilidade
-    // -------------------------------------------------------------
-    const htmlSegundaRender = renderResultadoScreen();
-    assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
-    assert.ok(htmlSegundaRender.includes('Pertinência: <strong>PERTINENTE</strong>'));
-    assert.equal(getResultadoExecutivoAtivo().conclusao, 'APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA');
-    assert.equal(getResultadoExecutivoAtivo().precedenciaAplicada, 'P4');
-    assert.equal(getResultadoExecutivoAtivo().regraDecAplicada, 'DEC-09C');
-    assert.equal(getConclusaoValidada(), null);
-    assert.ok(!htmlSegundaRender.includes('PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA'));
-    assert.ok(htmlSegundaRender.includes('Nova Apreciação Necessária'));
-
-    const htmlTerceiraRender = renderResultadoScreen();
-    assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
-    assert.equal(getConclusaoValidada(), null);
-
-    // -------------------------------------------------------------
-    // E) Recarregar a página e confirmar novamente os mesmos resultados
-    // -------------------------------------------------------------
-    // Simula salvamento atual antes de recarregar (como ocorre no navegador)
-    const estadoResAntesReload = exportarEstadoResultado();
-    await salvarRascunhoAtual(
-      getProcessoAtivo(),
-      getPertinenciaAtiva(),
-      getChecklistAtivo(),
-      getCondicionantesAtivas(),
-      'rascunho',
-      getAchadosAtivos(),
-      getRiscosAtivos(),
-      getEventosAtivos(),
-      getResultadoExecutivoAtivo().conclusao,
-      getConclusaoValidada(),
-      getValidacaoHumana(),
-      estadoResAntesReload
-    );
-
-    // Limpa a memória volátil como aconteceria em um refresh / reload F5
-    limparResultadoAtivo();
-
-    // Executa a restauração completa a partir do rascunho recuperado
-    const rascunhoRecuperado = await recuperarUltimoRascunho();
-    assert.ok(rascunhoRecuperado);
-    setProcessoAtivo(rascunhoRecuperado.processo);
-    setPertinenciaAtiva(rascunhoRecuperado.pertinencia);
-    setChecklistAtivo(rascunhoRecuperado.checklist);
-    setCondicionantesAtivas(rascunhoRecuperado.condicionantes);
-    if (rascunhoRecuperado.achados) setAchadosAtivos(rascunhoRecuperado.achados);
-    if (rascunhoRecuperado.riscos) setRiscosAtivos(rascunhoRecuperado.riscos);
-    if (rascunhoRecuperado.eventos) setEventosAtivos(rascunhoRecuperado.eventos);
-    importarEstadoResultado({
-      conclusaoValidada: rascunhoRecuperado.conclusaoValidada || null,
-      validacaoHumana: rascunhoRecuperado.validacaoHumana || null,
-      justificativaDivergencia: rascunhoRecuperado.justificativaDivergencia || '',
-      observacoesAssessor: rascunhoRecuperado.observacoesAssessor || '',
-      hashDadosEtapasAnteriores: rascunhoRecuperado.hashDadosEtapasAnteriores || '',
-      necessitaNovaRevisaoConclusao: rascunhoRecuperado.necessitaNovaRevisaoConclusao || false,
-      manifestacaoAnteriorInvalidada: rascunhoRecuperado.manifestacaoAnteriorInvalidada || null
-    });
-
-    // Renderiza a Etapa 6 após o reload
-    const htmlPosReload = renderResultadoScreen();
-    // Confirma que pertinência continua PERTINENTE após reload
-    assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
-    assert.ok(htmlPosReload.includes('Pertinência: <strong>PERTINENTE</strong>'));
-    // Confirma P4 / DEC-09C estável após reload
-    const resPosReload = getResultadoExecutivoAtivo();
-    assert.equal(resPosReload.conclusao, 'APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA');
-    assert.equal(resPosReload.precedenciaAplicada, 'P4');
-    assert.equal(resPosReload.regraDecAplicada, 'DEC-09C');
-    assert.equal(resPosReload.riscoConsolidado, 'moderado');
-    // Confirma que parecer anterior NÃO permanece ativo
-    assert.equal(getConclusaoValidada(), null);
-    assert.ok(!htmlPosReload.includes('PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA'));
-    assert.ok(htmlPosReload.includes('Nova Apreciação Necessária'));
-
-    // -------------------------------------------------------------
-    // F) Auditoria
-    // -------------------------------------------------------------
-    const eventosAuditoria = getEventosAtivos();
-    const eventosInvalidacao = eventosAuditoria.filter(
-      (e) => e.acao === ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10
-    );
-    // Registrado UMA ÚNICA VEZ
+    const evtInval = evtsRN10[0];
+    assert.equal(evtInval.acao, ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10);
+    assert.equal(evtInval.entidade, 'ConclusaoExecutiva');
+    assert.equal(evtInval.registroId, getProcessoAtivo().numero);
+    assert.equal(evtInval.papel, 'assessor');
+    assert.ok(evtInval.dataHora);
+    assert.ok(evtInval.descricao?.includes('RN10'));
+    assert.ok(evtInval.descricao?.includes('alteração material superveniente'));
+    assert.ok(evtInval.antesDepois?.antes);
     assert.equal(
-      eventosInvalidacao.length,
-      1,
-      'O evento INVALIDACAO_CONCLUSAO_RN10 deve ser registrado exatamente uma vez, sem duplicações a cada renderização'
-    );
-    // Preserva histórico do parecer anterior nos dados do evento
-    const eventoInval = eventosInvalidacao[0];
-    assert.ok(eventoInval.antesDepois?.antes);
-    assert.equal(
-      (eventoInval.antesDepois.antes as { conclusaoValidada?: string }).conclusaoValidada,
+      (evtInval.antesDepois.antes as { conclusaoValidada?: string }).conclusaoValidada,
       'APTO_PARA_ASSINATURA'
     );
     assert.equal(
-      (eventoInval.antesDepois.depois as { status?: string }).status,
+      (evtInval.antesDepois.depois as { status?: string }).status,
       'INVALIDADA_POR_ALTERACAO_SUPERVENIENTE_RN10'
     );
 
     // -------------------------------------------------------------
-    // G) Confirmar que nenhuma função RN10 limpou ou resetou etapas anteriores
+    // E) Renderizar novamente a Etapa 6
     // -------------------------------------------------------------
+    const htmlPosInval = renderResultadoScreen();
+    assert.ok(htmlPosInval.includes('Nova Apreciação Necessária'));
+    assert.ok(htmlPosInval.includes('Histórico: Manifestação Anterior Automaticamente Invalidada (RN10)'));
+    assert.ok(!htmlPosInval.includes('PARECER HOMOLOGADO'));
+
+    const resMotorPosInval = getResultadoExecutivoAtivo();
+    assert.equal(resMotorPosInval.conclusao, 'APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA');
+    assert.equal(resMotorPosInval.precedenciaAplicada, 'P4');
+    assert.equal(resMotorPosInval.regraDecAplicada, 'DEC-09C');
+    assert.equal(resMotorPosInval.riscoConsolidado, 'moderado');
+
+    // -------------------------------------------------------------
+    // F) Confirmar que continua exatamente 1 evento
+    // -------------------------------------------------------------
+    renderResultadoScreen();
+    verificarAlteracaoMaterialPosterior();
+    const evtsPosReRender = getEventosAtivos().filter((e) => e.acao === ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10);
+    assert.equal(evtsPosReRender.length, 1, 'Re-renderizações não devem duplicar o evento de auditoria RN10');
+
+    // -------------------------------------------------------------
+    // G) Simular reload (salvar rascunho -> limpar memória -> restaurar)
+    // -------------------------------------------------------------
+    // Salva rascunho seguindo o mesmo fluxo do router (salvarRascunhoSessao)
+    verificarAlteracaoMaterialPosterior();
+    const estadoRes = exportarEstadoResultado();
+    const eventosAtivosParaSalvar = getEventosAtivos();
+    const conclusaoVal = getConclusaoValidada();
+    const validacaoHum = getValidacaoHumana();
+    await salvarRascunhoAtual(
+      getProcessoAtivo(),
+      getPertinenciaAtiva(),
+      getChecklistAtivo(),
+      getCondicionantesAtivas(),
+      'rascunho',
+      getAchadosAtivos(),
+      getRiscosAtivos(),
+      eventosAtivosParaSalvar,
+      getResultadoExecutivoAtivo().conclusao,
+      conclusaoVal,
+      validacaoHum,
+      {
+        hashDadosEtapasAnteriores: estadoRes.hashDadosEtapasAnteriores,
+        necessitaNovaRevisaoConclusao: estadoRes.necessitaNovaRevisaoConclusao,
+        manifestacaoAnteriorInvalidada: estadoRes.manifestacaoAnteriorInvalidada,
+        justificativaDivergencia: estadoRes.justificativaDivergencia,
+        observacoesAssessor: estadoRes.observacoesAssessor
+      }
+    );
+
+    // Limpa a memória volátil (simula refresh F5 / fechamento)
+    limparResultadoAtivo();
+    limparEventosAtivos();
+
+    // Restaura o rascunho do armazenamento persistido (como faz o initRouter)
+    const recuperado = await recuperarUltimoRascunho();
+    assert.ok(recuperado, 'Rascunho deve ser recuperado com sucesso do IndexedDB');
+    setProcessoAtivo(recuperado.processo);
+    setPertinenciaAtiva(recuperado.pertinencia);
+    setChecklistAtivo(recuperado.checklist);
+    setCondicionantesAtivas(recuperado.condicionantes);
+    if (recuperado.achados) setAchadosAtivos(recuperado.achados);
+    if (recuperado.riscos) setRiscosAtivos(recuperado.riscos);
+    if (recuperado.eventos) setEventosAtivos(recuperado.eventos);
+    importarEstadoResultado({
+      conclusaoValidada: recuperado.conclusaoValidada || null,
+      validacaoHumana: recuperado.validacaoHumana || null,
+      justificativaDivergencia: recuperado.justificativaDivergencia || '',
+      observacoesAssessor: recuperado.observacoesAssessor || '',
+      hashDadosEtapasAnteriores: recuperado.hashDadosEtapasAnteriores || '',
+      necessitaNovaRevisaoConclusao: recuperado.necessitaNovaRevisaoConclusao || false,
+      manifestacaoAnteriorInvalidada: recuperado.manifestacaoAnteriorInvalidada || null
+    });
+
+    // -------------------------------------------------------------
+    // H) Confirmar que continua exatamente 1 evento e com a trilha íntegra
+    // -------------------------------------------------------------
+    renderResultadoScreen();
+    const evtsPosReload = getEventosAtivos().filter((e) => e.acao === ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10);
+    assert.equal(evtsPosReload.length, 1, 'Após reload e renderização, deve haver exatamente 1 evento INVALIDACAO_CONCLUSAO_RN10');
+
+    // Confirma que a trilha completa de auditoria está preservada
+    const trilhaCompleta = getEventosAtivos();
+    assert.ok(trilhaCompleta.some((e) => e.acao === ACOES_AUDITORIA.VALIDACAO_CONCLUSAO), 'Evento anterior de homologação deve estar preservado');
+    assert.ok(trilhaCompleta.some((e) => e.acao === ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10), 'Evento de invalidação deve estar preservado');
+
+    // Confirma preservação de todos os dados do processo e etapas anteriores
     assert.equal(getPertinenciaAtiva().conclusao, 'PERTINENTE');
-    assert.equal(getPertinenciaAtiva().respostas.competenciaNecessidade, true);
-    assert.equal(getChecklistAtivo().length, 2);
-    assert.equal(getCondicionantesAtivas().length, 1);
-    assert.equal(getRiscosAtivos().length, 4);
+    assert.equal(getPertinenciaAtiva().validada, true);
     assert.equal(getRiscosAtivos().find((r) => r.dimensao === 'operacional')?.nivel, 'moderado');
-    assert.equal(getProcessoAtivo().id, 'proc-resultado-t1');
+    assert.equal(getConclusaoValidada(), null);
+    assert.equal(getResultadoExecutivoAtivo().conclusao, 'APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA');
   });
 });

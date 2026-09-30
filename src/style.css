@@ -691,8 +691,12 @@ textarea:disabled,
   margin-bottom: 1.5rem;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .validation-summary-box.hidden {
-  display: none;
+  display: none !important;
 }
 
 .validation-summary-header {
@@ -1110,6 +1114,12 @@ textarea:disabled,
   border-radius: 4px;
 }
 
+.humano-badge.humano-badge-validado {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+
 .sugestao-resultado {
   font-size: 1.05rem;
   color: var(--text-main);
@@ -1140,6 +1150,10 @@ textarea:disabled,
   margin-top: 1rem;
   font-size: 0.88rem;
   color: #1e40af;
+}
+
+.divergence-box.hidden {
+  display: none !important;
 }
 
 .divergence-icon {

@@ -4,7 +4,7 @@
  * Base: docs/contexto.md (RN02, RN07, RN13) e docs/sprint.md
  */
 
-import type { Pertinencia, ConclusaoPertinencia } from '../domain/tipos.ts';
+import type { Pertinencia, ConclusaoPertinencia, ValidacaoHumana } from '../domain/tipos.ts';
 import {
   validarPertinencia,
   sugerirConclusaoPertinencia,
@@ -15,7 +15,15 @@ import {
   type ResultadoValidacaoPertinencia
 } from '../domain/validacao.ts';
 import { getProcessoAtivo } from './identificacao.ts';
-import { podeEditar, podeCarregarCenarios } from '../auth/papeis.ts';
+import { podeEditar, podeCarregarCenarios, getPapelAtivo, getInfoPapelAtivo } from '../auth/papeis.ts';
+
+// Metadados padrão para cenários pré-configurados homologados
+const METADADOS_DEMO_VALIDADOS: ValidacaoHumana = {
+  validadoPor: 'Assessor Técnico (Simulado)',
+  dataHora: '2026-09-30T10:00:00.000Z',
+  papel: 'assessor',
+  observacoes: 'Pertinência institucional homologada no cenário didático'
+};
 
 // Cenários didáticos determinísticos de Pertinência Institucional com dados estritamente fictícios
 export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
@@ -30,7 +38,9 @@ export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
     evidencias: 'Documento Demonstrativo nº 01/2026 e ETP nº 04/2026: renovação do parque tecnológico das unidades operacionais prevista no plano de modernização setorial.',
     justificativa: 'Necessidade plenamente aderente às competências institucionais da pasta e aos objetivos estratégicos de modernização e aparelhamento da segurança pública.',
     conclusao: 'PERTINENTE',
-    providencia: 'Prosseguir com o trâmite regular para verificação de conformidade documental e jurídica.'
+    providencia: 'Prosseguir com o trâmite regular para verificação de conformidade documental e jurídica.',
+    validada: true,
+    validacaoHumana: { ...METADADOS_DEMO_VALIDADOS }
   },
   'cenario-02': {
     respostas: {
@@ -43,7 +53,9 @@ export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
     evidencias: 'Relatório Técnico de Manutenção Predial nº 12/2025 e Certidão de Regularidade Operacional.',
     justificativa: 'Serviço de manutenção essencial e continuado. A prorrogação garante a conservação do patrimônio público com vantajosidade comprovada.',
     conclusao: 'PERTINENTE',
-    providencia: 'Avançar para verificação dos requisitos formais de prorrogação e vantajosidade de preços.'
+    providencia: 'Avançar para verificação dos requisitos formais de prorrogação e vantajosidade de preços.',
+    validada: true,
+    validacaoHumana: { ...METADADOS_DEMO_VALIDADOS }
   },
   'cenario-03': {
     respostas: {
@@ -56,7 +68,9 @@ export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
     evidencias: 'Estudo Técnico Preliminar nº 08/2026 e Mapa Comparativo de Preços das unidades prediais.',
     justificativa: 'Serviço de apoio operacional indispensável ao funcionamento diário das unidades policiais e administrativas da SESP.',
     conclusao: 'PERTINENTE',
-    providencia: 'Prosseguir para conformidade documental e conferência de dotação orçamentária.'
+    providencia: 'Prosseguir para conformidade documental e conferência de dotação orçamentária.',
+    validada: true,
+    validacaoHumana: { ...METADADOS_DEMO_VALIDADOS }
   },
   'cenario-04': {
     respostas: {
@@ -69,7 +83,12 @@ export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
     evidencias: 'Documentação enviada pela unidade demandante não correlaciona a quantidade solicitada às metas do plano anual.',
     justificativa: 'Não consta dos autos a demonstração inequívoca de benefício institucional direto e compatibilidade de custos para a quantidade pleiteada.',
     conclusao: 'NAO_DEMONSTRADA',
-    providencia: 'Requerer estudo técnico complementar e justificativa de alinhamento com as metas operacionais antes de autorizar a adesão.'
+    providencia: 'Requerer estudo técnico complementar e justificativa de alinhamento com as metas operacionais antes de autorizar a adesão.',
+    validada: true,
+    validacaoHumana: {
+      ...METADADOS_DEMO_VALIDADOS,
+      observacoes: 'Pertinência Não Demonstrada homologada pelo assessor'
+    }
   },
   'cenario-05': {
     respostas: {
@@ -82,7 +101,12 @@ export const CENARIOS_PERTINENCIA_DEMO: Record<string, Pertinencia> = {
     evidencias: 'Inexistência de justificativa fática plausível e ausência de correlação com planos de segurança em vigor.',
     justificativa: 'Objeto em desvio de finalidade institucional evidente, sem demonstração de necessidade pública ou interesse coletivo.',
     conclusao: 'NAO_PERTINENTE',
-    providencia: 'Sugerir indeferimento do prosseguimento e devolução imediata à origem para esclarecimentos circunstanciados.'
+    providencia: 'Sugerir indeferimento do prosseguimento e devolução imediata à origem para esclarecimentos circunstanciados.',
+    validada: true,
+    validacaoHumana: {
+      ...METADADOS_DEMO_VALIDADOS,
+      observacoes: 'Não Pertinência homologada pelo assessor'
+    }
   }
 };
 
@@ -91,21 +115,62 @@ let pertinenciaAtiva: Pertinencia = { ...CENARIOS_PERTINENCIA_DEMO['cenario-01']
 let ultimoResultadoValidacaoPertinencia: ResultadoValidacaoPertinencia | null = null;
 let cenarioPertinenciaSelecionadoId: string = 'cenario-01';
 
+/**
+ * Normaliza o objeto de pertinência preservando critérios e textos sem inferir validação humana.
+ * Conforme RN02 e governança institucional, rascunhos legados sem validação humana expressa
+ * permanecem estritamente no estado PENDENTE (validada: false, validacaoHumana: null).
+ */
+export function normalizarPertinencia(pert: Partial<Pertinencia> | null | undefined): Pertinencia {
+  const padrao: Pertinencia = { ...CENARIOS_PERTINENCIA_DEMO['cenario-01'] };
+  if (!pert) return padrao;
+
+  const respostas = pert.respostas || { ...padrao.respostas };
+  const conclusaoNormalizada = pert.conclusao ? (pert.conclusao.trim() as ConclusaoPertinencia) : null;
+  const evidencias = typeof pert.evidencias === 'string' ? pert.evidencias : (typeof pert.evidencias === 'object' && pert.evidencias ? JSON.stringify(pert.evidencias) : '');
+  const justificativa = typeof pert.justificativa === 'string' ? pert.justificativa : '';
+  const providencia = typeof pert.providencia === 'string' ? pert.providencia : '';
+
+  // Governança estrita RN02: Somente validação humana real/expressa define validada: true.
+  // Rascunhos legados ou sem evidência explícita de validação JAMAIS recebem validada: true nem metadados fabricados.
+  const validada = pert.validada === true && Boolean(pert.validacaoHumana);
+  const validacaoHumana = validada && pert.validacaoHumana ? { ...pert.validacaoHumana } : null;
+
+  return {
+    respostas,
+    evidencias,
+    justificativa,
+    providencia,
+    conclusao: conclusaoNormalizada,
+    validada,
+    validacaoHumana
+  };
+}
+
+/**
+ * Determina se a pertinência institucional está devidamente validada/homologada pelo assessor humano (RN02).
+ * Exige evidência explícita de validação humana (validada === true e metadados de validacaoHumana).
+ * A mera completude regulamentar dos campos NÃO equivale à validação humana.
+ */
+export function isPertinenciaValidada(pert?: Partial<Pertinencia> | null): boolean {
+  if (!pert) return false;
+  return pert.validada === true && Boolean(pert.validacaoHumana);
+}
+
 export function getPertinenciaAtiva(): Pertinencia {
   return pertinenciaAtiva;
 }
 
 export function setPertinenciaAtiva(pertinencia: Pertinencia): void {
   if (!pertinencia) return;
-  const conclusaoEfetiva =
-    pertinencia.conclusao ||
-    (pertinenciaAtiva && pertinenciaAtiva.conclusao) ||
-    'PERTINENTE';
+  const normalizada = normalizarPertinencia(pertinencia);
 
   pertinenciaAtiva = {
     ...pertinenciaAtiva,
-    ...pertinencia,
-    conclusao: conclusaoEfetiva
+    ...normalizada,
+    conclusao: normalizada.conclusao !== undefined ? normalizada.conclusao : pertinenciaAtiva.conclusao,
+    validada: normalizada.validada !== undefined ? normalizada.validada : pertinenciaAtiva.validada,
+    validacaoHumana:
+      normalizada.validacaoHumana !== undefined ? normalizada.validacaoHumana : pertinenciaAtiva.validacaoHumana
   };
 }
 
@@ -242,7 +307,10 @@ function renderPainelConclusao(pert: Pertinencia): string {
   const editable = podeEditar();
   const sugestao = sugerirConclusaoPertinencia(pert.respostas);
   const conclusaoValidada = pert.conclusao;
-  const haDivergencia = Boolean(conclusaoValidada && conclusaoValidada !== sugestao);
+  const normConclusao = (conclusaoValidada || '').trim().toUpperCase();
+  const normSugestao = (sugestao || '').trim().toUpperCase();
+  const haDivergencia = Boolean(normConclusao && normSugestao && normConclusao !== normSugestao);
+  const estaValidada = isPertinenciaValidada(pert);
 
   return `
     <div class="conclusao-pertinencia-panel" id="conclusao-panel">
@@ -251,7 +319,13 @@ function renderPainelConclusao(pert: Pertinencia): string {
       <div class="sugestao-sistema-box" id="box-sugestao-sistema">
         <div class="sugestao-header">
           <span class="sugestao-badge">Sugestão Indicativa do Sistema</span>
-          <span class="humano-badge" title="A IA confere e organiza; o assessor valida e decide">Pendente de Validação Humana (RN02)</span>
+          <span 
+            id="selo-validacao-pertinencia" 
+            class="humano-badge ${estaValidada ? 'humano-badge-validado' : ''}" 
+            title="${estaValidada ? 'Pertinência institucional validada e homologada pelo assessor técnico (RN02)' : 'A IA confere e organiza; o assessor valida e decide'}"
+          >
+            ${estaValidada ? 'Validado / Homologado (RN02)' : 'Pendente de Validação Humana (RN02)'}
+          </span>
         </div>
         <div class="sugestao-resultado" id="disp-sugestao-texto">
           <strong>${formatarConclusaoPertinencia(sugestao)}</strong>
@@ -286,6 +360,7 @@ function renderPainelConclusao(pert: Pertinencia): string {
         <div 
           id="divergencia-alerta" 
           class="divergence-box ${haDivergencia ? '' : 'hidden'}" 
+          style="${haDivergencia ? 'display: flex;' : 'display: none !important;'}"
           role="status" 
           aria-live="polite"
         >
@@ -553,8 +628,28 @@ export function extrairDadosDoFormularioPertinencia(): Pertinencia {
     evidencias: getVal('campo-pert-evidencias') || pertinenciaAtiva.evidencias,
     justificativa: getVal('campo-pert-justificativa') || pertinenciaAtiva.justificativa,
     providencia: getVal('campo-pert-providencia') || pertinenciaAtiva.providencia,
-    conclusao
+    conclusao,
+    validada: pertinenciaAtiva.validada,
+    validacaoHumana: pertinenciaAtiva.validacaoHumana
   };
+}
+
+/**
+ * Atualiza visualmente o selo de validação humana no DOM da Etapa 2.
+ */
+export function atualizarSeloValidacaoNoDOM(pert: Pertinencia): void {
+  const selo = document.getElementById('selo-validacao-pertinencia');
+  if (!selo) return;
+  const estaValidada = isPertinenciaValidada(pert);
+  if (estaValidada) {
+    selo.className = 'humano-badge humano-badge-validado';
+    selo.textContent = 'Validado / Homologado (RN02)';
+    selo.title = 'Pertinência institucional validada e homologada pelo assessor técnico (RN02)';
+  } else {
+    selo.className = 'humano-badge';
+    selo.textContent = 'Pendente de Validação Humana (RN02)';
+    selo.title = 'A IA confere e organiza; o assessor valida e decide';
+  }
 }
 
 /**
@@ -576,7 +671,7 @@ export function sincronizarPertinenciaDoFormulario(): Pertinencia {
 /**
  * Atualiza o painel de sugestão e aviso de divergência no DOM.
  */
-function atualizarPainelSugestaoAoVivo(dados: Pertinencia): void {
+export function atualizarPainelSugestaoAoVivo(dados: Pertinencia): void {
   const sugestao = sugerirConclusaoPertinencia(dados.respostas);
   const dispSugestao = document.getElementById('disp-sugestao-texto');
   if (dispSugestao) {
@@ -595,11 +690,15 @@ function atualizarPainelSugestaoAoVivo(dados: Pertinencia): void {
 
   const divergenciaBox = document.getElementById('divergencia-alerta');
   if (divergenciaBox) {
-    const haDivergencia = Boolean(dados.conclusao && dados.conclusao !== sugestao);
+    const normConclusao = (dados.conclusao || '').trim().toUpperCase();
+    const normSugestao = (sugestao || '').trim().toUpperCase();
+    const haDivergencia = Boolean(normConclusao && normSugestao && normConclusao !== normSugestao);
     if (haDivergencia) {
       divergenciaBox.classList.remove('hidden');
+      divergenciaBox.style.setProperty('display', 'flex', 'important');
     } else {
       divergenciaBox.classList.add('hidden');
+      divergenciaBox.style.setProperty('display', 'none', 'important');
     }
   }
 }
@@ -686,8 +785,11 @@ export function initPertinenciaEvents(
       });
 
       const dados = extrairDadosDoFormularioPertinencia();
+      dados.validada = false;
+      dados.validacaoHumana = null;
       pertinenciaAtiva = dados;
       atualizarPainelSugestaoAoVivo(dados);
+      atualizarSeloValidacaoNoDOM(dados);
     });
   });
 
@@ -695,8 +797,11 @@ export function initPertinenciaEvents(
   const selectConclusao = document.getElementById('campo-conclusao-pertinencia') as HTMLSelectElement | null;
   selectConclusao?.addEventListener('change', () => {
     const dados = extrairDadosDoFormularioPertinencia();
+    dados.validada = false;
+    dados.validacaoHumana = null;
     pertinenciaAtiva = dados;
     atualizarPainelSugestaoAoVivo(dados);
+    atualizarSeloValidacaoNoDOM(dados);
   });
 
   // Carga de Cenários Didáticos
@@ -724,7 +829,9 @@ export function initPertinenciaEvents(
         evidencias: '',
         justificativa: '',
         conclusao: null,
-        providencia: ''
+        providencia: '',
+        validada: false,
+        validacaoHumana: null
       };
     } else if (CENARIOS_PERTINENCIA_DEMO[cenarioKey]) {
       pertinenciaAtiva = { ...CENARIOS_PERTINENCIA_DEMO[cenarioKey] };
@@ -773,6 +880,7 @@ export function initPertinenciaEvents(
     setVal('campo-conclusao-pertinencia', pertinenciaAtiva.conclusao || '');
 
     atualizarPainelSugestaoAoVivo(pertinenciaAtiva);
+    atualizarSeloValidacaoNoDOM(pertinenciaAtiva);
     renderizarErrosNoFormularioPertinencia(ultimoResultadoValidacaoPertinencia);
   };
 
@@ -783,13 +891,28 @@ export function initPertinenciaEvents(
   const btnRevalidar = document.getElementById('btn-revalidar-pert');
   btnRevalidar?.addEventListener('click', () => {
     const dados = extrairDadosDoFormularioPertinencia();
-    pertinenciaAtiva = dados;
     const res = validarPertinencia(dados);
     ultimoResultadoValidacaoPertinencia = res;
     renderizarErrosNoFormularioPertinencia(res);
 
     if (res.valido) {
+      dados.validada = true;
+      dados.validacaoHumana = {
+        validadoPor: getInfoPapelAtivo().nome,
+        dataHora: new Date().toISOString(),
+        papel: getPapelAtivo(),
+        observacoes: `Pertinência institucional validada e homologada como ${dados.conclusao}`
+      };
+      pertinenciaAtiva = dados;
+      atualizarPainelSugestaoAoVivo(dados);
+      atualizarSeloValidacaoNoDOM(dados);
       alert('✅ Todos os critérios e campos da Pertinência Institucional foram validados com sucesso!');
+    } else {
+      dados.validada = false;
+      dados.validacaoHumana = null;
+      pertinenciaAtiva = dados;
+      atualizarPainelSugestaoAoVivo(dados);
+      atualizarSeloValidacaoNoDOM(dados);
     }
   });
 
@@ -812,12 +935,15 @@ export function initPertinenciaEvents(
     }
 
     const dados = extrairDadosDoFormularioPertinencia();
-    pertinenciaAtiva = dados;
     const res = validarPertinencia(dados);
     ultimoResultadoValidacaoPertinencia = res;
     renderizarErrosNoFormularioPertinencia(res);
 
     if (!res.valido) {
+      dados.validada = false;
+      dados.validacaoHumana = null;
+      pertinenciaAtiva = dados;
+      atualizarSeloValidacaoNoDOM(dados);
       const primeiroErro = Object.keys(res.erros)[0];
       const el = document.getElementById(`campo-pert-${primeiroErro}`) || document.getElementById('campo-conclusao-pertinencia');
       el?.focus();
@@ -825,6 +951,17 @@ export function initPertinenciaEvents(
       alerta?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+
+    // Se válido, confirma validação humana e atualiza metadados
+    dados.validada = true;
+    dados.validacaoHumana = {
+      validadoPor: getInfoPapelAtivo().nome,
+      dataHora: new Date().toISOString(),
+      papel: getPapelAtivo(),
+      observacoes: `Pertinência institucional homologada como ${dados.conclusao}`
+    };
+    pertinenciaAtiva = dados;
+    atualizarSeloValidacaoNoDOM(dados);
 
     onNavegarConformidade();
   });

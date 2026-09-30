@@ -47,7 +47,8 @@ import {
   getResultadoExecutivoAtivo,
   sincronizarResultadoDoFormulario,
   exportarEstadoResultado,
-  importarEstadoResultado
+  importarEstadoResultado,
+  verificarAlteracaoMaterialPosterior
 } from './pages/resultado.ts';
 import {
   renderPainelScreen,
@@ -67,7 +68,11 @@ import {
  * preservando dados de todas as etapas e metadados de conclusão/invalidação RN10.
  */
 async function salvarRascunhoSessao(): Promise<{ analiseId: string; salvoEm: string }> {
+  verificarAlteracaoMaterialPosterior();
   const estadoRes = exportarEstadoResultado();
+  const eventosAtivosParaSalvar = getEventosAtivos();
+  const conclusaoVal = getConclusaoValidada();
+  const validacaoHum = getValidacaoHumana();
   return salvarRascunhoAtual(
     getProcessoAtivo(),
     getPertinenciaAtiva(),
@@ -76,10 +81,10 @@ async function salvarRascunhoSessao(): Promise<{ analiseId: string; salvoEm: str
     'rascunho',
     getAchadosAtivos(),
     getRiscosAtivos(),
-    getEventosAtivos(),
+    eventosAtivosParaSalvar,
     getResultadoExecutivoAtivo().conclusao,
-    getConclusaoValidada(),
-    getValidacaoHumana(),
+    conclusaoVal,
+    validacaoHum,
     {
       hashDadosEtapasAnteriores: estadoRes.hashDadosEtapasAnteriores,
       necessitaNovaRevisaoConclusao: estadoRes.necessitaNovaRevisaoConclusao,
@@ -368,6 +373,12 @@ export function renderRoute(): void {
   const isStage = currentStageIndex !== -1;
   const currentStage = isStage ? STAGES[currentStageIndex] : null;
 
+  // Garante que se o assessor estiver navegando nas etapas e houver alteração material superveniente,
+  // a invalidação RN10 seja processada antes de desenhar a barra de persistência e a tela.
+  if (isStage) {
+    verificarAlteracaoMaterialPosterior();
+  }
+
   let mainHtml = '';
 
   if (!isStage || normalizedHash === '#/' || normalizedHash === '#/painel') {
@@ -446,6 +457,10 @@ export function renderRoute(): void {
   // Listener para abertura do modal da Trilha de Auditoria Local (S3.5)
   const btnAuditoria = document.getElementById('btn-ver-auditoria-global');
   btnAuditoria?.addEventListener('click', () => {
+    sincronizarEstadoDaTelaAtiva();
+    verificarAlteracaoMaterialPosterior();
+    const btnAudit = document.getElementById('btn-ver-auditoria-global');
+    if (btnAudit) btnAudit.textContent = `📜 Auditoria Local (${getEventosAtivos().length})`;
     abrirModalAuditoria();
   });
 
@@ -461,6 +476,9 @@ export function renderRoute(): void {
     try {
       // Sincroniza imediatamente o estado a partir do formulário aberto no DOM
       sincronizarEstadoDaTelaAtiva();
+
+      // Verifica se houve alteração material superveniente que invalide conclusão prévia (RN10)
+      verificarAlteracaoMaterialPosterior();
 
       // Registra evento de salvamento de rascunho na trilha de auditoria local (S3.5)
       registrarEventoLocal({

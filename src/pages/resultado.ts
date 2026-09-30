@@ -27,13 +27,14 @@ import {
   type DadosEntradaConclusao
 } from '../domain/conclusao.ts';
 import { getProcessoAtivo } from './identificacao.ts';
-import { getPertinenciaAtiva } from './pertinencia.ts';
+import { getPertinenciaAtiva, isPertinenciaValidada } from './pertinencia.ts';
 import { getChecklistAtivo, getCondicionantesAtivas } from './conformidade.ts';
 import { getAchadosAtivos } from './achados.ts';
 import { getRiscosAtivos } from './riscos.ts';
 import { podeEditar, getPapelAtivo } from '../auth/papeis.ts';
 import {
   registrarEventoLocal,
+  getEventosAtivos,
   ACOES_AUDITORIA
 } from '../services/auditoria.ts';
 
@@ -115,24 +116,38 @@ function invalidarHomologacaoPorAlteracaoMaterial(): void {
   observacoesAssessorAtiva = '';
   necessitaNovaRevisaoConclusao = true;
 
-  registrarEventoLocal({
-    acao: ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10,
-    entidade: 'ConclusaoExecutiva',
-    registroId: getProcessoAtivo().numero || 'conclusao-ativa',
-    antesDepois: {
-      antes: {
-        conclusaoValidada: conclusaoAnterior,
-        validadoPor: validacaoAnterior?.validadoPor,
-        dataHora: validacaoAnterior?.dataHora
+  // Garante estritamente que não haja duplicação de evento para a mesma transição de invalidação
+  const eventosAtuais = getEventosAtivos();
+  const ultimoIndexInval = eventosAtuais.map((e) => e.acao).lastIndexOf(ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10);
+  const ultimoIndexValid = Math.max(
+    eventosAtuais.map((e) => e.acao).lastIndexOf(ACOES_AUDITORIA.VALIDACAO_CONCLUSAO),
+    eventosAtuais.map((e) => e.acao).lastIndexOf(ACOES_AUDITORIA.DIVERGENCIA_CONCLUSAO)
+  );
+  const jaRegistrado = ultimoIndexInval !== -1 && ultimoIndexInval > ultimoIndexValid;
+
+  if (!jaRegistrado) {
+    const proc = getProcessoAtivo();
+    registrarEventoLocal({
+      acao: ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10,
+      entidade: 'ConclusaoExecutiva',
+      registroId: proc.numero || proc.id || 'conclusao-ativa',
+      antesDepois: {
+        antes: {
+          conclusaoValidada: conclusaoAnterior,
+          validadoPor: validacaoAnterior?.validadoPor,
+          dataHora: validacaoAnterior?.dataHora,
+          justificativaDivergencia: justAnterior || undefined,
+          observacoes: obsAnterior || undefined
+        },
+        depois: {
+          conclusaoValidada: null,
+          status: 'INVALIDADA_POR_ALTERACAO_SUPERVENIENTE_RN10',
+          motivo: 'Invalidação dinâmica automática (RN10) por modificação material nas etapas anteriores.'
+        }
       },
-      depois: {
-        conclusaoValidada: null,
-        status: 'INVALIDADA_POR_ALTERACAO_SUPERVENIENTE_RN10',
-        motivo: 'Invalidação dinâmica automática (RN10) por modificação material nas etapas anteriores.'
-      }
-    },
-    descricao: `Homologação anterior (${formatarConclusao(conclusaoAnterior)}) automaticamente invalidada nos autos (RN10) por alteração material superveniente. Nova manifestação do assessor necessária.`
-  });
+      descricao: `Homologação anterior (${formatarConclusao(conclusaoAnterior)}) automaticamente invalidada nos autos (RN10) por alteração material superveniente. Nova manifestação do assessor necessária.`
+    });
+  }
 }
 
 // ==========================================
@@ -238,9 +253,16 @@ export function limparResultadoAtivo(): void {
  * Obtém a avaliação executiva sugerida pelo motor determinístico a partir dos dados atuais.
  */
 export function getResultadoExecutivoAtivo(): ResultadoConclusaoExecutiva {
+  const pertAtiva = getPertinenciaAtiva();
+  // Conforme RN02 e governança institucional: a Etapa 6 só considera a pertinência
+  // como validada e concluída para fins de emissão de parecer se houver validação humana explícita (DEC-02).
+  const pertEfetiva = isPertinenciaValidada(pertAtiva)
+    ? pertAtiva
+    : { ...pertAtiva, conclusao: null };
+
   const entrada: DadosEntradaConclusao = {
     processo: getProcessoAtivo(),
-    pertinencia: getPertinenciaAtiva(),
+    pertinencia: pertEfetiva,
     checklist: getChecklistAtivo(),
     condicionantes: getCondicionantesAtivas(),
     achados: getAchadosAtivos(),
