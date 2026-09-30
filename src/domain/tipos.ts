@@ -203,6 +203,17 @@ export interface ValidacaoHumana {
 }
 
 /**
+ * Registro histórico de manifestação executiva anterior desconstituída por alteração material (RN10).
+ */
+export interface ManifestacaoAnteriorInvalidada {
+  conclusao: TipoConclusao;
+  validacaoHumana: ValidacaoHumana | null;
+  justificativaDivergencia: string;
+  observacoes: string;
+  dataHoraInvalidacao: string;
+}
+
+/**
  * Análise de conformidade completa de um processo.
  */
 export interface Analise {

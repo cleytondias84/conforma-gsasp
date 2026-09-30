@@ -9,14 +9,14 @@ import {
   getProcessoAtivo,
   setProcessoAtivo,
   sincronizarIdentificacaoDoFormulario
-} from './pages/identificacao';
+} from './pages/identificacao.ts';
 import {
   renderPertinenciaScreen,
   initPertinenciaEvents,
   getPertinenciaAtiva,
   setPertinenciaAtiva,
   sincronizarPertinenciaDoFormulario
-} from './pages/pertinencia';
+} from './pages/pertinencia.ts';
 import {
   renderConformidadeScreen,
   initConformidadeEvents,
@@ -25,28 +25,29 @@ import {
   getCondicionantesAtivas,
   setCondicionantesAtivas,
   sincronizarConformidadeDoFormulario
-} from './pages/conformidade';
+} from './pages/conformidade.ts';
 import {
   renderAchadosScreen,
   initAchadosEvents,
   getAchadosAtivos,
   setAchadosAtivos
-} from './pages/achados';
+} from './pages/achados.ts';
 import {
   renderRiscosScreen,
   initRiscosEvents,
   getRiscosAtivos,
   setRiscosAtivos,
   sincronizarRiscosDoFormulario
-} from './pages/riscos';
+} from './pages/riscos.ts';
 import {
   renderResultadoScreen,
   initResultadoEvents,
   getConclusaoValidada,
-  setConclusaoValidada,
   getValidacaoHumana,
   getResultadoExecutivoAtivo,
-  sincronizarResultadoDoFormulario
+  sincronizarResultadoDoFormulario,
+  exportarEstadoResultado,
+  importarEstadoResultado
 } from './pages/resultado.ts';
 import {
   renderPainelScreen,
@@ -59,7 +60,35 @@ import {
   obterDiagnosticoArmazenamento,
   AVISO_PERSISTENCIA_LOCAL,
   type DiagnosticoArmazenamento
-} from './services/armazenamento';
+} from './services/armazenamento.ts';
+
+/**
+ * Salva o estado completo da sessão no armazenamento local,
+ * preservando dados de todas as etapas e metadados de conclusão/invalidação RN10.
+ */
+async function salvarRascunhoSessao(): Promise<{ analiseId: string; salvoEm: string }> {
+  const estadoRes = exportarEstadoResultado();
+  return salvarRascunhoAtual(
+    getProcessoAtivo(),
+    getPertinenciaAtiva(),
+    getChecklistAtivo(),
+    getCondicionantesAtivas(),
+    'rascunho',
+    getAchadosAtivos(),
+    getRiscosAtivos(),
+    getEventosAtivos(),
+    getResultadoExecutivoAtivo().conclusao,
+    getConclusaoValidada(),
+    getValidacaoHumana(),
+    {
+      hashDadosEtapasAnteriores: estadoRes.hashDadosEtapasAnteriores,
+      necessitaNovaRevisaoConclusao: estadoRes.necessitaNovaRevisaoConclusao,
+      manifestacaoAnteriorInvalidada: estadoRes.manifestacaoAnteriorInvalidada,
+      justificativaDivergencia: estadoRes.justificativaDivergencia,
+      observacoesAssessor: estadoRes.observacoesAssessor
+    }
+  );
+}
 import {
   getPapelAtivo,
   setPapelAtivo,
@@ -67,7 +96,7 @@ import {
   podeEditar,
   podeSalvarRascunho,
   type PapelUsuario
-} from './auth/papeis';
+} from './auth/papeis.ts';
 import {
   getEventosAtivos,
   setEventosAtivos,
@@ -317,6 +346,7 @@ function renderNavigationButtons(currentStepNumber: number): string {
  * Garante que qualquer digitação pendente no DOM seja sincronizada para o estado da tela ativa antes de salvar.
  */
 export function sincronizarEstadoDaTelaAtiva(): void {
+  if (typeof document === 'undefined') return;
   sincronizarIdentificacaoDoFormulario();
   sincronizarPertinenciaDoFormulario();
   sincronizarConformidadeDoFormulario();
@@ -444,19 +474,7 @@ export function renderRoute(): void {
         descricao: `Rascunho da análise salvo no armazenamento local (${diagnosticoArmazenamento?.tipo || 'IndexedDB'})`
       });
 
-      const res = await salvarRascunhoAtual(
-        getProcessoAtivo(),
-        getPertinenciaAtiva(),
-        getChecklistAtivo(),
-        getCondicionantesAtivas(),
-        'rascunho',
-        getAchadosAtivos(),
-        getRiscosAtivos(),
-        getEventosAtivos(),
-        getResultadoExecutivoAtivo().conclusao,
-        getConclusaoValidada(),
-        getValidacaoHumana()
-      );
+      const res = await salvarRascunhoSessao();
       ultimoSalvamentoTimestamp = res.salvoEm;
       try {
         diagnosticoArmazenamento = await obterDiagnosticoArmazenamento();
@@ -502,9 +520,15 @@ export function renderRoute(): void {
       if (recuperado.eventos) {
         setEventosAtivos(recuperado.eventos);
       }
-      if (recuperado.conclusaoValidada || recuperado.validacaoHumana) {
-        setConclusaoValidada(recuperado.conclusaoValidada || null, recuperado.validacaoHumana || null);
-      }
+      importarEstadoResultado({
+        conclusaoValidada: recuperado.conclusaoValidada || null,
+        validacaoHumana: recuperado.validacaoHumana || null,
+        justificativaDivergencia: recuperado.justificativaDivergencia || '',
+        observacoesAssessor: recuperado.observacoesAssessor || '',
+        hashDadosEtapasAnteriores: recuperado.hashDadosEtapasAnteriores || '',
+        necessitaNovaRevisaoConclusao: recuperado.necessitaNovaRevisaoConclusao || false,
+        manifestacaoAnteriorInvalidada: recuperado.manifestacaoAnteriorInvalidada || null
+      });
       ultimoSalvamentoTimestamp = recuperado.salvoEm;
       renderRoute();
       alert(`✅ Rascunho recuperado com sucesso do armazenamento local!\n\nProcesso: ${recuperado.processo.numero || '(Sem número)'}\nSalvo em: ${formatarCarimboSalvamento(recuperado.salvoEm)}\n\nTodas as informações das etapas e histórico de auditoria foram restaurados no navegador.`);
@@ -518,16 +542,7 @@ export function renderRoute(): void {
       // Salva rascunho automaticamente ao avançar se permitido
       if (podeSalvarRascunho()) {
         sincronizarEstadoDaTelaAtiva();
-        await salvarRascunhoAtual(
-          getProcessoAtivo(),
-          getPertinenciaAtiva(),
-          getChecklistAtivo(),
-          getCondicionantesAtivas(),
-          'rascunho',
-          getAchadosAtivos(),
-          getRiscosAtivos(),
-          getEventosAtivos()
-        );
+        await salvarRascunhoSessao();
       }
       window.location.hash = '#/pertinencia';
     });
@@ -555,16 +570,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(
-            getProcessoAtivo(),
-            getPertinenciaAtiva(),
-            getChecklistAtivo(),
-            getCondicionantesAtivas(),
-            'rascunho',
-            getAchadosAtivos(),
-            getRiscosAtivos(),
-            getEventosAtivos()
-          );
+          await salvarRascunhoSessao();
         }
         window.location.hash = '#/conformidade';
       },
@@ -598,16 +604,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(
-            getProcessoAtivo(),
-            getPertinenciaAtiva(),
-            getChecklistAtivo(),
-            getCondicionantesAtivas(),
-            'rascunho',
-            getAchadosAtivos(),
-            getRiscosAtivos(),
-            getEventosAtivos()
-          );
+          await salvarRascunhoSessao();
         }
         window.location.hash = '#/achados';
       },
@@ -641,16 +638,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(
-            getProcessoAtivo(),
-            getPertinenciaAtiva(),
-            getChecklistAtivo(),
-            getCondicionantesAtivas(),
-            'rascunho',
-            getAchadosAtivos(),
-            getRiscosAtivos(),
-            getEventosAtivos()
-          );
+          await salvarRascunhoSessao();
         }
         window.location.hash = '#/riscos';
       },
@@ -669,16 +657,7 @@ export function renderRoute(): void {
         e.preventDefault();
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(
-            getProcessoAtivo(),
-            getPertinenciaAtiva(),
-            getChecklistAtivo(),
-            getCondicionantesAtivas(),
-            'rascunho',
-            getAchadosAtivos(),
-            getRiscosAtivos(),
-            getEventosAtivos()
-          );
+          await salvarRascunhoSessao();
         }
         window.location.hash = '#/riscos';
       });
@@ -702,16 +681,7 @@ export function renderRoute(): void {
         // Salva rascunho automaticamente ao avançar se permitido
         if (podeSalvarRascunho()) {
           sincronizarEstadoDaTelaAtiva();
-          await salvarRascunhoAtual(
-            getProcessoAtivo(),
-            getPertinenciaAtiva(),
-            getChecklistAtivo(),
-            getCondicionantesAtivas(),
-            'rascunho',
-            getAchadosAtivos(),
-            getRiscosAtivos(),
-            getEventosAtivos()
-          );
+          await salvarRascunhoSessao();
         }
         window.location.hash = '#/resultado';
       },
@@ -817,9 +787,15 @@ export async function initRouter(): Promise<void> {
         if (recuperado.eventos) {
           setEventosAtivos(recuperado.eventos);
         }
-        if (recuperado.conclusaoValidada || recuperado.validacaoHumana) {
-          setConclusaoValidada(recuperado.conclusaoValidada || null, recuperado.validacaoHumana || null);
-        }
+        importarEstadoResultado({
+          conclusaoValidada: recuperado.conclusaoValidada || null,
+          validacaoHumana: recuperado.validacaoHumana || null,
+          justificativaDivergencia: recuperado.justificativaDivergencia || '',
+          observacoesAssessor: recuperado.observacoesAssessor || '',
+          hashDadosEtapasAnteriores: recuperado.hashDadosEtapasAnteriores || '',
+          necessitaNovaRevisaoConclusao: recuperado.necessitaNovaRevisaoConclusao || false,
+          manifestacaoAnteriorInvalidada: recuperado.manifestacaoAnteriorInvalidada || null
+        });
         ultimoSalvamentoTimestamp = recuperado.salvoEm;
       }
     } catch {

@@ -335,15 +335,19 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       10. **Salvaguarda Institucional e Vedação de Assinatura Automática (RN08/RN11):** Banner ostensivo destacando a natureza estritamente indicativa, sem chancela eletrônica, autorização automática ou substituição da deliberação da autoridade competente.
       11. **Controle de Papéis e Persistência Local:** Perfis *Leitor* e *Aprovador* em modo somente consulta (`readonly-banner`); persistência da conclusão homologada, justificativa e observações no IndexedDB/localStorage via `salvarRascunhoAtual` e restauração em `recuperarUltimoRascunho`.
     - *Verificações automatizadas aprovadas:*
-      - **138 testes unitários aprovados via `npm test`** (32 testes de domínio cobrindo todos os 17 cenários da RN08 + 7 testes da tela de resultado + 99 preexistentes).
-      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 571ms, precache de 31 ativos e Service Worker íntegros).
-    - *Testes manuais da S4.2 (Em andamento — 3 de 5 aprovados):*
-      - [x] TM-S4.2-01: Adoção da sugestão do sistema em consonância com o motor no Cenário 1 (Processo SESP-PRO-2026/00001, P5, DEC-10, MOT-APTIDAO-PLENA-REGULARIDADE, Risco Baixo), homologação exibindo selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados de responsável/data/hora e registro na auditoria (VALIDACAO_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
-      - [x] TM-S4.2-02: Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta (< 10 caracteres) e homologação de divergência técnica fundamentada (Processo SESP-PRO-2026/00001, RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA) exibindo selo "PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA", badge "Prevalece Decisão Humana (RN02/RN07)", justificativa registrada e evento na auditoria (DIVERGENCIA_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
-      - [ ] TM-S4.2-03: Invalidação dinâmica automática da conclusão (RN10) após alteração superveniente na matriz de riscos e alerta ostensivo na tela (PENDENTE).
-      - [ ] TM-S4.2-04: Conferência das respostas às 5 Perguntas Executivas Centrais (RN09) e das 4 salvaguardas regulamentares da SESP-MT (PENDENTE).
-      - [x] TM-S4.2-05: Modo somente consulta nos perfis Leitor e Aprovador (banner exibido, bloqueio de controles de homologação/adoção/reabertura, dados preservados e restauração ao retornar para Assessor) (Aprovado pelo usuário em 29/09/2026).
-    - *Status de Homologação:* S4.2 ainda NÃO homologada integralmente. Tarefa S4.3 NÃO iniciada. Nenhuma nova implementação deve iniciar antes da conclusão da validação da S4.2.
+      - **143 testes unitários aprovados via `npm test`** (32 testes de domínio cobrindo todos os 17 cenários da RN08 + 12 testes da tela de resultado com regressão RN10 + 99 preexistentes, 0 falhas).
+      - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado com sucesso, precache de 31 ativos e Service Worker íntegros).
+    - *Status dos Testes Manuais da S4.2:*
+      - [x] TM-S4.2-01: APROVADO (Adoção da sugestão do sistema em consonância com o motor no Cenário 1, homologação exibindo selo "PARECER HOMOLOGADO EM CONSONÂNCIA", metadados e registro na auditoria).
+      - [x] TM-S4.2-02: APROVADO (Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta e homologação de divergência técnica fundamentada).
+      - [ ] TM-S4.2-03: NÃO APROVADO, correção RN10 implementada e aguardando RETESTE MANUAL (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, persistência estrita e estabilidade de tela).
+      - [ ] TM-S4.2-04: PENDENTE (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT).
+      - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
+    - *Status Geral da Sprint 4:*
+      - S4.1: HOMOLOGADA;
+      - S4.2: em validação manual, ainda NÃO homologada integralmente;
+      - S4.3: NÃO INICIADA;
+      - Próximo passo: repetir integralmente o TM-S4.2-03 no bundle atualizado.
 - **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 - **Comandos para manter o servidor local:**
   ```powershell

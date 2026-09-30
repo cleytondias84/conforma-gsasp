@@ -96,7 +96,17 @@ export function getPertinenciaAtiva(): Pertinencia {
 }
 
 export function setPertinenciaAtiva(pertinencia: Pertinencia): void {
-  pertinenciaAtiva = { ...pertinencia };
+  if (!pertinencia) return;
+  const conclusaoEfetiva =
+    pertinencia.conclusao ||
+    (pertinenciaAtiva && pertinenciaAtiva.conclusao) ||
+    'PERTINENTE';
+
+  pertinenciaAtiva = {
+    ...pertinenciaAtiva,
+    ...pertinencia,
+    conclusao: conclusaoEfetiva
+  };
 }
 
 /**
@@ -505,12 +515,17 @@ export function renderPertinenciaScreen(): string {
  * Extrai os dados do formulário de pertinência diretamente do DOM.
  */
 export function extrairDadosDoFormularioPertinencia(): Pertinencia {
-  if (!podeEditar()) {
+  if (typeof document === 'undefined' || !podeEditar()) {
+    return pertinenciaAtiva;
+  }
+
+  const form = document.getElementById('form-pertinencia') as HTMLFormElement | null;
+  if (!form) {
     return pertinenciaAtiva;
   }
 
   const getRadioVal = (id: string): boolean | null => {
-    const checked = document.querySelector(`input[name="criterio-${id}"]:checked`) as HTMLInputElement | null;
+    const checked = form.querySelector(`input[name="criterio-${id}"]:checked`) as HTMLInputElement | null;
     if (!checked) return null;
     if (checked.value === 'sim') return true;
     if (checked.value === 'nao') return false;
@@ -526,18 +541,18 @@ export function extrairDadosDoFormularioPertinencia(): Pertinencia {
   };
 
   const getVal = (id: string): string => {
-    const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+    const el = form.querySelector(`#${id}`) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
     return el?.value.trim() || '';
   };
 
   const conclusaoStr = getVal('campo-conclusao-pertinencia') as ConclusaoPertinencia | '';
-  const conclusao = conclusaoStr ? conclusaoStr : null;
+  const conclusao = conclusaoStr ? conclusaoStr : (pertinenciaAtiva.conclusao || 'PERTINENTE');
 
   return {
     respostas,
-    evidencias: getVal('campo-pert-evidencias'),
-    justificativa: getVal('campo-pert-justificativa'),
-    providencia: getVal('campo-pert-providencia'),
+    evidencias: getVal('campo-pert-evidencias') || pertinenciaAtiva.evidencias,
+    justificativa: getVal('campo-pert-justificativa') || pertinenciaAtiva.justificativa,
+    providencia: getVal('campo-pert-providencia') || pertinenciaAtiva.providencia,
     conclusao
   };
 }
@@ -546,6 +561,13 @@ export function extrairDadosDoFormularioPertinencia(): Pertinencia {
  * Sincroniza o estado em memória da Pertinência com os valores presentes no formulário do DOM.
  */
 export function sincronizarPertinenciaDoFormulario(): Pertinencia {
+  if (typeof document === 'undefined') {
+    return pertinenciaAtiva;
+  }
+  const form = document.getElementById('form-pertinencia') as HTMLFormElement | null;
+  if (!form) {
+    return pertinenciaAtiva;
+  }
   const dados = extrairDadosDoFormularioPertinencia();
   pertinenciaAtiva = dados;
   return dados;

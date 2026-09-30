@@ -1,8 +1,8 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
 Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 29/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1, 2 e 3 100% CONCLUÍDAS E HOMOLOGADAS; Sprint 4 a iniciar)  
+Data do último registro: 30/09/2026.  
+**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1, 2 e 3 100% CONCLUÍDAS E HOMOLOGADAS; Sprint 4 em andamento e validação manual)  
 **Caminho local da pasta do projeto:**  
 `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 
@@ -129,9 +129,8 @@ Data do último registro: 29/09/2026.
   - **Sprint 2:** 100% concluída e homologada (S2.1 a S2.6).
   - **Sprint 3:** **100% CONCLUÍDA E HOMOLOGADA** (S3.1 a S3.6: 99 testes unitários aprovados, build 100% íntegro e 6 testes manuais da S3.6 homologados).
   - **Sprint 4:** Em andamento:
-    - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): **100% HOMOLOGADA** pelo usuário em 29/09/2026.
-    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **EM VALIDAÇÃO MANUAL** (138 testes unitários aprovados; build 100% íntegro).
-    - `S4.2`: **Ainda NÃO homologada integralmente** (3 de 5 testes manuais aprovados).
+    - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): **HOMOLOGADA** formalmente pelo usuário em 29/09/2026.
+    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **EM VALIDAÇÃO MANUAL, AINDA NÃO HOMOLOGADA INTEGRALMENTE** (143 testes unitários aprovados; build 100% íntegro).
     - `S4.3` (Documento executivo e estilos de impressão): **NÃO INICIADA**.
 
 1. **Sprint 4 — Tarefa S4.2 em Validação Manual (RN08, RN09, RN10):**
@@ -146,24 +145,24 @@ Data do último registro: 29/09/2026.
      - Banner ostensivo de apoio à decisão (sem autorização automática para assinatura).
      - Cartão da sugestão do sistema com badge, precedência, regra DEC e códigos MOT.
      - Espaço de homologação técnica do assessor: adoção direta ou seleção divergente com justificativa obrigatória ($\ge 10$ caracteres).
-     - Invalidação dinâmica automática (RN10) por alterações supervenientes nos autos.
+     - Invalidação dinâmica automática (RN10) por alterações supervenientes nos autos com box histórico e sem descarte indevido do estado de etapas anteriores.
      - Respostas às 5 Perguntas Executivas Centrais (RN09).
-     - Trilha de auditoria integrada (`VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO`, `REABERTURA_CONCLUSAO`).
+     - Trilha de auditoria integrada (`VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO`, `REABERTURA_CONCLUSAO`, `INVALIDACAO_CONCLUSAO_RN10`).
      - Modo somente consulta para perfis *Leitor* e *Aprovador*.
-     - Persistência e restauração do parecer no IndexedDB/localStorage.
+     - Persistência e restauração integral do parecer e metadados no IndexedDB/localStorage.
    - **Testes Automatizados e Build:**
-     - **138 testes unitários aprovados via `npm test`** (32 de domínio + 7 de interface + 99 preexistentes).
-     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado em 571ms, precache de 31 ativos e Service Worker íntegros).
-   - **Testes Manuais da S4.2 (Status da Validação):**
-     - [x] TM-S4.2-01: Adoção da sugestão do sistema em consonância com o motor no Cenário 1 (Processo SESP-PRO-2026/00001, P5, DEC-10, MOT-APTIDAO-PLENA-REGULARIDADE, Risco Baixo), homologação com selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados de responsável/data/hora e registro na auditoria (VALIDACAO_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
-     - [x] TM-S4.2-02: Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta (< 10 caracteres) e homologação de divergência técnica fundamentada (Processo SESP-PRO-2026/00001, RETORNAR_PARA_SANEAMENTO_ANTES_DA_ASSINATURA) com selo "PARECER HOMOLOGADO COM DIVERGÊNCIA MOTIVADA", badge "Prevalece Decisão Humana (RN02/RN07)", justificativa registrada e evento na auditoria (DIVERGENCIA_CONCLUSAO) (Homologado pelo usuário em 29/09/2026).
-     - [ ] TM-S4.2-03: Invalidação dinâmica automática da conclusão (RN10) após alteração superveniente na matriz de riscos e alerta ostensivo na tela (PENDENTE).
-     - [ ] TM-S4.2-04: Conferência das respostas às 5 Perguntas Executivas Centrais (RN09) e das 4 salvaguardas regulamentares da SESP-MT (PENDENTE).
-     - [x] TM-S4.2-05: Modo somente consulta nos perfis Leitor e Aprovador (banner exibido, bloqueio de controles de homologação/adoção/reabertura, dados preservados e restauração ao retornar para Assessor) (Homologado pelo usuário em 29/09/2026).
+     - **143 testes unitários aprovados via `npm test`** (32 de domínio + 12 de interface com regressão RN10 + 99 preexistentes, 0 falhas).
+     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado com sucesso, precache de 31 ativos e Service Worker íntegros).
+   - **Status dos Testes Manuais da S4.2:**
+     - [x] TM-S4.2-01: APROVADO (Adoção da sugestão do sistema em consonância com o motor no Cenário 1, homologação com selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados e registro na auditoria).
+     - [x] TM-S4.2-02: APROVADO (Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta e homologação de divergência técnica fundamentada).
+     - [ ] TM-S4.2-03: NÃO APROVADO, correção RN10 implementada e aguardando RETESTE MANUAL (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, estabilidade da pertinência e ausência de ressuscitação do parecer anterior no Bloco 2).
+     - [ ] TM-S4.2-04: PENDENTE (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT).
+     - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
 
 2. **Próxima Ação Imediata na Retomada:**
-   - **Próximo teste exato a executar:** **TM-S4.2-03** (Invalidação Dinâmica Automática por Alterações Supervenientes — RN10), seguido por **TM-S4.2-04** (Cinco Perguntas Executivas e Salvaguardas).
-   - **Regra de bloqueio estrita:** Nenhuma nova implementação de código deve começar antes da conclusão integral da validação manual e homologação formal da Tarefa S4.2. A Tarefa S4.3 **NÃO** deve ser iniciada antes disso.
+   - **Próximo passo:** repetir integralmente o **TM-S4.2-03** no bundle atualizado.
+   - **Regra de bloqueio estrita:** Nenhuma nova implementação de código deve começar antes da conclusão integral da validação manual e homologação formal da Tarefa S4.2. A Tarefa S4.3 permanece **NÃO INICIADA**.
 
 3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
    ```powershell

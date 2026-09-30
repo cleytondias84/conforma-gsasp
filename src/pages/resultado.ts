@@ -13,8 +13,10 @@
 
 import type {
   TipoConclusao,
-  ValidacaoHumana
+  ValidacaoHumana,
+  ManifestacaoAnteriorInvalidada
 } from '../domain/tipos.ts';
+export type { ManifestacaoAnteriorInvalidada };
 import {
   avaliarConclusaoExecutiva,
   formatarConclusao,
@@ -48,7 +50,14 @@ let observacoesAssessorAtiva: string = '';
 let hashDadosEtapasAnteriores: string = '';
 let necessitaNovaRevisaoConclusao: boolean = false;
 
+let manifestacaoAnteriorInvalidada: ManifestacaoAnteriorInvalidada | null = null;
+
+export function getManifestacaoAnteriorInvalidada(): ManifestacaoAnteriorInvalidada | null {
+  return manifestacaoAnteriorInvalidada ? { ...manifestacaoAnteriorInvalidada } : null;
+}
+
 export function necessitaRevisaoConclusao(): boolean {
+  verificarAlteracaoMaterialPosterior();
   return necessitaNovaRevisaoConclusao;
 }
 
@@ -69,7 +78,10 @@ function calcularHashEtapasAnteriores(): string {
       vigenciaInicio: p.vigenciaInicio,
       vigenciaFim: p.vigenciaFim
     },
-    pertConclusao: pert.conclusao,
+    pert: {
+      conclusao: pert?.conclusao || null,
+      respostas: pert?.respostas || null
+    },
     chk: chk.map((c) => ({ id: c.id, status: c.status, just: c.justificativaNaoAplicavel })),
     conds: conds.map((c) => ({ id: c.id, situacao: c.situacao })),
     ach: ach.map((a) => ({
@@ -81,15 +93,111 @@ function calcularHashEtapasAnteriores(): string {
   });
 }
 
+function invalidarHomologacaoPorAlteracaoMaterial(): void {
+  if (!conclusaoValidadaAtiva) return;
+
+  const conclusaoAnterior = conclusaoValidadaAtiva;
+  const validacaoAnterior = validacaoHumanaAtiva ? { ...validacaoHumanaAtiva } : null;
+  const justAnterior = justificativaDivergenciaAtiva;
+  const obsAnterior = observacoesAssessorAtiva;
+
+  manifestacaoAnteriorInvalidada = {
+    conclusao: conclusaoAnterior,
+    validacaoHumana: validacaoAnterior,
+    justificativaDivergencia: justAnterior,
+    observacoes: obsAnterior,
+    dataHoraInvalidacao: new Date().toISOString()
+  };
+
+  conclusaoValidadaAtiva = null;
+  validacaoHumanaAtiva = null;
+  justificativaDivergenciaAtiva = '';
+  observacoesAssessorAtiva = '';
+  necessitaNovaRevisaoConclusao = true;
+
+  registrarEventoLocal({
+    acao: ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10,
+    entidade: 'ConclusaoExecutiva',
+    registroId: getProcessoAtivo().numero || 'conclusao-ativa',
+    antesDepois: {
+      antes: {
+        conclusaoValidada: conclusaoAnterior,
+        validadoPor: validacaoAnterior?.validadoPor,
+        dataHora: validacaoAnterior?.dataHora
+      },
+      depois: {
+        conclusaoValidada: null,
+        status: 'INVALIDADA_POR_ALTERACAO_SUPERVENIENTE_RN10',
+        motivo: 'Invalidação dinâmica automática (RN10) por modificação material nas etapas anteriores.'
+      }
+    },
+    descricao: `Homologação anterior (${formatarConclusao(conclusaoAnterior)}) automaticamente invalidada nos autos (RN10) por alteração material superveniente. Nova manifestação do assessor necessária.`
+  });
+}
+
 // ==========================================
-// 2. GETTERS E SETTERS DE ESTADO
+// 2. GETTERS E SETTERS DE ESTADO E PERSISTÊNCIA
 // ==========================================
 
+export interface EstadoResultadoPersistivel {
+  conclusaoValidada: TipoConclusao | null;
+  validacaoHumana: ValidacaoHumana | null;
+  justificativaDivergencia: string;
+  observacoesAssessor: string;
+  hashDadosEtapasAnteriores: string;
+  necessitaNovaRevisaoConclusao: boolean;
+  manifestacaoAnteriorInvalidada: ManifestacaoAnteriorInvalidada | null;
+}
+
+export function exportarEstadoResultado(): EstadoResultadoPersistivel {
+  return {
+    conclusaoValidada: conclusaoValidadaAtiva,
+    validacaoHumana: validacaoHumanaAtiva ? { ...validacaoHumanaAtiva } : null,
+    justificativaDivergencia: justificativaDivergenciaAtiva,
+    observacoesAssessor: observacoesAssessorAtiva,
+    hashDadosEtapasAnteriores,
+    necessitaNovaRevisaoConclusao,
+    manifestacaoAnteriorInvalidada: manifestacaoAnteriorInvalidada ? { ...manifestacaoAnteriorInvalidada } : null
+  };
+}
+
+export function importarEstadoResultado(estado?: Partial<EstadoResultadoPersistivel> | null): void {
+  if (!estado) return;
+
+  if (estado.manifestacaoAnteriorInvalidada) {
+    manifestacaoAnteriorInvalidada = { ...estado.manifestacaoAnteriorInvalidada };
+    conclusaoValidadaAtiva = null;
+    validacaoHumanaAtiva = null;
+    justificativaDivergenciaAtiva = estado.justificativaDivergencia || '';
+    observacoesAssessorAtiva = estado.observacoesAssessor || '';
+    hashDadosEtapasAnteriores = estado.hashDadosEtapasAnteriores || '';
+    necessitaNovaRevisaoConclusao = true;
+  } else {
+    manifestacaoAnteriorInvalidada = null;
+    conclusaoValidadaAtiva = estado.conclusaoValidada || null;
+    validacaoHumanaAtiva = estado.validacaoHumana ? { ...estado.validacaoHumana } : null;
+    justificativaDivergenciaAtiva = estado.justificativaDivergencia || '';
+    observacoesAssessorAtiva = estado.observacoesAssessor || '';
+    hashDadosEtapasAnteriores = estado.hashDadosEtapasAnteriores || '';
+    necessitaNovaRevisaoConclusao = Boolean(estado.necessitaNovaRevisaoConclusao);
+
+    // Se havia uma conclusão homologada com hash salvo e os dados anteriores foram alterados:
+    if (conclusaoValidadaAtiva && hashDadosEtapasAnteriores) {
+      const hashAtual = calcularHashEtapasAnteriores();
+      if (hashAtual !== hashDadosEtapasAnteriores) {
+        invalidarHomologacaoPorAlteracaoMaterial();
+      }
+    }
+  }
+}
+
 export function getConclusaoValidada(): TipoConclusao | null {
+  verificarAlteracaoMaterialPosterior();
   return conclusaoValidadaAtiva;
 }
 
 export function getValidacaoHumana(): ValidacaoHumana | null {
+  verificarAlteracaoMaterialPosterior();
   return validacaoHumanaAtiva ? { ...validacaoHumanaAtiva } : null;
 }
 
@@ -109,8 +217,11 @@ export function setConclusaoValidada(
   conclusaoValidadaAtiva = conclusao;
   validacaoHumanaAtiva = validacao ? { ...validacao } : null;
   justificativaDivergenciaAtiva = justificativaDivergencia;
-  hashDadosEtapasAnteriores = calcularHashEtapasAnteriores();
-  necessitaNovaRevisaoConclusao = false;
+  hashDadosEtapasAnteriores = conclusao ? calcularHashEtapasAnteriores() : '';
+  if (conclusao) {
+    manifestacaoAnteriorInvalidada = null;
+    necessitaNovaRevisaoConclusao = false;
+  }
 }
 
 export function limparResultadoAtivo(): void {
@@ -119,6 +230,7 @@ export function limparResultadoAtivo(): void {
   justificativaDivergenciaAtiva = '';
   observacoesAssessorAtiva = '';
   hashDadosEtapasAnteriores = '';
+  manifestacaoAnteriorInvalidada = null;
   necessitaNovaRevisaoConclusao = false;
 }
 
@@ -142,12 +254,21 @@ export function getResultadoExecutivoAtivo(): ResultadoConclusaoExecutiva {
  * Verifica se os dados das etapas anteriores foram alterados após a última validação humana (RN10).
  */
 export function verificarAlteracaoMaterialPosterior(): boolean {
+  if (manifestacaoAnteriorInvalidada !== null) {
+    // Invariante estrita da RN10: Se há manifestação anterior invalidada,
+    // a conclusão ativa anterior JAMAIS permanece vigente ou homologada.
+    if (conclusaoValidadaAtiva !== null) {
+      conclusaoValidadaAtiva = null;
+      validacaoHumanaAtiva = null;
+    }
+    return true;
+  }
   if (!conclusaoValidadaAtiva) return false;
   if (!hashDadosEtapasAnteriores) return false;
 
   const hashAtual = calcularHashEtapasAnteriores();
   if (hashAtual !== hashDadosEtapasAnteriores) {
-    necessitaNovaRevisaoConclusao = true;
+    invalidarHomologacaoPorAlteracaoMaterial();
     return true;
   }
   return false;
@@ -219,6 +340,7 @@ export function validarConclusaoAssessor(
   justificativaDivergenciaAtiva = haDivergencia ? (justificativaDivergencia || '').trim() : '';
   observacoesAssessorAtiva = observacoes?.trim() || '';
   hashDadosEtapasAnteriores = calcularHashEtapasAnteriores();
+  manifestacaoAnteriorInvalidada = null;
   necessitaNovaRevisaoConclusao = false;
 
   const acaoAuditoria = haDivergencia
@@ -265,6 +387,9 @@ export function reabrirConclusaoParaRevisao(): void {
   conclusaoValidadaAtiva = null;
   validacaoHumanaAtiva = null;
   justificativaDivergenciaAtiva = '';
+  observacoesAssessorAtiva = '';
+  manifestacaoAnteriorInvalidada = null;
+  hashDadosEtapasAnteriores = '';
   necessitaNovaRevisaoConclusao = false;
 
   registrarEventoLocal({
@@ -280,7 +405,7 @@ export function reabrirConclusaoParaRevisao(): void {
 }
 
 export function sincronizarResultadoDoFormulario(): void {
-  if (!podeEditar()) return;
+  if (typeof document === 'undefined' || !podeEditar()) return;
   const justEl = document.getElementById('textarea-justificativa-divergencia') as HTMLTextAreaElement | null;
   if (justEl) {
     justificativaDivergenciaAtiva = justEl.value;
@@ -443,8 +568,8 @@ function gerarRespostasCincoPerguntas(
  * Renderiza a tela completa da Etapa 6.
  */
 export function renderResultadoScreen(): string {
-  const resultadoSugerido = getResultadoExecutivoAtivo();
   const alteracaoPosterior = verificarAlteracaoMaterialPosterior();
+  const resultadoSugerido = getResultadoExecutivoAtivo();
   const edicaoHabilitada = podeEditar();
   const conclusaoEfetiva = conclusaoValidadaAtiva || resultadoSugerido.conclusao;
   const cincoPerguntas = gerarRespostasCincoPerguntas(conclusaoEfetiva, resultadoSugerido);
@@ -664,9 +789,37 @@ export function renderResultadoScreen(): string {
         `
             : `
           <!-- ESTADO EM REVISÃO HUMANA (PENDENTE DE HOMOLOGAÇÃO) -->
-          <div class="homologacao-instrucoes-box">
+          ${
+            manifestacaoAnteriorInvalidada
+              ? `
+            <div class="historico-manifestacao-invalidada-box">
+              <div class="historico-manifestacao-header">
+                <span class="historico-icone">📜</span>
+                <strong>Histórico: Manifestação Anterior Automaticamente Invalidada (RN10)</strong>
+                <span class="badge badge-warning" style="margin-left:auto;">Desconstituída</span>
+              </div>
+              <div class="historico-manifestacao-corpo">
+                <div><strong>Parecer anterior:</strong> ${formatarConclusao(manifestacaoAnteriorInvalidada.conclusao)}</div>
+                <div><strong>Responsável original:</strong> ${manifestacaoAnteriorInvalidada.validacaoHumana?.validadoPor || 'Assessor Técnico'}</div>
+                <div><strong>Data/Hora da homologação original:</strong> ${manifestacaoAnteriorInvalidada.validacaoHumana?.dataHora ? new Date(manifestacaoAnteriorInvalidada.validacaoHumana.dataHora).toLocaleString('pt-BR') : 'Não informada'}</div>
+                ${manifestacaoAnteriorInvalidada.justificativaDivergencia ? `<div><strong>Justificativa da divergência anterior:</strong> ${manifestacaoAnteriorInvalidada.justificativaDivergencia}</div>` : ''}
+                ${manifestacaoAnteriorInvalidada.observacoes ? `<div><strong>Observações anteriores:</strong> ${manifestacaoAnteriorInvalidada.observacoes}</div>` : ''}
+              </div>
+              <div class="historico-manifestacao-aviso">
+                ℹ️ Esta manifestação não possui mais eficácia decisória ativa nos autos e permanece arquivada na trilha de auditoria para transparência processual. Uma nova manifestação é exigida.
+              </div>
+            </div>
+          `
+              : ''
+          }
+
+          <div class="homologacao-instrucoes-box ${manifestacaoAnteriorInvalidada ? 'instrucoes-reapreciacao' : ''}">
             <p>
-              O sistema sugere a conclusão indicativa acima. Avalie se as condições fáticas e documentais dos autos sustentam essa recomendação ou se cabe registrar juízo técnico divergente fundamentado.
+              ${
+                manifestacaoAnteriorInvalidada
+                  ? '⚠️ <strong>Nova Apreciação Necessária:</strong> Em razão da alteração material superveniente na instrução dos autos, a manifestação anterior perdeu sua vigência ativa. Avalie a nova recomendação sugerida pelo motor abaixo e registre sua nova manifestação técnica ou homologação.'
+                  : 'O sistema sugere a conclusão indicativa acima. Avalie se as condições fáticas e documentais dos autos sustentam essa recomendação ou se cabe registrar juízo técnico divergente fundamentado.'
+              }
             </p>
           </div>
 

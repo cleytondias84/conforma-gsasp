@@ -21,7 +21,8 @@ import type {
   EventoLocal,
   EstadoEdicao,
   TipoConclusao,
-  ValidacaoHumana
+  ValidacaoHumana,
+  ManifestacaoAnteriorInvalidada
 } from '../domain/tipos';
 
 export const NOME_BANCO_INDEXED_DB = 'conforma_gsasp_db';
@@ -47,6 +48,12 @@ export interface DadosRascunhoCompleto {
   analiseId: string;
   estadoEdicao: EstadoEdicao;
   salvoEm: string;
+  // Metadados persistíveis da Etapa 6 / Invalidação Dinâmica RN10
+  hashDadosEtapasAnteriores?: string;
+  necessitaNovaRevisaoConclusao?: boolean;
+  manifestacaoAnteriorInvalidada?: ManifestacaoAnteriorInvalidada | null;
+  justificativaDivergencia?: string;
+  observacoesAssessor?: string;
 }
 
 export interface ResumoRascunhoSalvo {
@@ -432,7 +439,14 @@ export async function salvarRascunhoAtual(
   eventos?: EventoLocal[],
   conclusaoIndicativa?: TipoConclusao | null,
   conclusaoValidada?: TipoConclusao | null,
-  validacaoHumana?: ValidacaoHumana | null
+  validacaoHumana?: ValidacaoHumana | null,
+  metadadosConclusao?: {
+    hashDadosEtapasAnteriores?: string;
+    necessitaNovaRevisaoConclusao?: boolean;
+    manifestacaoAnteriorInvalidada?: ManifestacaoAnteriorInvalidada | null;
+    justificativaDivergencia?: string;
+    observacoesAssessor?: string;
+  }
 ): Promise<{ analiseId: string; salvoEm: string }> {
   const repo = obterRepositorioArmazenamento();
   const agoraIso = new Date().toISOString();
@@ -451,7 +465,14 @@ export async function salvarRascunhoAtual(
     validacaoHumana: validacaoHumana ? JSON.parse(JSON.stringify(validacaoHumana)) : undefined,
     analiseId,
     estadoEdicao,
-    salvoEm: agoraIso
+    salvoEm: agoraIso,
+    hashDadosEtapasAnteriores: metadadosConclusao?.hashDadosEtapasAnteriores,
+    necessitaNovaRevisaoConclusao: metadadosConclusao?.necessitaNovaRevisaoConclusao,
+    manifestacaoAnteriorInvalidada: metadadosConclusao?.manifestacaoAnteriorInvalidada
+      ? JSON.parse(JSON.stringify(metadadosConclusao.manifestacaoAnteriorInvalidada))
+      : undefined,
+    justificativaDivergencia: metadadosConclusao?.justificativaDivergencia,
+    observacoesAssessor: metadadosConclusao?.observacoesAssessor
   };
 
   try {

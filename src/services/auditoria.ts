@@ -40,7 +40,8 @@ export const ACOES_AUDITORIA = {
   TROCA_PAPEL: 'TROCA_PAPEL',
   VALIDACAO_CONCLUSAO: 'VALIDACAO_CONCLUSAO',
   DIVERGENCIA_CONCLUSAO: 'DIVERGENCIA_CONCLUSAO',
-  REABERTURA_CONCLUSAO: 'REABERTURA_CONCLUSAO'
+  REABERTURA_CONCLUSAO: 'REABERTURA_CONCLUSAO',
+  INVALIDACAO_CONCLUSAO_RN10: 'INVALIDACAO_CONCLUSAO_RN10'
 } as const;
 
 export type TipoAcaoAuditoria = typeof ACOES_AUDITORIA[keyof typeof ACOES_AUDITORIA] | string;
@@ -181,6 +182,8 @@ export function obterMetadadosAcao(acao: string): { titulo: string; icone: strin
       return { titulo: 'Divergência Registrada pelo Assessor', icone: '⚠️', classeBadge: 'badge-audit-modify' };
     case ACOES_AUDITORIA.REABERTURA_CONCLUSAO:
       return { titulo: 'Reabertura da Conclusão para Revisão', icone: '↩️', classeBadge: 'badge-audit-reopen' };
+    case ACOES_AUDITORIA.INVALIDACAO_CONCLUSAO_RN10:
+      return { titulo: 'Invalidação Dinâmica de Parecer (RN10)', icone: '⚠️', classeBadge: 'badge-audit-reject' };
     default:
       return { titulo: acao, icone: '📌', classeBadge: 'badge-audit-default' };
   }
