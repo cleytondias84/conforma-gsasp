@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: '/conforma-gsasp/',
+  base: '/',
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
@@ -25,8 +25,8 @@ export default defineConfig({
         background_color: '#0f172a',
         display: 'standalone',
         orientation: 'portrait-primary',
-        scope: '/conforma-gsasp/',
-        start_url: '/conforma-gsasp/#/',
+        scope: '/',
+        start_url: '/#/',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -62,8 +62,8 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,svg,png,ico,json}'],
-        navigateFallback: '/conforma-gsasp/index.html',
-        navigateFallbackAllowlist: [/^\/conforma-gsasp\//],
+        navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^\/$/],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.includes('/data/'),
