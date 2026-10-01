@@ -761,7 +761,7 @@ export function renderRelatorioScreen(): string {
       <section class="relatorio-secao" aria-labelledby="sec-riscos">
         <h2 id="sec-riscos" class="relatorio-secao-titulo">V — MATRIZ DE AVALIAÇÃO DE RISCOS</h2>
         
-        <table class="relatorio-tabela">
+        <table class="relatorio-tabela relatorio-riscos-tabela">
           <colgroup>
             <col style="width: 20%;">
             <col style="width: 18%;">
@@ -779,22 +779,16 @@ export function renderRelatorioScreen(): string {
           <tbody>
             ${d.riscos.dimensoes.map((dim) => `
               <tr>
-                <td><strong>${escapeHtml(dim.nome)}</strong></td>
-                <td>
-                  <span class="relatorio-badge badge-risco-${dim.nivel ? escapeHtml(dim.nivel) : 'pendente'}">
-                    ${escapeHtml(dim.nivelRotulo)}
-                  </span>
-                </td>
-                <td>${escapeHtml(dim.justificativa)}</td>
-                <td>
-                  ${dim.achadosVinculados.length === 0 ? '<em>Nenhum vínculo</em>' : dim.achadosVinculados.map((id) => `<code>${escapeHtml(id)}</code>`).join(', ')}
-                </td>
+                <td class="relatorio-risco-dimensao">${escapeHtml(dim.nome)}</td>
+                <td class="relatorio-risco-nivel"><span class="relatorio-badge relatorio-risco-badge badge-risco-${dim.nivel ? escapeHtml(dim.nivel) : 'pendente'}">${escapeHtml(dim.nivelRotulo)}</span></td>
+                <td class="relatorio-risco-justificativa">${escapeHtml(dim.justificativa)}</td>
+                <td class="relatorio-risco-achados">${dim.achadosVinculados.length === 0 ? '<em>Nenhum vínculo</em>' : dim.achadosVinculados.map((id) => `<code>${escapeHtml(id)}</code>`).join(', ')}</td>
               </tr>
             `).join('')}
             <tr>
-              <td colspan="4" style="background: #f8fafc;">
+              <td colspan="4" class="relatorio-risco-consolidado-cell" style="background: #f8fafc;">
                 <strong>Risco Consolidado da Análise:</strong>
-                <span class="relatorio-badge badge-risco-${escapeHtml(d.riscos.riscoConsolidado.toLowerCase())}" style="margin-left: 8px;">
+                <span class="relatorio-badge relatorio-risco-badge badge-risco-${escapeHtml(d.riscos.riscoConsolidado.toLowerCase())}" style="margin-left: 8px;">
                   ${escapeHtml(d.riscos.riscoConsolidado)}
                 </span>
                 <span style="margin-left: 12px; font-size: 8pt; color: #475569;">(Metodologia institucional RN12 — Avaliação técnica das 4 dimensões)</span>

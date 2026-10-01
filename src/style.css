@@ -3394,18 +3394,22 @@ textarea:disabled,
 
 .painel-riscos-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  grid-template-columns: 1fr;
+  gap: 6px;
   margin: 0.5rem 0;
 }
 
 .risco-row {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 0.8rem;
   background: #f8fafc;
-  padding: 0.35rem 0.55rem;
+  padding: 0.35rem 0.6rem;
   border-radius: 4px;
   border: 1px solid var(--border-light);
 }
@@ -3413,6 +3417,16 @@ textarea:disabled,
 .risco-dim-name {
   font-weight: 600;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.risco-row .tag-badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
 }
 
 /* Indicadores Estratégicos (Metas vs. Medições) */
@@ -4505,6 +4519,71 @@ table.relatorio-tabela th.text-right {
   border: 1px solid #cbd5e1;
 }
 
+/* Matriz de Riscos — Alinhamento Visual Estrutural (S4.3) */
+table.relatorio-riscos-tabela td {
+  vertical-align: middle;
+  padding: 6px 8px;
+}
+
+table.relatorio-riscos-tabela th {
+  vertical-align: middle;
+}
+
+.relatorio-risco-dimensao {
+  vertical-align: middle;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.relatorio-risco-nivel {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.relatorio-risco-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  padding: 3px 8px;
+  box-sizing: border-box;
+}
+
+.relatorio-risco-justificativa {
+  vertical-align: middle;
+  line-height: 1.4;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.relatorio-risco-achados {
+  vertical-align: middle;
+  line-height: 1.4;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.relatorio-risco-achados code {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 7.8pt;
+  line-height: 1.2;
+  background: #f1f5f9;
+  padding: 1.5px 5px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e1;
+  vertical-align: middle;
+}
+
+.relatorio-risco-consolidado-cell {
+  vertical-align: middle !important;
+  padding: 7px 10px !important;
+}
+
 /* 8. Seção VI — Conclusão Executiva */
 table.relatorio-tabela-conclusao {
   background: #ffffff;
@@ -4770,6 +4849,71 @@ table.relatorio-tabela-conclusao td:first-child {
   }
 
   table.relatorio-tabela-conclusao td:first-child {
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Matriz de Riscos na Impressão A4 / PDF */
+  table.relatorio-riscos-tabela td {
+    vertical-align: middle !important;
+    padding: 4.5pt 6pt !important;
+  }
+
+  table.relatorio-riscos-tabela th {
+    vertical-align: middle !important;
+  }
+
+  .relatorio-risco-dimensao {
+    vertical-align: middle !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    white-space: nowrap !important;
+  }
+
+  .relatorio-risco-nivel {
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+  }
+
+  .relatorio-risco-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    padding: 2pt 5pt !important;
+    box-sizing: border-box !important;
+  }
+
+  .relatorio-risco-justificativa {
+    vertical-align: middle !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    color: #000000 !important;
+  }
+
+  .relatorio-risco-achados {
+    vertical-align: middle !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    color: #000000 !important;
+  }
+
+  .relatorio-risco-achados code {
+    display: inline-block !important;
+    font-size: 7.2pt !important;
+    line-height: 1.15 !important;
+    padding: 1pt 3pt !important;
+    border: 1px solid #6b7280 !important;
+    background: transparent !important;
+    color: #000000 !important;
+    vertical-align: middle !important;
+  }
+
+  .relatorio-risco-consolidado-cell {
+    vertical-align: middle !important;
+    padding: 5pt 7pt !important;
     background-color: #f8fafc !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
