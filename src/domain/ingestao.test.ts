@@ -13,6 +13,8 @@ import {
   converterMapaParaProcesso,
   criarCampoExtraido,
   criarCampoNaoLocalizado,
+  criarCampoAmbiguo,
+  criarCampoInconclusivo,
   type EvidenciaCampo,
   type CampoExtraido,
   type MapaCamposIdentificacao,
@@ -279,4 +281,75 @@ test('14. serialização JSON sem perda dos dados essenciais', () => {
   assert.strictEqual(deserializado.campos.valor.estadoRevisao, 'confirmado');
   assert.strictEqual(deserializado.campos.valor.valorConfirmado, 150000);
   assert.strictEqual(deserializado.campos.numeroProcesso.evidencias[0].pagina, 1);
+});
+
+test('15. criarCampoAmbiguo: preserva candidatos distintos com evidências associadas e pendente de revisão', () => {
+  const candidato1 = {
+    valor: 40000,
+    evidencias: [{ arquivoOrigem: 'doc.pdf', pagina: 2, trechoEvidencia: 'Acréscimo de R$ 40.000,00' }]
+  };
+  const candidato2 = {
+    valor: 240000,
+    evidencias: [{ arquivoOrigem: 'doc.pdf', pagina: 3, trechoEvidencia: 'Valor global de R$ 240.000,00' }]
+  };
+
+  const campo = criarCampoAmbiguo('valor', 'Valor Global', [candidato1, candidato2], null);
+
+  assert.strictEqual(campo.estadoExtracao, 'ambiguo');
+  assert.strictEqual(campo.valorSugerido, null);
+  assert.strictEqual(campo.estadoRevisao, 'pendente');
+  assert.strictEqual(campo.candidatos?.length, 2);
+  assert.strictEqual(campo.evidencias.length, 2);
+  assert.strictEqual(campo.candidatos[0].valor, 40000);
+  assert.strictEqual(campo.candidatos[1].valor, 240000);
+
+  // Confirmação ou edição humana resolve o campo ambíguo
+  const editado = editarCampo(campo, 240000, 'Assessor optou pelo valor global consolidado');
+  assert.strictEqual(editado.estadoRevisao, 'editado');
+  assert.strictEqual(editado.valorConfirmado, 240000);
+  assert.strictEqual(editado.candidatos?.length, 2, 'Preserva histórico de candidatos para auditoria');
+});
+
+test('16. criarCampoInconclusivo: gera estado inconclusivo com diagnosticoExtracao e sem justificativaEdicao', () => {
+  const campo = criarCampoInconclusivo('vigenciaFim', 'Vigência Final', {
+    motivo: 'Páginas sem camada textual identificadas',
+    paginasNaoAnalisaveis: [3, 4]
+  });
+
+  // 1. campo inconclusivo contém diagnóstico da extração
+  assert.strictEqual(campo.estadoExtracao, 'inconclusivo');
+  assert.strictEqual(campo.valorSugerido, null);
+  assert.strictEqual(campo.estadoRevisao, 'pendente');
+  assert.deepStrictEqual(campo.evidencias, []);
+  assert.ok(campo.diagnosticoExtracao, 'Deve conter diagnosticoExtracao');
+  assert.strictEqual(campo.diagnosticoExtracao?.motivo, 'Páginas sem camada textual identificadas');
+
+  // 2. páginas não analisáveis são preservadas
+  assert.deepStrictEqual(campo.diagnosticoExtracao?.paginasNaoAnalisaveis, [3, 4]);
+
+  // 3. justificativaEdicao permanece ausente até ação humana
+  assert.strictEqual(campo.justificativaEdicao, undefined, 'justificativaEdicao deve permanecer ausente até deliberação humana');
+});
+
+test('17. deliberação humana em campo inconclusivo: adiciona justificativaEdicao sem apagar diagnosticoExtracao', () => {
+  const campo = criarCampoInconclusivo('valor', 'Valor Global', {
+    motivo: 'Páginas escaneadas',
+    paginasNaoAnalisaveis: [2, 3]
+  });
+
+  // 4. edição humana posterior pode adicionar justificativaEdicao sem apagar diagnosticoExtracao
+  const editado = editarCampo(campo, 150000, 'Assessor consultou processo físico e identificou o valor na pág 3');
+
+  assert.strictEqual(editado.estadoRevisao, 'editado');
+  assert.strictEqual(editado.valorConfirmado, 150000);
+  assert.strictEqual(editado.justificativaEdicao, 'Assessor consultou processo físico e identificou o valor na pág 3');
+  assert.ok(editado.diagnosticoExtracao, 'diagnosticoExtracao deve permanecer preservado após edição');
+  assert.deepStrictEqual(editado.diagnosticoExtracao?.paginasNaoAnalisaveis, [2, 3]);
+  assert.strictEqual(editado.diagnosticoExtracao?.motivo, 'Páginas escaneadas');
+
+  // Rejeição humana também preserva diagnosticoExtracao
+  const rejeitado = rejeitarCampo(campo, 'Assessor optou por rejeitar campo não localizado');
+  assert.strictEqual(rejeitado.estadoRevisao, 'rejeitado');
+  assert.strictEqual(rejeitado.justificativaEdicao, 'Assessor optou por rejeitar campo não localizado');
+  assert.deepStrictEqual(rejeitado.diagnosticoExtracao?.paginasNaoAnalisaveis, [2, 3]);
 });
