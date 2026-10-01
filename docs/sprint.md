@@ -343,82 +343,124 @@ Commit exemplo: feat: adiciona identificação e validações (S2.1).
       - [x] TM-S4.2-03: APROVADO (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, persistência estrita e registro único na trilha de auditoria local sem duplicação após F5 — Homologado pelo usuário em 30/09/2026).
       - [x] TM-S4.2-04: APROVADO (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT, coerência de fluxo e ausência de eventos espúrios de auditoria — Homologado pelo usuário em 30/09/2026).
       - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
-    - *Status Geral da Sprint 4:*
-      - S4.1: 100% HOMOLOGADA;
-      - S4.2: 100% CONCLUÍDA E HOMOLOGADA (todos os 5 testes manuais aprovados);
-      - S4.3: NÃO INICIADA (congelada para demonstração);
-      - Próximo passo: Apresentação e demonstração do protótipo com funcionalidades homologadas.
-- **Caminho atual do projeto:** `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
-- **Comandos para manter o servidor local:**
-  ```powershell
-  npm.cmd run build
-  npm.cmd run preview
-  # Endereço: http://localhost:4173/conforma-gsasp/
-  ```
+    - *Status Geral da Sprint 4 e MVP Demonstrativo:*
+      - S4.1: 100% HOMOLOGADA (Tabela de Decisão RN08 em docs/regras-funcionais.md);
+      - S4.2: 100% CONCLUÍDA E HOMOLOGADA (Motor de Conclusão determinístico e Tela Etapa 6);
+      - S4.3: 100% CONCLUÍDA E HOMOLOGADA (Relatório executivo e visualização impressa em #/relatorio);
+      - S4.4: 100% CONCLUÍDA E HOMOLOGADA (Indicadores executivos e rastreamento local);
+      - S4.5: 100% CONCLUÍDA E HOMOLOGADA (157 testes unitários em 20 suítes, 0 falhas, build PWA 100% íntegro);
+      - **Apresentação e Homologação:** MVP demonstrativo apresentado e validado com nota 10;
+      - **Marco de Congelamento:** Tag imutável `v0.1.0-mvp-demo` (commit `74225d1`).
 
-## Sprint 3 — Motor de regras, achados e riscos
+## Definição de Pronto do MVP Demonstrativo (100% Concluída)
 
-Objetivo: sugestões verificáveis, revisão humana e avaliação de risco explicável.
+- [x] Documentos e decisões preservados; pendências materiais resolvidas ou explicitamente limitadas.
+- [x] Seis etapas funcionam de ponta a ponta com dados sintéticos.
+- [x] Quatro elementos essenciais destacados (RN01).
+- [x] Pertinência e condicionantes tratadas explicitamente (RN02/RN03/RN13).
+- [x] Quatro classificações de achados e quatro conclusões representadas (RN04/RN08).
+- [x] Sugestões e conclusões dependem de validação humana; mudanças relevantes exigem revisão (RN10).
+- [x] Documento responde às cinco perguntas (RN09) e permite impressão/PDF.
+- [x] KPIs explicáveis, baseline estimado e medições de demonstração identificadas.
+- [x] Perfis e registros locais apresentados como simulação.
+- [x] Persistência e offline testados; ausência de sincronização/backup explicada.
+- [x] Testes relevantes passam (157 aprovados, 0 falhas); publicação funciona no subcaminho correto.
+- [x] Nenhum dado real ou segredo publicado.
+- [x] README, roteiro de demonstração e transparência sobre IA completos.
 
-| ID | Tarefa e arquivos principais | Tecnologia | Pronto quando |
+---
+
+## Nova Fase: Sprint 5 — Ingestão Inteligente + Trilha de Auditoria Humano × IA × Sistema
+
+Documento diretor arquitetural: 👉 [docs/ROADMAP_AUDITORIA_HUMANO_IA.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/ROADMAP_AUDITORIA_HUMANO_IA.md)
+Guia de retomada e ambiente: 👉 [docs/RETOMADA.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/RETOMADA.md)
+Branch ativa de desenvolvimento: `s5-ingestao-auditoria`
+Commit-base: `74225d1`
+Baseline de testes: 157 testes unitários aprovados, 20 suítes, 0 falhas
+
+### Objetivo Geral da Sprint 5
+Construir o pipeline de ingestão assistida por IA para minutas e peças documentais em PDF, viabilizando a extração de dados com evidenciação rigorosa por campo e estabelecendo uma trilha de auditoria tripartite que segrega com clareza institucional as ações do **HUMANO**, da **IA** e do **SISTEMA**.
+
+### Primeira Entrega Estrita da Sprint 5
+$$\text{Upload de Minuta/PDF} \longrightarrow \text{Extração da Identificação} \longrightarrow \text{Evidência por Campo} \longrightarrow \text{Confirmar / Editar / Rejeitar} \longrightarrow \text{Persistência após Validação Humana}$$
+
+- **Upload de minuta/PDF:** Entrada de documento não estruturado em formato PDF.
+- **Extração da Identificação:** Extração assistida dos campos da Etapa 1 (Objeto, Tipo/Origem, Valor, Vigência, Número, Contratado e CNPJ).
+- **Evidência por campo:** Citação da página e do trecho textual exato do documento original que serviu de substrato à extração.
+- **Ações humanas explícitas:** Botões individuais por campo para `Confirmar`, `Editar` (com justificativa) ou `Rejeitar`.
+- **Persistência condicionada:** Nenhuma informação produzida pela IA entra no estado de negócio da análise sem a validação humana/técnica expressa, observadas as competências do usuário e da autoridade competente.
+
+### Princípios Obrigatórios de Governança
+1. **A IA extrai, classifica e sugere:** Desempenha função exclusivamente instrumental de apoio operacional. Não valida, não conclui e não delibera.
+2. **O Humano confirma, corrige, rejeita e complementa:** O operador realiza a validação humana/técnica, observadas as competências do usuário e da autoridade competente.
+3. **O Sistema aplica regras determinísticas (RN/DEC/MOT):** O motor algorítmico executa regras normativas e lógicas estritas, livres de inferência generativa.
+4. **Vedação de confusão:** Nenhum desses três atores pode ser confundido na trilha de auditoria, na interface ou nos relatórios executivos.
+
+### Atores Formais da Trilha de Auditoria
+- `HUMANO`: Operador autenticado/simulado atuando no processo.
+- `IA`: Pipeline probabilístico de extração e OCR.
+- `SISTEMA`: Motor de regras lógicas, validadores e barramento de dados.
+
+### Metadados Mínimos Mandatórios de Toda Execução de IA
+Toda execução futura de IA deverá registrar e preservar, no mínimo:
+- `prompt_id`
+- `prompt_version`
+- `ai_run_id`
+- `gatilho/automação`
+- `modelo/provedor`
+- `documentos/fontes` (com identificador de integridade/hash, sendo SHA-256 diretriz técnica candidata)
+- `página/trecho/evidência`
+- `saída produzida` (saída bruta ou referência segura à saída, conforme política de retenção e segurança)
+- `campos sugeridos` (grau de confiança registrado somente quando o modelo ou pipeline fornecer métrica tecnicamente válida, vedada a inferência de percentual artificial)
+- `timestamp` (carimbo de tempo padronizado, sendo ISO 8601 UTC diretriz técnica candidata)
+- `intervenção humana posterior` (IDs dos eventos humanos vinculados)
+
+### Rastreabilidade de Alterações Humanas sobre Sugestões da IA
+Qualquer intervenção do operador humano modificando ou rejeitando sugestão da IA deverá registrar:
+- `valor anterior` (sugerido pela IA);
+- `valor posterior` (adotado pelo humano);
+- `usuário` (identificação e papel ativo);
+- `data/hora` (timestamp ISO);
+- `justificativa quando aplicável` (obrigatória em divergências materiais e rejeições).
+
+### Segregação e Blindagem de Regras Determinísticas do SISTEMA
+Regras normativas e determinísticas — tais como **RN10** (invalidação superveniente da conclusão homologada por fato novo), **RN08** (cascata de precedência P1 a P5), **DEC-01 a DEC-10** e códigos **MOT-*** — **devem ser auditadas estritamente como ações do SISTEMA, nunca atribuídas à IA**. O motor do software computa lógica booleana prescrita em norma.
+
+### Requisitos Arquiteturais para Uso Institucional Futuro
+Para viabilizar futura adoção corporativa:
+- **Trilha append-only:** Base de auditoria com objetivo de ser estritamente aditiva (vedadas instruções de `UPDATE` ou `DELETE`).
+- **Eventos não apagados nem sobrescritos:** Garantia de imutabilidade histórica física e lógica.
+- **Retificação por novo evento:** Alterações exigem novo evento de retificação vinculado ao ID do evento antecedente.
+- **Autenticação:** Identificação de operadores e credenciais de serviços.
+- **Integridade:** Mecanismos de integridade (sendo hashing encadeado diretriz técnica candidata).
+- **Controle de acesso:** Controle de acesso e permissões (sendo RBAC diretriz técnica candidata, não arquitetura definitivamente escolhida nesta fase).
+- **Retenção:** Prazos de guarda e ciclo de vida documental conforme normas e políticas aplicáveis.
+- **Exportação para auditoria:** Exportação estruturada para auditoria, controle interno/externo e demais necessidades institucionais, conforme governança futura (sendo JSON e PDF formatos tratados como diretrizes técnicas candidatas).
+
+> [!WARNING]
+> **Ressalva Institucional de Armazenamento:**
+> A versão atual baseada em **IndexedDB continua sendo estritamente demonstrativa e didática**, sem garantias criptográficas ou equivalência a sistemas corporativos de processo eletrônico (SIGADOC/SEI).
+
+### Tabela de Tarefas da Sprint 5
+
+| ID | Tarefa e Arquivos Principais | Tecnologia | Critério de Aceite / Pronto Quando |
 |---|---|---|---|
-| S3.1 | Catalogar regras aprovadas em docs/regras-funcionais.md, vinculadas a contexto.md | Markdown | Cada regra informa condição, dados necessários, saída e fonte/motivo; lacunas destacadas; sem pesos inventados |
-| S3.2 | Implementar funções em src/domain/regras.ts e testes | TS/Vitest | Mesma entrada produz mesmo resultado; dados ausentes não geram aprovação; sugestões não são classificações definitivas |
-| S3.3 | src/pages/achados.ts e serviço de validação | TS | Evidência, regra/motivo, impacto, providência e responsável; sugestão identificada; validar/rejeitar com justificativa; sem duplicar achados ao reavaliar |
-| S3.4 | src/pages/riscos.ts e src/domain/riscos.ts | TS | Dimensões e níveis exibidos com justificativa; até aprovação da metodologia, avaliação humana; cálculo automatizado somente com critérios aprovados e testados |
-| S3.5 | src/services/auditoria.ts e histórico local | TS | Eventos de criação/edição/validação e antes/depois relevantes registrados; interface não oferece apagar eventos; informar que armazenamento local não é inviolável |
-| S3.6 | Estrutura do painel em src/pages/painel.ts | TS/CSS | Contadores derivados dos dados; áreas dos indicadores preparadas sem apresentar metas como medições |
+| **S5.1** | **Upload de Minuta/PDF e Extração da Identificação (Primeira Entrega):** Componente de upload seguro de PDF; extração assistida dos campos essenciais da Identificação (RN01: Objeto, Tipo, Valor, Vigência, Número, Contratado, CNPJ); visualizador de evidência com página e trecho textual; ações por campo de Confirmar, Editar e Rejeitar; persistência no rascunho condicionada à validação humana/técnica, observadas as competências do usuário e da autoridade competente. | TS / PDF Parser / HTML / CSS | Upload funcional com arquivo PDF de exemplo; campos extraídos destacados com indicação de página e trecho; botões Confirmar/Editar/Rejeitar operacionais; nenhum dado persiste sem validação do operador humano; rascunho de negócio isolado de saídas brutas de IA. |
+| **S5.2** | **Trilha de Auditoria Tripartite e Metadados de IA:** Expansão de `src/domain/tipos.ts` e `src/services/auditoria.ts` para suportar os três atores (`HUMANO`, `IA`, `SISTEMA`); estrutura de metadados de IA contendo obrigatoriamente os 11 atributos (`prompt_id`, `prompt_version`, `ai_run_id`, `gatilho/automação`, `modelo/provedor`, `documentos/fontes`, `página/trecho/evidência`, `saída produzida`, `campos sugeridos`, `timestamp`, `intervenção humana posterior`), com saída bruta ou referência segura conforme política de retenção e grau de confiança registrado apenas quando tecnicamente válido. | TS / Tipagem Estrita | Tipos discriminam formalmente eventos de HUMANO, IA e SISTEMA; evento de IA registra os 11 metadados mandatórios completos; serialização e deserialização preservam integridade sem perdas; testes unitários dedicados aprovados. |
+| **S5.3** | **Diffs Auditáveis e Rastreabilidade de Intervenções Humanas:** Registro detalhado de intervenções humanas sobre sugestões da IA com `valor anterior`, `valor posterior`, `usuário`, `data/hora` e `justificativa`; renderização de diff visual na tela de auditoria; exigência de justificativa mínima em alterações materiais. | TS / Interface / Auditoria | Toda edição humana de dado de IA gera evento com antes/depois, identificação do operador e justificativa; bloqueio de salvamento se justificativa obrigatória estiver vazia; modal de auditoria exibe visualmente o diff. |
+| **S5.4** | **Segregação e Blindagem de Regras Determinísticas do SISTEMA:** Auditoria explícita dos disparos do motor de regras (RN10, RN08, DEC-01 a DEC-10, MOT-*) como eventos exclusivos do ator `SISTEMA`; garantia de que nenhuma regra lógica seja rotulada como inferência de IA. | TS / Motor de Domínio | Eventos de disparo de RN10, RN08, DEC e MOT contêm obrigatoriamente `ator: 'SISTEMA'`; testes automatizados verificam que nenhum evento determinístico é atribuído ao ator 'IA'. |
+| **S5.5** | **Arquitetura de Auditoria Institucional, Imutabilidade e Exportação:** Modelagem append-only na camada de serviço; retificação por novo evento com vínculo de ID; visualizador com filtros por ator (`HUMANO`, `IA`, `SISTEMA`); exportação estruturada do dossiê probatório em formatos abertos (JSON como diretriz candidata); aviso ostensivo de governança sobre o IndexedDB demonstrativo. | TS / Serviços / Exportação | Interface não disponibiliza ações de exclusão ou edição de eventos de auditoria; retificações geram novo evento encadeado; exportação estruturada operacional; banner de persistência didática mantido. |
+| **S5.6** | **Suíte de Testes Automatizados e Homologação da Sprint 5:** Cobertura de testes unitários para os novos fluxos de ingestão, auditoria tripartite e rastreabilidade humana; garantia de não regressão dos 157 testes unitários consolidados no MVP. | Vitest / TypeScript | 100% dos 157 testes preexistentes continuam aprovados; novos testes unitários cobrem o pipeline de ingestão e auditoria; compilação `npm run build` passa com 0 erros. |
 
-Testes: casos de vigência inconsistente, valores divergentes quando existirem campos comparáveis, condicionante pendente e pertinência não demonstrada. Vigência inconsistente é alerta de dados; consequência jurídica depende de validação funcional/humana.
-Commit exemplo: feat: adiciona revisão humana dos achados (S3.3).
-
-## Sprint 4 — Resultado executivo, relatórios e testes
-
-Objetivo: converter análise revisada em documento para apoio à decisão.
-
-| ID | Tarefa e arquivos principais | Tecnologia | Pronto quando |
-|---|---|---|---|
-| S4.1 | Definir tabela de decisão em docs/regras-funcionais.md | Markdown | Tabela elaborada (Seção 7); aguardando aprovação humana formal; sem autorização automática |
-| S4.2 | src/domain/conclusao.ts e src/pages/resultado.ts | TS | Sugestão separada da validação; botão de validação exige revisão; alterações materiais invalidam validação anterior; autoridade não é substituída |
-| S4.3 | Documento e estilos de impressão em src/pages/resultado.ts e src/style.css | TS/HTML/CSS | Identificação, pertinência, quadro, achados, riscos, pontos sem óbice, providências/responsáveis e conclusão; responde às cinco perguntas; HTML imprimível e PDF pelo navegador |
-| S4.4 | Definir e implementar indicadores em src/services/indicadores.ts e painel | TS | Eventos/período aprovados; divisão por zero tratada; baseline estimado identificado; dados demonstrativos separados; redução descrita como aproximadamente 66,7% |
-| S4.5 | Consolidar testes em src/domain/*.test.ts e scripts/test_gerar_dados.py | Vitest/pytest | Ao menos dez testes unitários úteis; seis cenários funcionais abaixo verificados; não alterar teste correto para esconder erro |
-
-Cenários: regular; condicionante pendente; divergência de valor; vigência inconsistente; documento a confirmar; pertinência não demonstrada. Acrescentar casos para conclusão não recomendável e ressalva após definição dos critérios. Python valida massa/estrutura, TypeScript testa a regra usada no aplicativo.
-Commit exemplo: feat: gera resultado executivo imprimível (S4.3).
-
-## Sprint 5 — Homologação, segurança, UX e publicação final
-
-Objetivo: fluxo completo demonstrável, documentação e entrega.
-
-| ID | Tarefa e arquivos principais | Tecnologia | Pronto quando |
-|---|---|---|---|
-| S5.1 | Revisar dados públicos com scripts/validar_dados.py e checklist manual | Python/revisão | Proveniência inteiramente fictícia verificada; nenhum documento real, token ou segredo; mascaramento demonstrativo feito antes do JSON; testes não alegam provar ausência de coincidência com pessoas reais |
-| S5.2 | Revisar componentes, formulários, erros e impressão | TS/CSS | Labels, foco, teclado, contraste, telas menores e impressão legíveis; não depender só de cor |
-| S5.3 | Verificar instalação, cache e atualização PWA | PWA | Fluxo offline após primeiro acesso; nova versão não apaga análises locais; limitações de navegador documentadas |
-| S5.4 | Revisar workflow de build/testes/publicação | GitHub Actions | Testes e build passam antes do deploy; site e rotas funcionam no endereço final e celular |
-| S5.5 | README.md e docs/demonstracao.md | Markdown | Problema, solução, arquitetura, como rodar, KPIs, uso de IA, dados fictícios, limites e evolução; roteiro executável em menos de dez minutos |
-| S5.6 | Revisar entrega e marcar versão | Git/documentação | Cinco processos sintéticos demonstráveis; checklist abaixo concluído; versão/tag coerente com resultado realmente validado |
-
-Lighthouse: metas sugeridas no sprint recebido (desempenho 85, acessibilidade 90, boas práticas 90), registrar condições da medição. Não substituir testes funcionais por nota de ferramenta. Instalação/offline devem ser testados diretamente.
-Commit exemplo: docs: documenta entrega e demonstração (S5.5).
-
-## Definição de pronto do MVP
-
-- [ ] Documentos e decisões preservados; pendências materiais resolvidas ou explicitamente limitadas.
-- [ ] Seis etapas funcionam de ponta a ponta com dados sintéticos.
-- [ ] Quatro elementos essenciais destacados.
-- [ ] Pertinência e condicionantes tratadas explicitamente.
-- [ ] Quatro classificações de achados e quatro conclusões representadas.
-- [ ] Sugestões e conclusões dependem de validação humana; mudanças relevantes exigem revisão.
-- [ ] Documento responde às cinco perguntas e permite impressão/PDF.
-- [ ] KPIs explicáveis, baseline estimado e medições de demonstração identificadas.
-- [ ] Perfis e registros locais apresentados como simulação.
-- [ ] Persistência e offline testados; ausência de sincronização/backup explicada.
-- [ ] Testes relevantes passam; publicação funciona no subcaminho correto.
-- [ ] Nenhum dado real ou segredo publicado.
-- [ ] README, roteiro de demonstração e transparência sobre IA completos.
-
-## Ajustes em relação ao texto recebido
-
-Documentos organizados em tarefas numeradas, arquivos e critérios verificáveis. Mantidas as cinco sprints, inclusive PWA/publicação inicial na Sprint 1 e revisão final na Sprint 5. Separado andamento das quatro conclusões. Classificações jurídicas automáticas, metodologia de risco e critérios de aptidão dependem de validação funcional. Retirada a duplicação de motor de regras em Python; mascaramento deslocado para antes da publicação; mantidos dados locais como demonstração. Esses ajustes não acrescentam integração institucional ou IA em execução.
+### Definição de Pronto da Sprint 5
+- [ ] Upload de minuta em PDF funcional com extração assistida de Identificação (RN01).
+- [ ] Evidência literal (página e trecho) exibida individualmente por campo.
+- [ ] Intervenção humana por campo (Confirmar / Editar / Rejeitar) obrigatória antes de qualquer persistência no rascunho de negócio.
+- [ ] Trilha de auditoria tripartite registra distintamente os atores `HUMANO`, `IA` e `SISTEMA`.
+- [ ] 11 metadados mínimos de IA preservados em todas as rodadas de extração (com saída bruta ou referência segura e confiança apenas se tecnicamente válida).
+- [ ] Alterações humanas sobre dados de IA preservam valor anterior, valor posterior, operador, data/hora e justificativa.
+- [ ] Regras determinísticas (RN10, RN08, DEC, MOT) registradas exclusivamente como eventos do `SISTEMA`.
+- [ ] Trilha de eventos opera sob lógica append-only e retificação por novo evento.
+- [ ] Aviso sobre armazenamento IndexedDB estritamente demonstrativo preservado.
+- [ ] Todos os 157 testes anteriores passam sem regressão e novos testes de ingestão/auditoria são aprovados.
+- [ ] Build de produção aprovado com 0 erros.

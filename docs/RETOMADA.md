@@ -1,9 +1,12 @@
 # CONFORMA GSASP — Guia de Retomada do Projeto
 
-Documento de transição e estado do projeto para continuidade em outro computador ou sessão.  
-Data do último registro: 30/09/2026.  
-**Branch de trabalho atual:** `pausa-s2-4` (Sprints 1, 2 e 3 100% CONCLUÍDAS E HOMOLOGADAS; Sprint 4 em andamento e validação manual)  
-**Caminho local da pasta do projeto:**  
+Documento de transição e estado do projeto para continuidade em outro computador ou sessão.
+Data do último registro: 01/10/2026.
+**Marco de Congelamento do MVP Demonstrativo:** Tag `v0.1.0-mvp-demo` (concluído, apresentado e validado com nota 10).
+**Branch de trabalho ativa:** `s5-ingestao-auditoria` (Nova Fase: Sprint 5 — Ingestão Inteligente + Trilha de Auditoria Humano × IA × Sistema).
+**Commit-base:** `74225d1`.
+**Status dos testes automatizados:** 157 aprovados, 0 falhas, 20 suítes. Build validado com sucesso.
+**Caminho local da pasta do projeto:**
 `C:\Users\79310680253\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (trabalho) / `C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada` (casa)
 
 ---
@@ -120,63 +123,111 @@ Data do último registro: 30/09/2026.
       - [x] TM-S3.6-05: Exibição dos indicadores de tempo e retrabalho com distinção entre baseline estimado (30 min e 30%), meta de até ~67% (10 min e 10%), medição "Sem dados medidos", fórmulas visíveis e salvaguarda institucional, sem exibição artificial de 0% (Homologado pelo usuário em 29/09/2026).
       - [x] TM-S3.6-06: Navegação funcional pelos atalhos para as 6 etapas e retorno ao Painel pelo cabeçalho, barra de persistência e botões de rodapé; rotas #/identificacao, #/pertinencia, #/conformidade, #/achados, #/riscos e #/resultado conferidas, dados preservados, recarga F5 mantendo estado e auditoria local mantida em 0 sem eventos espúrios (Homologado pelo usuário em 29/09/2026).
 
+- **Sprint 4 — Resultado executivo, relatórios e testes (MVP Demonstrativo):** 100% CONCLUÍDA E HOMOLOGADA.
+  - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): 100% Homologada formalmente pelo usuário em 29/09/2026.
+  - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): 100% Homologada (32 testes de domínio cobrindo os 17 cenários da RN08 + 13 testes de interface + regressão RN10 completa A-H).
+  - `S4.3`, `S4.4`, `S4.5`, `S5.1-S5.6`: Pacote de fechamento do MVP Demonstrativo com exportação JSON/PDF mascarada, relatório executivo imprimível (#/relatorio), 157 testes unitários aprovados em 20 suítes e congelamento na tag `v0.1.0-mvp-demo`.
+  - **Apresentação Executiva do MVP Demonstrativo:** Apresentado e homologado com nota 10.
+
 ---
 
-## 2. Próximo Passo Exato (Ponto Seguro de Retomada)
+## 2. Ponto Seguro de Retomada — Sprint 5
 
-- **Situação de momento:**
-  - **Sprint 1:** 100% concluída e publicada.
-  - **Sprint 2:** 100% concluída e homologada (S2.1 a S2.6).
-  - **Sprint 3:** **100% CONCLUÍDA E HOMOLOGADA** (S3.1 a S3.6: 99 testes unitários aprovados, build 100% íntegro e 6 testes manuais da S3.6 homologados).
-  - **Sprint 4:** Em andamento:
-    - `S4.1` (Tabela de Decisão RN08 em docs/regras-funcionais.md): **HOMOLOGADA** formalmente pelo usuário em 29/09/2026.
-    - `S4.2` (Motor de Conclusão e Tela da Etapa 6 — src/domain/conclusao.ts e src/pages/resultado.ts): **100% CONCLUÍDA E HOMOLOGADA** (149 testes unitários aprovados; build 100% íntegro; todos os 5 testes manuais aprovados pelo usuário em 30/09/2026).
-    - `S4.3` (Documento executivo e estilos de impressão): **NÃO INICIADA** (congelada para demonstração).
+### 2.1. Contexto Técnico Atual
+- **MVP demonstrativo:** Concluído, apresentado e validado formalmente com nota 10.
+- **Tag de congelamento:** `v0.1.0-mvp-demo`.
+- **Branch ativa de desenvolvimento:** `s5-ingestao-auditoria`.
+- **Commit-base:** `74225d1`.
+- **Testes atuais:** 157 aprovados, 0 falhas, 20 suítes (`npm test`).
+- **Build de produção:** Validado com sucesso (`npm.cmd run build`).
+- **Diretriz de tarefa estrita:** Não alterar nenhum arquivo de `src`, `public`, testes, configuração, dependências ou lógica da aplicação nesta etapa de documentação.
 
-1. **Sprint 4 — Tarefa S4.2 Concluída e Homologada (RN08, RN09, RN10):**
-   - **Camada de Domínio Puro (`src/domain/conclusao.ts`):**
-     - Cascata determinística estrita: $P1 \rightarrow P2 \rightarrow P3 \rightarrow P4 \rightarrow P5$.
-     - Precedência P1 absoluta: dados essenciais faltantes (`DEC-01`) ou avaliações mínimas pendentes (`DEC-02`) acionam P1 antes de óbices P2 a P5.
-     - 4 estados de checklist: `confirmar` em P1; `pendente` em P3 (`DEC-07A`, `MOT-SANEAMENTO-CHECKLIST-PENDENTE`); `nao_aplicavel` com justificativa formalmente resolvido admitindo P4/P5 (`DEC-10`); `nao_aplicavel` sem justificativa obrigatória em P1 (`DEC-01`).
-     - Consolidação de riscos: Crítico > Alto > Moderado > Baixo; dimensão não avaliada aciona P1 (`MOT-SANEAMENTO-AVALIACOES-PENDENTES`), vedada presunção de risco Baixo.
-     - Agregação de múltiplos códigos `MOT-*` quando coexistirem ressalvas em P4 (`APTO_PARA_ASSINATURA_COM_RESSALVA_NAO_IMPEDITIVA`).
-     - Saída com salvaguarda `naoConstituiAutorizacaoAutomatica: true`.
-   - **Camada de Interface e Governança (`src/pages/resultado.ts`):**
-     - Banner ostensivo de apoio à decisão (sem autorização automática para assinatura).
-     - Cartão da sugestão do sistema com badge, precedência, regra DEC e códigos MOT.
-     - Espaço de homologação técnica do assessor: adoção direta ou seleção divergente com justificativa obrigatória ($\ge 10$ caracteres).
-     - Invalidação dinâmica automática (RN10) por alterações supervenientes nos autos com box histórico e sem descarte indevido do estado de etapas anteriores.
-     - Respostas às 5 Perguntas Executivas Centrais (RN09).
-     - Trilha de auditoria integrada (`VALIDACAO_CONCLUSAO`, `DIVERGENCIA_CONCLUSAO`, `REABERTURA_CONCLUSAO`, `INVALIDACAO_CONCLUSAO_RN10`).
-     - Modo somente consulta para perfis *Leitor* e *Aprovador*.
-     - Persistência e restauração integral do parecer e metadados no IndexedDB/localStorage.
-   - **Testes Automatizados e Build:**
-     - **149 testes unitários aprovados via `npm test`** (32 de domínio + 13 de interface com regressão RN10 completa A-H + 104 preexistentes, 0 falhas).
-     - **Compilação e empacotamento PWA aprovados via `npm.cmd run build` com 0 erros** (bundle gerado com sucesso, precache de 31 ativos e Service Worker íntegros).
-   - **Status dos Testes Manuais da S4.2 (100% Homologados pelo usuário em 30/09/2026):**
-     - [x] TM-S4.2-01: APROVADO (Adoção da sugestão do sistema em consonância com o motor no Cenário 1, homologação com selo "PARECER HOMOLOGADO EM CONSONÂNCIA", badge "Em Consonância com o Sistema", metadados e registro na auditoria).
-     - [x] TM-S4.2-02: APROVADO (Reabertura de parecer para revisão, bloqueio estrito de divergência com justificativa vazia ou curta e homologação de divergência técnica fundamentada).
-     - [x] TM-S4.2-03: APROVADO (Invalidação dinâmica automática da conclusão RN10 após alteração superveniente na matriz de riscos, estabilidade da pertinência e registro único na auditoria sem duplicação após F5 — Homologado pelo usuário em 30/09/2026).
-     - [x] TM-S4.2-04: APROVADO (Conferência das respostas às 5 Perguntas Executivas Centrais RN09 e das 4 salvaguardas regulamentares da SESP-MT, coerência de fluxo e ausência de eventos espúrios de auditoria — Homologado pelo usuário em 30/09/2026).
-     - [x] TM-S4.2-05: APROVADO (Modo somente consulta nos perfis Leitor e Aprovador com banner, bloqueio de controles e preservação de dados).
+### 2.2. Nova Fase: Sprint 5 — Ingestão Inteligente + Trilha de Auditoria Humano × IA × Sistema
+A Sprint 5 marca o início da automação assistida com IA com rigorosa governança pública e trilha de auditoria tripartite segregada.
 
-2. **Próxima Ação Imediata na Retomada:**
-   - **Próximo passo:** Apresentação e demonstração executiva do protótipo com base nas funcionalidades 100% homologadas (S1, S2, S3 e S4.2).
-   - **Regra de bloqueio estrita:** Nenhuma nova funcionalidade ou código deve ser iniciado até a conclusão da apresentação de demonstração. A Tarefa S4.3 permanece **NÃO INICIADA** e o código está congelado.
+O documento diretor completo desta fase está registrado em:
+👉 [docs/ROADMAP_AUDITORIA_HUMANO_IA.md](file:///c:/Users/cleyt/OneDrive/Documentos/Projetos/conforma-gsasp-retomada/docs/ROADMAP_AUDITORIA_HUMANO_IA.md)
 
-3. **Comandos para Retomar o Servidor Local na Pasta Ativa:**
-   ```powershell
-   # 1. Garantir que está na pasta do projeto:
-   cd C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
+### 2.3. Primeira Entrega Estrita da Sprint 5
+A primeira entrega funcional da Sprint 5 está circunscrita estritamente ao seguinte fluxo:
+$$\text{Upload de Minuta/PDF} \longrightarrow \text{Extração da Identificação} \longrightarrow \text{Evidência por Campo} \longrightarrow \text{Confirmar / Editar / Rejeitar} \longrightarrow \text{Persistência após Validação Humana}$$
 
-   # 2. Compilar e rodar os testes:
-   npm.cmd test
-   npm.cmd run build
+1. **Upload da Minuta/PDF:** Envio de arquivo em formato PDF contendo a minuta contratual ou termo aditivo.
+2. **Extração da Identificação:** Extração assistida por IA dos campos essenciais do instrumento (RN01: Objeto, Tipo/Origem, Valor, Vigência, além de Número, Contratado e CNPJ).
+3. **Evidência por Campo:** Cada campo sugerido deve exibir a coordenada/localização exata no documento (página e trecho literal) de onde o dado foi extraído.
+4. **Intervenção Humana Obrigatória:** Para cada campo, o operador humano dispõe das opções explícitas de **Confirmar** a extração, **Editar** o valor (com justificativa quando couber) ou **Rejeitar** a sugestão.
+5. **Persistência Condicionada:** Nenhuma informação produzida pela IA é gravada diretamente no rascunho de negócio sem a validação expressa do operador humano.
 
-   # 3. Iniciar o servidor de pré-visualização:
-   npm.cmd run preview
-   # Endereço: http://localhost:4173/conforma-gsasp/
-   ```
+### 2.4. Princípio Obrigatório de Governança
+A segregação entre os papéis no CONFORMA GSASP é categórica:
+- **IA:** extrai, classifica e sugere;
+- **Humano:** confirma, corrige, rejeita e complementa (validação humana/técnica, observadas as competências do usuário e da autoridade competente);
+- **Sistema:** aplica regras determinísticas RN / DEC / MOT;
+- **Nenhum desses atores deve ser confundido na auditoria.**
+
+### 2.5. Trilha de Auditoria Tripartite (HUMANO × IA × SISTEMA)
+A trilha de auditoria deve categorizar os eventos a partir de três atores formais:
+1. `HUMANO`: Registra confirmações, edições, rejeições, divergências motivadas e homologações do assessor.
+2. `IA`: Registra a execução de pipelines de OCR/NLP, saídas brutas e sugestões probabilísticas de campos.
+3. `SISTEMA`: Registra validações lógicas estruturais, verificações de integridade e a aplicação determinística de regras.
+
+### 2.6. Metadados Mínimos Mandatórios de Toda Execução de IA
+Toda execução futura de componentes de inteligência artificial deverá registrar e preservar, no mínimo:
+- `prompt_id`
+- `prompt_version`
+- `ai_run_id`
+- `gatilho/automação`
+- `modelo/provedor`
+- `documentos/fontes` (com identificação de integridade/hash, sendo SHA-256 diretriz técnica candidata)
+- `página/trecho/evidência`
+- `saída produzida` (saída bruta ou referência segura à saída, conforme política de retenção e segurança)
+- `campos sugeridos` (grau de confiança registrado somente quando o modelo ou pipeline fornecer métrica tecnicamente válida, vedada a inferência de percentual artificial)
+- `timestamp` (carimbo de tempo padronizado, sendo ISO 8601 UTC diretriz técnica candidata)
+- `intervenção humana posterior` (IDs dos eventos humanos subsequentes)
+
+### 2.7. Rastreamento de Alterações Humanas sobre Sugestões da IA
+Qualquer modificação realizada pelo operador sobre uma sugestão gerada pela IA deverá preservar:
+- `valor anterior` (sugerido pela IA);
+- `valor posterior` (adotado pelo humano);
+- `usuário` (identificação e papel ativo);
+- `data/hora` (timestamp ISO);
+- `justificativa quando aplicável` (obrigatória para alterações materiais e rejeições).
+
+### 2.8. Segregação e Atribuição de Regras Determinísticas ao SISTEMA
+Regras determinísticas e normativas — tais como **RN10** (invalidação superveniente da conclusão homologada por fato novo), **RN08** (cascata determinística P1 a P5), regras **DEC-01 a DEC-10** e motivos **MOT-*** — **devem ser auditadas estritamente como ações do SISTEMA, nunca atribuídas à IA**. O motor do sistema executa lógica booleana prescrita em norma, sem inferência generativa.
+
+### 2.9. Requisitos Arquiteturais para Uso Institucional Futuro
+Para viabilizar futura adoção corporativa, a arquitetura da auditoria deve prever:
+- **Trilha append-only:** Base de auditoria com objetivo de ser estritamente aditiva (sem operações de exclusão ou sobrescrita).
+- **Eventos não apagados nem sobrescritos:** Garantia de imutabilidade histórica.
+- **Retificação por novo evento:** Qualquer alteração ou desfazimento gera novo evento de retificação vinculado ao ID do evento original.
+- **Autenticação:** Identificação de operadores humanos e credenciais de serviços.
+- **Integridade:** Mecanismos de integridade (sendo hashing encadeado diretriz técnica candidata).
+- **Controle de acesso:** Controle de acesso e permissões (sendo RBAC diretriz técnica candidata, não arquitetura definitivamente escolhida nesta fase).
+- **Retenção:** Prazos de guarda e ciclo de vida documental conforme normas e políticas aplicáveis.
+- **Exportação para auditoria:** Geração de pacotes estruturados para auditoria, controle interno/externo e demais necessidades institucionais, conforme governança futura (sendo JSON e PDF formatos tratados como diretrizes técnicas candidatas).
+
+> [!WARNING]
+> **Advertência de Governança Institucional:**
+> A versão atual da persistência baseada em **IndexedDB continua sendo apenas demonstrativa e didática**. Ela não fornece garantias de inviolabilidade criptográfica contra manipulações no cliente.
+
+### 2.10. Comandos para Executar e Testar na Branch Ativa
+```powershell
+# 1. Garantir que está na pasta do projeto e na branch correta:
+cd C:\Users\cleyt\OneDrive\Documentos\Projetos\conforma-gsasp-retomada
+git status
+# Branch: s5-ingestao-auditoria
+
+# 2. Executar a suíte completa de testes automatizados (157 testes):
+npm.cmd test
+
+# 3. Compilar a aplicação e validar tipos e PWA:
+npm.cmd run build
+
+# 4. Iniciar o servidor de pré-visualização:
+npm.cmd run preview
+# Endereço: http://localhost:4173/conforma-gsasp/
+```
 
 ---
 
@@ -184,85 +235,66 @@ Data do último registro: 30/09/2026.
 
 ### Passo a passo no novo computador:
 
-#### 1. Clonar o repositório e acessar a branch da pausa
+#### 1. Clonar o repositório e acessar a branch da Sprint 5
 ```powershell
 git clone https://github.com/cleytondias84/conforma-gsasp.git
 cd conforma-gsasp
-git checkout pausa-s2-4
+git checkout s5-ingestao-auditoria
 ```
 
 #### 2. Preparar o ambiente Node.js / Frontend
 ```powershell
-# Instala as dependências (Vite, TypeScript, vite-plugin-pwa)
 npm.cmd install
 ```
 
 #### 3. Preparar o ambiente Python local (.venv)
 ```powershell
-# Criar o ambiente virtual isolado
 python -m venv .venv
-
-# Ativar o ambiente virtual (Windows PowerShell)
 .\.venv\Scripts\Activate.ps1
-# (ou no CMD: .\.venv\Scripts\activate.bat | ou Linux/macOS: source .venv/bin/activate)
-
-# Instalar dependências registradas (pytest)
 pip install -r requirements.txt
 ```
 
-#### 4. Gerar dados sintéticos e ícones
+#### 4. Executar os testes automatizados
 ```powershell
-# Gera os 7 arquivos de cenários fictícios em public/data/
-python scripts/gerar_dados.py
-
-# Gera os ícones do PWA e favicon em public/
-python scripts/gerar_icones.py
-```
-
-#### 5. Executar os testes automatizados
-```powershell
-# Executa a suíte de testes unitários dos dados sintéticos (12 testes)
+# Testes do gerador Python (12 testes):
 pytest -v scripts/test_gerar_dados.py
+
+# Testes da aplicação TypeScript (157 testes em 20 suítes):
+npm.cmd test
 ```
 
-#### 6. Compilar e executar a aplicação
+#### 5. Compilar e executar a aplicação
 ```powershell
-# Compilação de produção e checagem estrita de tipos
 npm.cmd run build
-
-# Executa o servidor de pré-visualização (recomendado para testar o PWA e Service Worker)
 npm.cmd run preview
 # Endereço: http://localhost:4173/conforma-gsasp/
-
-# Ou para desenvolvimento contínuo:
-npm.cmd run dev
-# Endereço: http://localhost:5173/conforma-gsasp/
 ```
 
 ---
 
-## 4. Histórico de Entregas Anteriores (S0.2 a S1.5)
+## 4. Histórico de Entregas Anteriores (Sprints 1 a 4 e Congelamento do MVP)
 
-Para consulta de detalhes de decisões e implementações das tarefas já homologadas:
-- **S0.2:** Diagnóstico de ambiente e ferramentas mínimas.
-- **S1.1:** Setup inicial com Vite + TypeScript + CSS puro, `.gitignore` seguro.
-- **S1.2:** Modelagem em `src/domain/tipos.ts` (4 conclusões da RN08, validação humana, campos opcionais).
-- **S1.3:** Roteador hash com 6 etapas, stepper acessível, foco por teclado e destaque dos 4 elementos essenciais na Identificação.
-- **S1.4:** Gerador `scripts/gerar_dados.py` gerando 2 casos regulares, 2 com pendências e 1 grave com inconsistências propositais, testado via `scripts/test_gerar_dados.py`.
-- **S1.5:** Configuração de `base: '/conforma-gsasp/'`, deploy automatizado no GitHub Actions e publicação ativa no GitHub Pages.
-- **S1.6:** Instalação e cache PWA (Service Worker Workbox, precache de 31 ativos, manifesto, ícones e homologação de instalação e funcionamento offline).
+- **Sprint 1 (Fundação, Arquitetura e PWA):** Tipagem de domínio, roteador por hash, gerador de dados sintéticos, GitHub Pages e PWA com precache e suporte offline.
+- **Sprint 2 (Formulário e Persistência Local):** Formulários de Identificação (RN01), Pertinência (RN02), Conformidade Documental/Condicionantes (RN03/RN13), persistência em IndexedDB e papéis simulados (S2.5).
+- **Sprint 3 (Motor de Regras, Achados e Riscos):** Catálogo de regras determinísticas (`REG-01` a `REG-06`), motor de achados com anatomia RN03, matriz de riscos qualitativa de 4 dimensões (RN12), trilha de auditoria local (S3.5) e painel executivo (S3.6).
+- **Sprint 4 (Resultado Executivo, Tabela de Decisão e Relatórios):** Tabela de decisão RN08 (P1 a P5, DEC-01 a DEC-10, MOT-*), motor de conclusão determinístico com invalidação dinâmica superveniente RN10, respostas às 5 Perguntas Executivas RN09, tela de relatório executivo (#/relatorio) e exportação com máscara de proteção.
+- **Marco de Congelamento do MVP Demonstrativo:** Homologação completa com 157 testes unitários em 20 suítes, apresentação formal com nota 10 e criação da tag imutável `v0.1.0-mvp-demo`.
 
 ---
 
-## 5. Pendências e Decisões Mapeadas para as Próximas Sprints
+## 5. Planejamento e Decisões para a Sprint 5
 
-1. **Sprint 2 (Formulário e Persistência Local):**
-   - Matriz de papéis de usuários (Administrador, Analista, Revisor, Autoridade, Leitor).
-   - Validações de obrigatoriedade e não aplicabilidade de campos contratuais.
-   - Armazenamento local no navegador com IndexedDB e retomada offline.
-2. **Sprints 3 e 4 (Motor de Regras, Riscos e Documento Final):**
-   - Metodologia de cálculo de riscos e tabela de decisão para sugestões de conclusão.
-   - Geração de documento de conformidade para impressão/PDF.
-
-
-
+1. **Marco 5.1 — Upload e Extração de Identificação com Validação Humana:**
+   - Componente de upload de PDF e extração estruturada de campos essenciais.
+   - Painel comparativo de evidências com citação de página/trecho e botões Confirmar/Editar/Rejeitar.
+   - Persistência no rascunho de negócio estritamente condicionada à validação humana/técnica, observadas as competências do usuário e da autoridade competente.
+2. **Marco 5.2 — Trilha de Auditoria Tripartite e Preservação de Metadados de IA:**
+   - Estruturação dos três atores (`HUMANO`, `IA`, `SISTEMA`).
+   - Registro mandatório dos 11 metadados de execução de IA (`prompt_id`, `prompt_version`, `ai_run_id`, etc.), utilizando saída bruta ou referência segura à saída, conforme política de retenção e segurança.
+   - Métrica de confiança registrada exclusivamente quando o modelo/pipeline fornecer métrica tecnicamente válida, vedada a inferência de percentual artificial.
+3. **Marco 5.3 — Diffs Auditáveis e Justificativa de Divergência:**
+   - Preservação de valor anterior, valor posterior, identificação do operador, data/hora e justificativa.
+4. **Marco 5.4 — Segregação e Blindagem das Regras do SISTEMA:**
+   - Auditoria autônoma de RN10, RN08, DEC e MOT como ações exclusivas do SISTEMA.
+5. **Marco 5.5 — Homologação da Suíte de Testes da Nova Fase:**
+   - Testes unitários para os novos módulos sem qualquer regressão dos 157 testes preexistentes.
