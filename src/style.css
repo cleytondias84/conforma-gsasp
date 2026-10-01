@@ -3186,7 +3186,7 @@ textarea:disabled,
 
 .painel-meta-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: minmax(280px, 2fr) repeat(3, minmax(140px, 1fr));
   gap: 1rem;
   padding: 1rem;
   background: #f8fafc;
@@ -3194,10 +3194,21 @@ textarea:disabled,
   border: 1px solid var(--border-light);
 }
 
+@media (max-width: 840px) {
+  .painel-meta-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
 .painel-meta-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
+}
+
+.painel-meta-item-objeto {
+  min-width: 0;
 }
 
 .painel-meta-label {
@@ -3211,9 +3222,24 @@ textarea:disabled,
 .painel-meta-val {
   font-size: 0.9rem;
   color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.35;
+}
+
+.painel-meta-val.painel-meta-val-objeto,
+.painel-meta-item-objeto .painel-meta-val,
+.painel-meta-val-objeto {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  -webkit-line-clamp: unset;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.35;
 }
 
 .painel-section {

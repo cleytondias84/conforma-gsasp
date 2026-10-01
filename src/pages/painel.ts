@@ -312,9 +312,9 @@ export function renderPainelScreen(): string {
 
         <!-- Metadados Essenciais em Destaque (RN01) -->
         <div class="painel-meta-grid">
-          <div class="painel-meta-item">
+          <div class="painel-meta-item painel-meta-item-objeto">
             <span class="painel-meta-label">Objeto:</span>
-            <span class="painel-meta-val" title="${c.processo.objeto}">${c.processo.objeto}</span>
+            <span class="painel-meta-val painel-meta-val-objeto" title="${c.processo.objeto}" style="white-space: normal; overflow: visible; text-overflow: unset; word-break: normal; overflow-wrap: break-word; line-height: 1.35;">${c.processo.objeto}</span>
           </div>
           <div class="painel-meta-item">
             <span class="painel-meta-label">Valor Estimado:</span>
